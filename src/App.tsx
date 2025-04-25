@@ -14,6 +14,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 
 // Dashboard pages
 import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
+import EmployeeChat from "@/pages/employee/EmployeeChat";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 
@@ -42,6 +43,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Employee']}>
                   <EmployeeDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/employee/chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Employee']}>
+                  <EmployeeChat />
                 </ProtectedRoute>
               } 
             />
