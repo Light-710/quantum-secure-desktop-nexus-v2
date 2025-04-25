@@ -1,11 +1,10 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, LogOut, LayoutDashboard, Users, Server, Monitor, Activity, Database, Bell } from 'lucide-react';
+import { Settings, LogOut, LayoutDashboard, Users, Server, Monitor, Activity, Database, Bell, MessageCircle } from 'lucide-react';
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -16,7 +15,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  // Get initials for avatar fallback
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -25,17 +23,18 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       .toUpperCase();
   };
 
-  // Navigation items based on user role
   const getNavItems = () => {
     const roleItems = {
       Employee: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/employee' },
         { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/employee/desktop' },
+        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/employee/chat' },
       ],
       Manager: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/manager' },
         { name: 'Projects', icon: <Activity size={20} />, path: '/dashboard/manager/projects' },
         { name: 'Team', icon: <Users size={20} />, path: '/dashboard/manager/team' },
+        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/manager/chat' },
       ],
       Admin: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/admin' },
@@ -51,14 +50,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-cyber-dark flex">
-      {/* Background elements */}
       <div className="cyber-grid-bg" />
       <div className="scan-line animate-scan-line" />
       
-      {/* Sidebar */}
       <aside className={`glass-panel border-r border-cyber-teal/20 h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
           <div className="p-4 flex items-center justify-center">
             <Link to={`/dashboard/${user?.role?.toLowerCase()}`} className="flex items-center">
               <span className={`text-2xl neon-blue font-bold ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
@@ -66,7 +62,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </Link>
           </div>
           
-          {/* Toggle button */}
           <button 
             className="absolute -right-3 top-6 bg-cyber-dark-blue border border-cyber-teal/30 rounded-full p-1"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -84,7 +79,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           
           <Separator className="my-4 bg-cyber-teal/20" />
           
-          {/* Navigation */}
           <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
             {getNavItems().map((item, index) => (
               <Link 
@@ -98,7 +92,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             ))}
           </nav>
           
-          {/* User profile section */}
           <div className="p-4 border-t border-cyber-teal/20">
             <div className="flex items-center">
               <Avatar className="h-10 w-10 border border-cyber-teal/40">
@@ -143,9 +136,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </div>
       </aside>
       
-      {/* Main content */}
       <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        {/* Header */}
         <header className="glass-panel sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-cyber-teal/20">
           <div>
             <h1 className="text-xl font-semibold text-cyber-teal">
@@ -153,7 +144,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </h1>
           </div>
           
-          {/* Notifications */}
           <div className="flex items-center space-x-4">
             <Button 
               variant="outline" 
@@ -168,7 +158,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         </header>
         
-        {/* Content */}
         <div className="p-6">
           {children}
         </div>
