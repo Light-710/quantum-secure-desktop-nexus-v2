@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,8 @@ import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
 import EmployeeChat from "@/pages/employee/EmployeeChat";
 import EmployeeVirtualDesktop from "@/pages/employee/EmployeeVirtualDesktop";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
+import ManagerProjects from "@/pages/manager/ManagerProjects";
+import ManagerTeam from "@/pages/manager/ManagerTeam";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 
 // Error page
@@ -70,6 +71,22 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Manager']}>
                   <ManagerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/projects" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/team" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerTeam />
                 </ProtectedRoute>
               } 
             />
