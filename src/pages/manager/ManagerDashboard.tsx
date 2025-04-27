@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
@@ -230,7 +231,7 @@ const ManagerDashboard = () => {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
+                                <CalendarComponent
                                   mode="single"
                                   selected={startDate}
                                   onSelect={setStartDate}
@@ -257,7 +258,7 @@ const ManagerDashboard = () => {
                                 </Button>
                               </PopoverTrigger>
                               <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
+                                <CalendarComponent
                                   mode="single"
                                   selected={endDate}
                                   onSelect={setEndDate}
@@ -537,3 +538,4 @@ const ManagerDashboard = () => {
 };
 
 export default ManagerDashboard;
+
