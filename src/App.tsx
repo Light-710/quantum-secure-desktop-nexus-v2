@@ -1,13 +1,10 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "next-themes";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 // Auth pages
 import Login from "@/pages/Login";
@@ -31,99 +28,94 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <div className="fixed top-4 right-4 z-50">
-          <ThemeToggle />
-        </div>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              {/* Auth Routes */}
-              <Route path="/" element={<Login />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              
-              {/* Employee Routes */}
-              <Route 
-                path="/dashboard/employee" 
-                element={
-                  <ProtectedRoute allowedRoles={['Employee']}>
-                    <EmployeeDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard/employee/chat" 
-                element={
-                  <ProtectedRoute allowedRoles={['Employee']}>
-                    <EmployeeChat />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard/employee/desktop" 
-                element={
-                  <ProtectedRoute allowedRoles={['Employee']}>
-                    <EmployeeVirtualDesktop />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Manager Routes */}
-              <Route 
-                path="/dashboard/manager" 
-                element={
-                  <ProtectedRoute allowedRoles={['Manager']}>
-                    <ManagerDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard/manager/projects" 
-                element={
-                  <ProtectedRoute allowedRoles={['Manager']}>
-                    <ManagerProjects />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard/manager/team" 
-                element={
-                  <ProtectedRoute allowedRoles={['Manager']}>
-                    <ManagerTeam />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard/manager/chat" 
-                element={
-                  <ProtectedRoute allowedRoles={['Manager']}>
-                    <ManagerChat />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Admin Routes */}
-              <Route 
-                path="/dashboard/admin" 
-                element={
-                  <ProtectedRoute allowedRoles={['Admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              
-              {/* Catch-all route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            {/* Employee Routes */}
+            <Route 
+              path="/dashboard/employee" 
+              element={
+                <ProtectedRoute allowedRoles={['Employee']}>
+                  <EmployeeDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/employee/chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Employee']}>
+                  <EmployeeChat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/employee/desktop" 
+              element={
+                <ProtectedRoute allowedRoles={['Employee']}>
+                  <EmployeeVirtualDesktop />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Manager Routes */}
+            <Route 
+              path="/dashboard/manager" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/projects" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/team" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerTeam />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerChat />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Admin Routes */}
+            <Route 
+              path="/dashboard/admin" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            
+            {/* Catch-all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
