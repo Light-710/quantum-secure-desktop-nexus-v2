@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { format } from "date-fns";
+import { Plus, Users, FileText, Calendar, AlignJustify, Building } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,8 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { Activity, Calendar, FileText, Plus, Users, BarChart3 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 const ManagerDashboard = () => {
   const { toast } = useToast();
