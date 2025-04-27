@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,6 +19,7 @@ import EmployeeVirtualDesktop from "@/pages/employee/EmployeeVirtualDesktop";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
 import ManagerProjects from "@/pages/manager/ManagerProjects";
 import ManagerTeam from "@/pages/manager/ManagerTeam";
+import ManagerChat from "@/pages/manager/ManagerChat";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 
 // Error page
@@ -87,6 +89,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Manager']}>
                   <ManagerTeam />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerChat />
                 </ProtectedRoute>
               } 
             />
