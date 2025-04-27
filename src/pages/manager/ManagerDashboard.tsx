@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
@@ -15,6 +14,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { Checkbox } from "@/components/ui/checkbox";
 
 const ManagerDashboard = () => {
   const { toast } = useToast();
@@ -65,6 +65,16 @@ const ManagerDashboard = () => {
       setClientEmail('');
       setIsDialogOpen(false);
     }
+  };
+
+  const handleTeamMemberToggle = (memberId: string) => {
+    setSelectedTeamMembers(prev => {
+      if (prev.includes(memberId)) {
+        return prev.filter(id => id !== memberId);
+      } else {
+        return [...prev, memberId];
+      }
+    });
   };
   
   return (
@@ -278,19 +288,16 @@ const ManagerDashboard = () => {
                               <div
                                 key={member.id}
                                 className={cn(
-                                  "flex items-center space-x-2 border border-cyber-teal/30 rounded-md p-2 cursor-pointer transition-colors",
-                                  selectedTeamMembers.includes(member.id)
-                                    ? "bg-cyber-blue/20 border-cyber-blue"
-                                    : "bg-cyber-dark-blue/50 hover:bg-cyber-dark-blue/70"
+                                  "flex items-center space-x-3 border border-cyber-teal/30 rounded-md p-3 bg-cyber-dark-blue/50 hover:bg-cyber-dark-blue/70",
+                                  selectedTeamMembers.includes(member.id) && "border-cyber-blue bg-cyber-blue/20"
                                 )}
-                                onClick={() => {
-                                  setSelectedTeamMembers(prev =>
-                                    prev.includes(member.id)
-                                      ? prev.filter(id => id !== member.id)
-                                      : [...prev, member.id]
-                                  );
-                                }}
                               >
+                                <Checkbox
+                                  id={`member-${member.id}`}
+                                  checked={selectedTeamMembers.includes(member.id)}
+                                  onCheckedChange={() => handleTeamMemberToggle(member.id)}
+                                  className="border-cyber-teal/30 data-[state=checked]:border-cyber-blue data-[state=checked]:bg-cyber-blue"
+                                />
                                 <div className="w-8 h-8 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
                                   {member.name.split(' ').map(n => n[0]).join('')}
                                 </div>
@@ -538,4 +545,3 @@ const ManagerDashboard = () => {
 };
 
 export default ManagerDashboard;
-
