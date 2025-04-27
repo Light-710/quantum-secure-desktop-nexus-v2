@@ -117,7 +117,7 @@ const UsersPage = () => {
       email: data.email,
       username: data.username,
       role: data.role,
-      status: 'Active',
+      status: 'Active', // Explicitly using the literal 'Active' string
       lastLogin: 'Never',
       permissions: data.role === 'Employee' 
         ? ['Access Virtual Machines', 'Submit Reports'] 
@@ -210,7 +210,10 @@ const UsersPage = () => {
           return user;
         }
         
-        const newStatus = user.status === 'Active' ? 'Suspended' : 'Active';
+        // Use explicit literal types for status
+        const newStatus: 'Active' | 'Suspended' | 'Deactivated' = 
+          user.status === 'Active' ? 'Suspended' : 'Active';
+        
         return {
           ...user,
           status: newStatus,
