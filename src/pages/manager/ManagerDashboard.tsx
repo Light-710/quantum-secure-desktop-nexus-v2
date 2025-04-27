@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
@@ -19,8 +18,16 @@ import { cn } from '@/lib/utils';
 const ManagerDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  // Add new state for form fields
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
+  const [newProjectScope, setNewProjectScope] = useState('');
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<string[]>([]);
+  const [clientName, setClientName] = useState('');
+  const [clientEmail, setClientEmail] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Sample projects data
@@ -46,8 +53,15 @@ const ManagerDashboard = () => {
         description: `"${newProjectName}" has been created successfully.`,
       });
       
+      // Reset form fields
       setNewProjectName('');
       setNewProjectDesc('');
+      setNewProjectScope('');
+      setStartDate(undefined);
+      setEndDate(undefined);
+      setSelectedTeamMembers([]);
+      setClientName('');
+      setClientEmail('');
       setIsDialogOpen(false);
     }
   };
@@ -156,14 +170,15 @@ const ManagerDashboard = () => {
                         <Plus className="mr-2 h-4 w-4" /> New Project
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] glass-panel border-cyber-teal/30">
+                    <DialogContent className="sm:max-w-[600px] glass-panel border-cyber-teal/30">
                       <DialogHeader>
                         <DialogTitle className="text-xl text-cyber-teal">Create New Project</DialogTitle>
                         <DialogDescription className="text-cyber-gray">
                           Fill in the details for your new security testing project
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-4 py-4">
+                      <div className="space-y-4 py-4 max-h-[70vh] overflow-y-auto">
+                        {/* Project Name and Description */}
                         <div className="space-y-2">
                           <Label htmlFor="project-name" className="text-cyber-teal">Project Name</Label>
                           <Input
@@ -176,28 +191,137 @@ const ManagerDashboard = () => {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="project-desc" className="text-cyber-teal">Description</Label>
-                          <Input
+                          <Textarea
                             id="project-desc"
                             placeholder="Brief project description"
                             value={newProjectDesc}
                             onChange={(e) => setNewProjectDesc(e.target.value)}
-                            className="bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal"
+                            className="bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal min-h-[100px]"
                           />
                         </div>
+                        
+                        {/* Project Scope */}
+                        <div className="space-y-2">
+                          <Label htmlFor="project-scope" className="text-cyber-teal">Project Scope</Label>
+                          <Textarea
+                            id="project-scope"
+                            placeholder="Define the project scope and objectives"
+                            value={newProjectScope}
+                            onChange={(e) => setNewProjectScope(e.target.value)}
+                            className="bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal min-h-[100px]"
+                          />
+                        </div>
+                        
+                        {/* Timeline */}
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="start-date" className="text-cyber-teal">Start Date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal border-cyber-teal/30",
+                                    !startDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  <Calendar className="mr-2 h-4 w-4" />
+                                  {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={startDate}
+                                  onSelect={setStartDate}
+                                  initialFocus
+                                  className="bg-cyber-dark-blue/90 border-cyber-teal/30 pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <Label htmlFor="end-date" className="text-cyber-teal">End Date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal border-cyber-teal/30",
+                                    !endDate && "text-muted-foreground"
+                                  )}
+                                >
+                                  <Calendar className="mr-2 h-4 w-4" />
+                                  {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={endDate}
+                                  onSelect={setEndDate}
+                                  initialFocus
+                                  className="bg-cyber-dark-blue/90 border-cyber-teal/30 pointer-events-auto"
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+                        
+                        {/* Team Members Selection */}
+                        <div className="space-y-2">
+                          <Label className="text-cyber-teal">Team Members</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {teamMembers.map((member) => (
+                              <div
+                                key={member.id}
+                                className={cn(
+                                  "flex items-center space-x-2 border border-cyber-teal/30 rounded-md p-2 cursor-pointer transition-colors",
+                                  selectedTeamMembers.includes(member.id)
+                                    ? "bg-cyber-blue/20 border-cyber-blue"
+                                    : "bg-cyber-dark-blue/50 hover:bg-cyber-dark-blue/70"
+                                )}
+                                onClick={() => {
+                                  setSelectedTeamMembers(prev =>
+                                    prev.includes(member.id)
+                                      ? prev.filter(id => id !== member.id)
+                                      : [...prev, member.id]
+                                  );
+                                }}
+                              >
+                                <div className="w-8 h-8 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
+                                  {member.name.split(' ').map(n => n[0]).join('')}
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm text-cyber-teal">{member.name}</p>
+                                  <p className="text-xs text-cyber-gray">{member.role}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Client Details */}
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="client-name" className="text-cyber-teal">Client Name</Label>
                             <Input
-                              id="start-date"
-                              type="date"
+                              id="client-name"
+                              placeholder="Enter client name"
+                              value={clientName}
+                              onChange={(e) => setClientName(e.target.value)}
                               className="bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="due-date" className="text-cyber-teal">Due Date</Label>
+                            <Label htmlFor="client-email" className="text-cyber-teal">Client Email</Label>
                             <Input
-                              id="due-date"
-                              type="date"
+                              id="client-email"
+                              type="email"
+                              placeholder="Enter client email"
+                              value={clientEmail}
+                              onChange={(e) => setClientEmail(e.target.value)}
                               className="bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal"
                             />
                           </div>
