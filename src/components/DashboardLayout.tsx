@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,7 +41,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/admin' },
         { name: 'Users', icon: <Users size={20} />, path: '/dashboard/admin/users' },
         { name: 'System', icon: <Server size={20} />, path: '/dashboard/admin/system' },
-        { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/admin/desktops' },
+        { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/admin/virtual-desktops' },
         { name: 'Logs', icon: <Database size={20} />, path: '/dashboard/admin/logs' },
       ],
     };
