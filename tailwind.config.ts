@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -62,20 +61,21 @@ export default {
           400: "hsl(0, 0%, 45%)",  // Dark Gray
           500: "hsl(0, 0%, 30%)",  // Darkest Gray
           accent: "hsl(40, 100%, 70%)", // Warm Gold
-        }
+        },
+        warm: {
+          50: "#FEF7CD",   // Soft Yellow
+          100: "#FEC6A1",  // Soft Orange
+          200: "#FDE1D3",  // Soft Peach
+          300: "#F97316",  // Bright Orange
+        },
       },
-      borderRadius: {
-        lg: "0.5rem",
-        md: "calc(0.5rem - 2px)",
-        sm: "calc(0.5rem - 4px)",
-      },
-      fontFamily: {
-        'sans': ['Inter', 'system-ui', 'sans-serif'],
-        'serif': ['Playfair Display', 'Georgia', 'serif'],
+      backgroundImage: {
+        'warm-gradient': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
       },
       boxShadow: {
         'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        'warm-subtle': '0 4px 6px -1px rgba(249,115,22,0.1), 0 2px 4px -1px rgba(249,115,22,0.06)',
       },
       keyframes: {
         "fade-in": {

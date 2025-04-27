@@ -7,7 +7,7 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-luxury-300/10 selection:text-luxury-500;
+    @apply border-border selection:bg-warm-100/10 selection:text-warm-300;
   }
   
   html, body {
@@ -17,28 +17,28 @@
 
   body {
     @apply bg-background text-foreground relative min-h-screen;
-    background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+    background: linear-gradient(to right, rgba(254,198,161,0.1), rgba(253,225,211,0.2));
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    @apply font-semibold text-luxury-500;
+    @apply font-semibold text-warm-300;
   }
 }
 
 @layer components {
-  /* Elegant glass panel effect */
+  /* Elegant glass panel effect with warm tones */
   .glass-panel {
-    @apply bg-white/70 backdrop-blur-lg border border-luxury-200/50 shadow-elegant rounded-lg;
+    @apply bg-white/70 backdrop-blur-lg border border-warm-100/50 shadow-warm-subtle rounded-lg;
   }
   
-  /* Simple button style */
+  /* Warm button style */
   .luxury-button {
-    @apply px-6 py-3 bg-luxury-500 text-white rounded-md transition-all hover:bg-luxury-400 focus:outline-none focus:ring-2 focus:ring-luxury-300 focus:ring-opacity-50;
+    @apply px-6 py-3 bg-warm-300 text-white rounded-md transition-all hover:bg-warm-200 focus:outline-none focus:ring-2 focus:ring-warm-100 focus:ring-opacity-50;
   }
 
-  /* Subtle hover effect */
+  /* Subtle hover effect with warm undertones */
   .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant;
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-warm-subtle;
   }
 }
