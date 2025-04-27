@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,10 @@ import ManagerProjects from "@/pages/manager/ManagerProjects";
 import ManagerTeam from "@/pages/manager/ManagerTeam";
 import ManagerChat from "@/pages/manager/ManagerChat";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
+import UsersPage from "@/pages/admin/UsersPage";
+import SystemPage from "@/pages/admin/SystemPage";
+import LogsPage from "@/pages/admin/LogsPage";
+import VirtualDesktopPage from "@/pages/admin/VirtualDesktopPage";
 
 // Error page
 import NotFound from "@/pages/NotFound";
@@ -106,6 +111,38 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/users" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <UsersPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/system" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <SystemPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/logs" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <LogsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/virtual-desktops" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <VirtualDesktopPage />
                 </ProtectedRoute>
               } 
             />
