@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
-import { Plus, Users, FileText, Calendar, AlignJustify, Building } from 'lucide-react';
+import { Plus, Users, FileText, Calendar, AlignJustify, Building, Activity, BarChart3 } from 'lucide-react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
