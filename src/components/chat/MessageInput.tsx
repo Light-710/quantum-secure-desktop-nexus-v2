@@ -18,7 +18,7 @@ const MessageInput = ({
   handleFileUpload 
 }: MessageInputProps) => {
   return (
-    <div className="flex gap-2 items-center bg-cyber-dark-blue/20 p-2 rounded-md border border-cyber-teal/20">
+    <div className="flex gap-2 items-center bg-white/5 p-2 rounded-md border border-warm-100/30">
       <input
         type="file"
         id="file-upload"
@@ -27,21 +27,21 @@ const MessageInput = ({
       />
       <label
         htmlFor="file-upload"
-        className="cursor-pointer p-2 rounded-full hover:bg-cyber-dark-blue/20 transition-colors"
+        className="cursor-pointer p-2 rounded-full hover:bg-warm-100/10 transition-colors"
         title="Upload file"
       >
-        <Paperclip className="h-5 w-5 text-cyber-teal" />
+        <Paperclip className="h-5 w-5 text-warm-300" />
       </label>
       <Input
         value={newMessage}
         onChange={(e) => setNewMessage(e.target.value)}
         placeholder="Type your message..."
-        className="flex-1 bg-cyber-dark-blue/20 border-cyber-teal/30"
+        className="flex-1 bg-white/5 border-warm-100/30"
         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
       />
       <Button
         onClick={handleSendMessage}
-        className="cyber-button"
+        className="bg-warm-300 hover:bg-warm-200 text-white"
         size="icon"
         disabled={!newMessage.trim()}
         title="Send message"
