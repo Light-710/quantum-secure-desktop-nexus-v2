@@ -1,132 +1,44 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    /* Dark futuristic theme */
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
-    
-    --primary: 186 100% 64%;
-    --primary-foreground: 222 47% 4%;
-    
-    --secondary: 260 95% 33%;
-    --secondary-foreground: 210 40% 98%;
-    
-    --muted: 223 47% 14%;
-    --muted-foreground: 215 20% 65%;
-    
-    --accent: 161 100% 65%;
-    --accent-foreground: 222 47% 4%;
-    
-    --destructive: 349 96% 65%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 223 47% 14%;
-    --input: 223 47% 14%;
-    --ring: 186 100% 64%;
-
-    --radius: 0.5rem;
-  }
-}
-
-@layer base {
   * {
-    @apply border-border selection:bg-cyber-blue/10 selection:text-cyber-blue;
+    @apply border-border selection:bg-luxury-300/10 selection:text-luxury-500;
   }
   
   html, body {
     @apply antialiased overflow-x-hidden;
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
 
   body {
-    @apply bg-cyber-dark text-foreground relative min-h-screen;
-    background-image: 
-      radial-gradient(circle at 20% 35%, rgba(92, 239, 255, 0.07) 0%, transparent 50%),
-      radial-gradient(circle at 75% 65%, rgba(77, 255, 167, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
+    @apply bg-background text-foreground relative min-h-screen;
+    background: linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', sans-serif;
-    @apply font-bold;
-  }
-  
-  code, pre {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'Playfair Display', serif;
+    @apply font-semibold text-luxury-500;
   }
 }
 
 @layer components {
-  /* Glass panel effect */
+  /* Elegant glass panel effect */
   .glass-panel {
-    @apply bg-cyber-dark-blue/30 backdrop-blur-lg border border-cyber-teal/20 shadow-lg;
+    @apply bg-white/70 backdrop-blur-lg border border-luxury-200/50 shadow-elegant rounded-lg;
   }
   
-  /* Terminal-like text */
-  .terminal-text {
-    font-family: 'Share Tech Mono', monospace;
-    @apply text-cyber-teal;
+  /* Simple button style */
+  .luxury-button {
+    @apply px-6 py-3 bg-luxury-500 text-white rounded-md transition-all hover:bg-luxury-400 focus:outline-none focus:ring-2 focus:ring-luxury-300 focus:ring-opacity-50;
   }
 
-  /* Neon glow effects */
-  .neon-blue {
-    @apply text-cyber-blue;
-    text-shadow: 0 0 5px theme('colors.cyber.blue'), 0 0 10px rgba(92, 239, 255, 0.7);
-  }
-  
-  .neon-green {
-    @apply text-cyber-green;
-    text-shadow: 0 0 5px theme('colors.cyber.green'), 0 0 10px rgba(77, 255, 167, 0.7);
-  }
-  
-  .neon-purple {
-    @apply text-cyber-purple;
-    text-shadow: 0 0 5px theme('colors.cyber.purple'), 0 0 10px rgba(58, 12, 163, 0.7);
-  }
-  
-  .neon-red {
-    @apply text-cyber-red;
-    text-shadow: 0 0 5px theme('colors.cyber.red'), 0 0 10px rgba(255, 77, 109, 0.7);
-  }
-
-  /* Futuristic button */
-  .cyber-button {
-    @apply relative overflow-hidden px-6 py-3 bg-transparent font-bold text-cyber-teal border border-cyber-teal/50 transition-all;
-  }
-  
-  .cyber-button::before {
-    content: '';
-    @apply absolute inset-0 bg-cyber-teal/10 transform scale-x-0 origin-left transition-transform duration-300;
-  }
-  
-  .cyber-button:hover::before {
-    @apply scale-x-100;
-  }
-  
-  .cyber-button:hover {
-    @apply border-cyber-teal text-white shadow-[0_0_10px_rgba(102,252,241,0.5)];
-  }
-
-  /* Scan line effect */
-  .scan-line {
-    @apply pointer-events-none fixed inset-0 h-[2px] w-full z-50 bg-cyber-blue/30 opacity-10;
-  }
-
-  /* Grid background */
-  .cyber-grid-bg {
-    @apply bg-cyber-grid bg-[length:30px_30px] absolute inset-0 opacity-[0.07] pointer-events-none;
+  /* Subtle hover effect */
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-elegant;
   }
 }
-
