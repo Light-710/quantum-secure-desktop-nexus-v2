@@ -47,15 +47,15 @@ export const handleVMAction = async (
         throw new Error('Invalid action');
     }
 
-    toast({
-      title: `${action} Successful`,
+    // Fixed toast usage - using the format supported by sonner
+    toast(`${action} Successful`, {
       description: `Virtual desktop ${vmId} has been ${action.toLowerCase()}ed.`,
     });
 
     onSuccess?.();
   } catch (error) {
-    toast({
-      title: 'Error',
+    // Fixed toast usage for error case
+    toast(`Error`, {
       description: `Failed to ${action.toLowerCase()} VM: ${error.message}`,
       variant: 'destructive',
     });
@@ -63,8 +63,8 @@ export const handleVMAction = async (
 };
 
 export const handleCreateSnapshot = async (vmId: string) => {
-  toast({
-    title: "Snapshot Created",
+  // Fixed toast usage
+  toast("Snapshot Created", {
     description: `Snapshot for ${vmId} has been created successfully.`,
   });
 };
