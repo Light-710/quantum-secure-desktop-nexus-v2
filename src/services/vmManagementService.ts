@@ -1,4 +1,3 @@
-
 import { vmService } from './vmService';
 import { toast } from '@/components/ui/sonner';
 
@@ -54,10 +53,9 @@ export const handleVMAction = async (
 
     onSuccess?.();
   } catch (error) {
-    // Fixed toast usage for error case
-    toast(`Error`, {
-      description: `Failed to ${action.toLowerCase()} VM: ${error.message}`,
-      variant: 'destructive',
+    // Fixed toast usage for error case - using sonner's error type instead of variant
+    toast.error(`Failed to ${action.toLowerCase()} VM`, {
+      description: error.message,
     });
   }
 };
