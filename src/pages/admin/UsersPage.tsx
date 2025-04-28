@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,79 +9,53 @@ import { UserForm } from '@/components/admin/users/UserForm';
 import { UserList } from '@/components/admin/users/UserList';
 import { UserPermissions } from '@/components/admin/users/UserPermissions';
 import type { User, UserFormValues } from '@/types/user';
-
-const sampleUsers: User[] = [
-  {
-    id: 'U001',
-    name: 'John Employee',
-    email: 'john@ptng.com',
-    username: 'john_emp',
-    role: 'Employee',
-    status: 'Active',
-    lastLogin: '2025-04-27 09:12:33',
-    permissions: ['Access Virtual Machines', 'Submit Reports']
-  },
-  {
-    id: 'U002',
-    name: 'Jane Manager',
-    email: 'jane@ptng.com',
-    username: 'jane_mgr',
-    role: 'Manager',
-    status: 'Active',
-    lastLogin: '2025-04-27 08:45:10',
-    permissions: ['Access Virtual Machines', 'Submit Reports', 'Manage Projects', 'View Team']
-  },
-  {
-    id: 'U003',
-    name: 'Alex Admin',
-    email: 'alex@ptng.com',
-    username: 'alex_adm',
-    role: 'Admin',
-    status: 'Active',
-    lastLogin: '2025-04-27 07:30:24',
-    permissions: ['All Permissions']
-  },
-  {
-    id: 'U004',
-    name: 'Sam Smith',
-    email: 'sam@ptng.com',
-    username: 'sam_smith',
-    role: 'Employee',
-    status: 'Suspended',
-    lastLogin: '2025-04-24 15:22:57',
-    permissions: ['Limited Access']
-  },
-];
+import { userService } from '@/services/userService';
 
 const UsersPage = () => {
   const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>(sampleUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleAddUser = (data: UserFormValues) => {
-    const newUser: User = {
-      id: `U${(users.length + 1).toString().padStart(3, '0')}`,
-      name: data.name,
-      email: data.email,
-      username: data.username,
-      role: data.role,
-      status: 'Active',
-      lastLogin: 'Never',
-      permissions: data.role === 'Employee' 
-        ? ['Access Virtual Machines', 'Submit Reports'] 
-        : ['Access Virtual Machines', 'Submit Reports', 'Manage Projects', 'View Team']
-    };
+  useEffect(() => {
+    loadUsers();
+  }, []);
 
-    setUsers([...users, newUser]);
-    setIsAddUserOpen(false);
-    
-    toast({
-      title: "User Added",
-      description: `${newUser.name} has been added successfully.`,
-    });
+  const loadUsers = async () => {
+    try {
+      const fetchedUsers = await userService.getAllUsers();
+      setUsers(fetchedUsers);
+    } catch (error) {
+      toast({
+        title: "Error Loading Users",
+        description: "Failed to load users. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddUser = async (data: UserFormValues) => {
+    try {
+      await userService.createUser(data);
+      await loadUsers();
+      setIsAddUserOpen(false);
+      
+      toast({
+        title: "User Added",
+        description: `${data.name} has been added successfully.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error Adding User",
+        description: "Failed to add user. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleEditUser = (user: User) => {
@@ -89,33 +63,29 @@ const UsersPage = () => {
     setIsEditUserOpen(true);
   };
 
-  const handleUpdateUser = (data: UserFormValues) => {
+  const handleUpdateUser = async (data: UserFormValues) => {
     if (!selectedUser) return;
 
-    const updatedUsers = users.map(user => {
-      if (user.id === selectedUser.id) {
-        return {
-          ...user,
-          name: data.name,
-          email: data.email,
-          username: data.username,
-          role: data.role,
-        };
-      }
-      return user;
-    });
-
-    setUsers(updatedUsers);
-    setIsEditUserOpen(false);
-    setSelectedUser(null);
-    
-    toast({
-      title: "User Updated",
-      description: `${data.name}'s details have been updated.`,
-    });
+    try {
+      await userService.updateUserRole(selectedUser.id, data.role);
+      await loadUsers();
+      setIsEditUserOpen(false);
+      setSelectedUser(null);
+      
+      toast({
+        title: "User Updated",
+        description: `${data.name}'s details have been updated.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error Updating User",
+        description: "Failed to update user. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     const userToDelete = users.find(user => user.id === userId);
     if (userToDelete?.role === 'Admin') {
       toast({
@@ -126,13 +96,21 @@ const UsersPage = () => {
       return;
     }
     
-    const updatedUsers = users.filter(user => user.id !== userId);
-    setUsers(updatedUsers);
-    
-    toast({
-      title: "User Deleted",
-      description: "The user has been removed from the system.",
-    });
+    try {
+      await userService.softDeleteUser(userId);
+      await loadUsers();
+      
+      toast({
+        title: "User Deleted",
+        description: "The user has been removed from the system.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error Deleting User",
+        description: "Failed to delete user. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleViewPermissions = (user: User) => {
@@ -140,37 +118,49 @@ const UsersPage = () => {
     setIsPermissionsOpen(true);
   };
 
-  const handleStatusToggle = (userId: string) => {
-    const updatedUsers = users.map(user => {
-      if (user.id === userId) {
-        if (user.role === 'Admin') {
-          toast({
-            title: "Cannot Change Admin Status",
-            description: "The admin user status cannot be changed.",
-            variant: "destructive",
-          });
-          return user;
-        }
-        
-        const newStatus: 'Active' | 'Suspended' | 'Deactivated' = 
-          user.status === 'Active' ? 'Suspended' : 'Active';
-        
-        return {
-          ...user,
-          status: newStatus,
-        };
-      }
-      return user;
-    });
+  const handleStatusToggle = async (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
 
-    setUsers(updatedUsers);
-    const updatedUser = updatedUsers.find(u => u.id === userId);
-    
-    toast({
-      title: "Status Updated",
-      description: `${updatedUser?.name}'s status changed to ${updatedUser?.status}.`,
-    });
+    if (user.role === 'Admin') {
+      toast({
+        title: "Cannot Change Admin Status",
+        description: "The admin user status cannot be changed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (user.status === 'Active') {
+        await userService.softDeleteUser(userId);
+      } else {
+        await userService.restoreUser(userId);
+      }
+      await loadUsers();
+
+      toast({
+        title: "Status Updated",
+        description: `${user.name}'s status has been updated.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error Updating Status",
+        description: "Failed to update user status. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyber-teal"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

@@ -1,22 +1,92 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Monitor, Server } from 'lucide-react';
+import { vmService } from '@/services/vmService';
+import type { VMStatus } from '@/services/vmService';
 
 const EmployeeVirtualDesktop = () => {
   const { toast } = useToast();
   const [activeOs, setActiveOs] = React.useState<'windows' | 'linux'>('windows');
+  const [vmStatus, setVmStatus] = useState<VMStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [actionInProgress, setActionInProgress] = useState(false);
 
-  const handleVmAction = (action: string) => {
-    toast({
-      title: `VM ${action} Initiated`,
-      description: `Your ${activeOs} virtual desktop is ${action === 'Start' ? 'starting' : 'stopping'}...`,
-    });
+  useEffect(() => {
+    loadVMStatus();
+  }, []);
+
+  const loadVMStatus = async () => {
+    try {
+      const status = await vmService.getVMStatus();
+      setVmStatus(status);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load VM status",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleVmAction = async (action: string) => {
+    if (actionInProgress) return;
+    
+    setActionInProgress(true);
+    try {
+      let response;
+      switch (action) {
+        case 'Start':
+          response = await vmService.startVM(activeOs);
+          break;
+        case 'Stop':
+          response = await vmService.stopVM(activeOs);
+          break;
+        case 'Restart':
+          response = await vmService.restartVM(activeOs);
+          break;
+        default:
+          return;
+      }
+
+      toast({
+        title: `VM ${action} Initiated`,
+        description: response.message,
+      });
+
+      // Refresh VM status
+      await loadVMStatus();
+
+      // If we got a URL back from starting the VM, we can use it to connect
+      if (response.URL) {
+        // Handle VM connection URL
+        window.open(response.URL, '_blank');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to ${action.toLowerCase()} VM`,
+        variant: "destructive",
+      });
+    } finally {
+      setActionInProgress(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyber-teal"></div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
