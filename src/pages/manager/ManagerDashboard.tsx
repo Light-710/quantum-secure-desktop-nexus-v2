@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { format } from "date-fns";
@@ -20,7 +21,7 @@ const ManagerDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   
-  // Add new state for form fields
+  // Form state
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
   const [newProjectScope, setNewProjectScope] = useState('');
@@ -31,21 +32,9 @@ const ManagerDashboard = () => {
   const [clientEmail, setClientEmail] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
-  // Sample projects data
-  const projects = [
-    { id: 'PR001', name: 'Web Application Penetration Test', team: 3, status: 'In Progress', dueDate: '2025-05-10', progress: 65 },
-    { id: 'PR002', name: 'Cloud Infrastructure Assessment', team: 4, status: 'Completed', dueDate: '2025-04-20', progress: 100 },
-    { id: 'PR003', name: 'Network Vulnerability Scan', team: 2, status: 'Pending', dueDate: '2025-05-15', progress: 0 },
-    { id: 'PR004', name: 'Mobile App Security Audit', team: 3, status: 'In Progress', dueDate: '2025-06-01', progress: 30 },
-  ];
-  
-  // Sample team data
-  const teamMembers = [
-    { id: 'EMP001', name: 'John Employee', role: 'Security Analyst', status: 'Active', projects: 2 },
-    { id: 'EMP002', name: 'Alice Tester', role: 'Penetration Tester', status: 'Active', projects: 3 },
-    { id: 'EMP003', name: 'Mark Security', role: 'Security Engineer', status: 'Away', projects: 1 },
-    { id: 'EMP004', name: 'Sarah Analyst', role: 'Security Analyst', status: 'Active', projects: 2 },
-  ];
+  // Empty arrays for mock data
+  const projects = [];
+  const teamMembers = [];
   
   const handleCreateProject = () => {
     if (newProjectName) {
@@ -98,14 +87,14 @@ const ManagerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-cyber-gray text-sm">Total Projects</p>
-                    <h3 className="text-3xl font-bold text-cyber-blue mt-1">12</h3>
+                    <h3 className="text-3xl font-bold text-cyber-blue mt-1">0</h3>
                   </div>
                   <div className="bg-cyber-blue/10 p-3 rounded-full">
                     <Activity className="h-6 w-6 text-cyber-blue" />
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-cyber-gray">
-                  <span className="text-green-400">↑ 8%</span> from last month
+                  No projects available
                 </div>
               </CardContent>
             </Card>
@@ -115,14 +104,14 @@ const ManagerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-cyber-gray text-sm">Team Members</p>
-                    <h3 className="text-3xl font-bold text-cyber-green mt-1">8</h3>
+                    <h3 className="text-3xl font-bold text-cyber-green mt-1">0</h3>
                   </div>
                   <div className="bg-cyber-green/10 p-3 rounded-full">
                     <Users className="h-6 w-6 text-cyber-green" />
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-cyber-gray">
-                  <span className="text-green-400">↑ 2</span> new this quarter
+                  No team members available
                 </div>
               </CardContent>
             </Card>
@@ -132,14 +121,14 @@ const ManagerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-cyber-gray text-sm">Completed</p>
-                    <h3 className="text-3xl font-bold text-cyber-teal mt-1">7</h3>
+                    <h3 className="text-3xl font-bold text-cyber-teal mt-1">0</h3>
                   </div>
                   <div className="bg-cyber-teal/10 p-3 rounded-full">
                     <FileText className="h-6 w-6 text-cyber-teal" />
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-cyber-gray">
-                  <span className="text-green-400">↑ 15%</span> completion rate
+                  No completed projects
                 </div>
               </CardContent>
             </Card>
@@ -149,14 +138,14 @@ const ManagerDashboard = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-cyber-gray text-sm">Upcoming</p>
-                    <h3 className="text-3xl font-bold text-purple-400 mt-1">3</h3>
+                    <h3 className="text-3xl font-bold text-purple-400 mt-1">0</h3>
                   </div>
                   <div className="bg-purple-400/10 p-3 rounded-full">
                     <Calendar className="h-6 w-6 text-purple-400" />
                   </div>
                 </div>
                 <div className="mt-4 text-xs text-cyber-gray">
-                  <span className="text-yellow-400">⚠</span> 1 due this week
+                  No upcoming projects
                 </div>
               </CardContent>
             </Card>
@@ -283,31 +272,37 @@ const ManagerDashboard = () => {
                         {/* Team Members Selection */}
                         <div className="space-y-2">
                           <Label className="text-cyber-teal">Team Members</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {teamMembers.map((member) => (
-                              <div
-                                key={member.id}
-                                className={cn(
-                                  "flex items-center space-x-3 border border-cyber-teal/30 rounded-md p-3 bg-cyber-dark-blue/50 hover:bg-cyber-dark-blue/70",
-                                  selectedTeamMembers.includes(member.id) && "border-cyber-blue bg-cyber-blue/20"
-                                )}
-                              >
-                                <Checkbox
-                                  id={`member-${member.id}`}
-                                  checked={selectedTeamMembers.includes(member.id)}
-                                  onCheckedChange={() => handleTeamMemberToggle(member.id)}
-                                  className="border-cyber-teal/30 data-[state=checked]:border-cyber-blue data-[state=checked]:bg-cyber-blue"
-                                />
-                                <div className="w-8 h-8 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
-                                  {member.name.split(' ').map(n => n[0]).join('')}
+                          {teamMembers.length > 0 ? (
+                            <div className="grid grid-cols-2 gap-2">
+                              {teamMembers.map((member) => (
+                                <div
+                                  key={member.id}
+                                  className={cn(
+                                    "flex items-center space-x-3 border border-cyber-teal/30 rounded-md p-3 bg-cyber-dark-blue/50 hover:bg-cyber-dark-blue/70",
+                                    selectedTeamMembers.includes(member.id) && "border-cyber-blue bg-cyber-blue/20"
+                                  )}
+                                >
+                                  <Checkbox
+                                    id={`member-${member.id}`}
+                                    checked={selectedTeamMembers.includes(member.id)}
+                                    onCheckedChange={() => handleTeamMemberToggle(member.id)}
+                                    className="border-cyber-teal/30 data-[state=checked]:border-cyber-blue data-[state=checked]:bg-cyber-blue"
+                                  />
+                                  <div className="w-8 h-8 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
+                                    {member.name.split(' ').map(n => n[0]).join('')}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-sm text-cyber-teal">{member.name}</p>
+                                    <p className="text-xs text-cyber-gray">{member.role}</p>
+                                  </div>
                                 </div>
-                                <div className="flex-1">
-                                  <p className="text-sm text-cyber-teal">{member.name}</p>
-                                  <p className="text-xs text-cyber-gray">{member.role}</p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-cyber-gray border border-cyber-teal/30 rounded-md bg-cyber-dark-blue/50">
+                              No team members available
+                            </div>
+                          )}
                         </div>
                         
                         {/* Client Details */}
@@ -354,72 +349,78 @@ const ManagerDashboard = () => {
                   </Dialog>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {projects.map((project) => (
-                      <div key={project.id} className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="text-cyber-teal font-medium">{project.name}</h4>
-                            <div className="flex space-x-4 mt-1">
-                              <span className="text-xs text-cyber-gray">ID: {project.id}</span>
-                              <span className="text-xs text-cyber-gray">Team: {project.team} members</span>
-                              <span className="text-xs text-cyber-gray">Due: {new Date(project.dueDate).toLocaleDateString()}</span>
+                  {projects.length > 0 ? (
+                    <div className="space-y-4">
+                      {projects.map((project) => (
+                        <div key={project.id} className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="text-cyber-teal font-medium">{project.name}</h4>
+                              <div className="flex space-x-4 mt-1">
+                                <span className="text-xs text-cyber-gray">ID: {project.id}</span>
+                                <span className="text-xs text-cyber-gray">Team: {project.team} members</span>
+                                <span className="text-xs text-cyber-gray">Due: {new Date(project.dueDate).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                            <div className={`text-sm px-2 py-1 rounded-full ${
+                              project.status === 'In Progress' 
+                                ? 'bg-cyber-blue/20 text-cyber-blue' 
+                                : project.status === 'Completed' 
+                                  ? 'bg-green-400/20 text-green-400' 
+                                  : 'bg-yellow-400/20 text-yellow-400'
+                            }`}>
+                              {project.status}
                             </div>
                           </div>
-                          <div className={`text-sm px-2 py-1 rounded-full ${
-                            project.status === 'In Progress' 
-                              ? 'bg-cyber-blue/20 text-cyber-blue' 
-                              : project.status === 'Completed' 
-                                ? 'bg-green-400/20 text-green-400' 
-                                : 'bg-yellow-400/20 text-yellow-400'
-                          }`}>
-                            {project.status}
+                          
+                          <div className="mt-4">
+                            <div className="flex justify-between items-center mb-1">
+                              <span className="text-xs text-cyber-gray">Progress</span>
+                              <span className="text-xs text-cyber-teal">{project.progress}%</span>
+                            </div>
+                            <div className="h-2 bg-cyber-dark-blue rounded overflow-hidden">
+                              <div 
+                                className={`h-full ${
+                                  project.status === 'Completed' 
+                                    ? 'bg-green-400' 
+                                    : 'bg-cyber-blue'
+                                }`} 
+                                style={{ width: `${project.progress}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <div className="mt-4 flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                            >
+                              Details
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+                            >
+                              <Users size={14} className="mr-1" /> Assign
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-xs border-cyber-teal/30 hover:bg-purple-400/20 hover:text-purple-400"
+                            >
+                              <FileText size={14} className="mr-1" /> Report
+                            </Button>
                           </div>
                         </div>
-                        
-                        <div className="mt-4">
-                          <div className="flex justify-between items-center mb-1">
-                            <span className="text-xs text-cyber-gray">Progress</span>
-                            <span className="text-xs text-cyber-teal">{project.progress}%</span>
-                          </div>
-                          <div className="h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                            <div 
-                              className={`h-full ${
-                                project.status === 'Completed' 
-                                  ? 'bg-green-400' 
-                                  : 'bg-cyber-blue'
-                              }`} 
-                              style={{ width: `${project.progress}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        
-                        <div className="mt-4 flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                          >
-                            Details
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
-                          >
-                            <Users size={14} className="mr-1" /> Assign
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-xs border-cyber-teal/30 hover:bg-purple-400/20 hover:text-purple-400"
-                          >
-                            <FileText size={14} className="mr-1" /> Report
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-cyber-gray">
+                      No projects found. Click "New Project" to create one.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -437,44 +438,43 @@ const ManagerDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {teamMembers.map((member) => (
-                      <div key={member.id} className="flex items-center space-x-3 border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                        <div className="flex-shrink-0">
-                          <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
-                            {member.name.split(' ').map(n => n[0]).join('')}
+                  {teamMembers.length > 0 ? (
+                    <div className="space-y-4">
+                      {teamMembers.map((member) => (
+                        <div key={member.id} className="flex items-center space-x-3 border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
+                          <div className="flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
+                              {member.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-cyber-teal truncate">
+                              {member.name}
+                            </p>
+                            <p className="text-xs text-cyber-gray truncate">
+                              {member.role}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <div className={`text-xs px-2 py-0.5 rounded-full ${
+                              member.status === 'Active' 
+                                ? 'bg-green-400/20 text-green-400' 
+                                : 'bg-yellow-400/20 text-yellow-400'
+                            }`}>
+                              {member.status}
+                            </div>
+                            <p className="text-xs text-cyber-gray mt-1">
+                              {member.projects} projects
+                            </p>
                           </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-cyber-teal truncate">
-                            {member.name}
-                          </p>
-                          <p className="text-xs text-cyber-gray truncate">
-                            {member.role}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <div className={`text-xs px-2 py-0.5 rounded-full ${
-                            member.status === 'Active' 
-                              ? 'bg-green-400/20 text-green-400' 
-                              : 'bg-yellow-400/20 text-yellow-400'
-                          }`}>
-                            {member.status}
-                          </div>
-                          <p className="text-xs text-cyber-gray mt-1">
-                            {member.projects} projects
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue mt-2"
-                    >
-                      View All Team Members
-                    </Button>
-                  </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-cyber-gray">
+                      No team members found
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -498,11 +498,11 @@ const ManagerDashboard = () => {
                   <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                     <h4 className="text-sm text-cyber-gray">Completion Rate</h4>
                     <div className="flex items-end justify-between mt-2">
-                      <div className="text-3xl font-semibold text-cyber-blue">75%</div>
-                      <div className="text-xs text-green-400">↑ 5%</div>
+                      <div className="text-3xl font-semibold text-cyber-blue">--%</div>
+                      <div className="text-xs text-cyber-gray">N/A</div>
                     </div>
                     <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                      <div className="h-full bg-cyber-blue" style={{ width: '75%' }}></div>
+                      <div className="h-full bg-cyber-blue" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                   
@@ -510,11 +510,11 @@ const ManagerDashboard = () => {
                   <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                     <h4 className="text-sm text-cyber-gray">On-Time Delivery</h4>
                     <div className="flex items-end justify-between mt-2">
-                      <div className="text-3xl font-semibold text-cyber-green">88%</div>
-                      <div className="text-xs text-green-400">↑ 12%</div>
+                      <div className="text-3xl font-semibold text-cyber-green">--%</div>
+                      <div className="text-xs text-cyber-gray">N/A</div>
                     </div>
                     <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                      <div className="h-full bg-cyber-green" style={{ width: '88%' }}></div>
+                      <div className="h-full bg-cyber-green" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                   
@@ -522,11 +522,11 @@ const ManagerDashboard = () => {
                   <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                     <h4 className="text-sm text-cyber-gray">Resource Utilization</h4>
                     <div className="flex items-end justify-between mt-2">
-                      <div className="text-3xl font-semibold text-purple-400">92%</div>
-                      <div className="text-xs text-green-400">↑ 3%</div>
+                      <div className="text-3xl font-semibold text-purple-400">--%</div>
+                      <div className="text-xs text-cyber-gray">N/A</div>
                     </div>
                     <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                      <div className="h-full bg-purple-400" style={{ width: '92%' }}></div>
+                      <div className="h-full bg-purple-400" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                 </div>

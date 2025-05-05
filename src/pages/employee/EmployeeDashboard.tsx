@@ -13,11 +13,8 @@ const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [activeOs, setActiveOs] = useState<'windows' | 'linux'>('windows');
   
-  // Sample projects data
-  const assignedProjects = [
-    { id: 'PR001', name: 'Web Application Penetration Test', status: 'In Progress', dueDate: '2025-05-10' },
-    { id: 'PR003', name: 'Network Vulnerability Scan', status: 'Pending', dueDate: '2025-05-15' },
-  ];
+  // Empty array for projects data
+  const assignedProjects = [];
   
   const handleVmAction = (action: string) => {
     toast({
@@ -67,55 +64,7 @@ const EmployeeDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="text-cyber-teal font-medium">Windows 11 Enterprise</h4>
-                        <p className="text-sm text-cyber-gray">Status: <span className="text-green-400">Ready</span></p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                          onClick={() => handleVmAction('Start')}
-                        >
-                          Start
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                          onClick={() => handleVmAction('Stop')}
-                        >
-                          Stop
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <div className="text-sm text-cyber-gray space-y-1">
-                      <div className="flex justify-between">
-                        <span>IP Address:</span>
-                        <span className="text-cyber-teal font-mono">192.168.1.120</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>CPU Usage:</span>
-                        <span className="text-cyber-teal">2%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Memory Usage:</span>
-                        <span className="text-cyber-teal">1.2 GB / 8 GB</span>
-                      </div>
-                    </div>
-                    
-                    <Button className="w-full cyber-button">
-                      Connect to Desktop
-                    </Button>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="linux" className="border rounded-md border-cyber-teal/20 p-4 bg-cyber-dark-blue/20">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-cyber-teal font-medium">Kali Linux 2023.1</h4>
-                        <p className="text-sm text-cyber-gray">Status: <span className="text-yellow-400">Stopped</span></p>
+                        <p className="text-sm text-cyber-gray">Status: <span className="text-yellow-400">Not Available</span></p>
                       </div>
                       <div className="flex space-x-2">
                         <Button
@@ -145,11 +94,60 @@ const EmployeeDashboard = () => {
                       </div>
                       <div className="flex justify-between">
                         <span>CPU Usage:</span>
-                        <span className="text-cyber-teal">0%</span>
+                        <span className="text-cyber-teal">---%</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Memory Usage:</span>
-                        <span className="text-cyber-teal">0 GB / 4 GB</span>
+                        <span className="text-cyber-teal">--- / ---</span>
+                      </div>
+                    </div>
+                    
+                    <Button className="w-full cyber-button" disabled>
+                      Start VM to Connect
+                    </Button>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="linux" className="border rounded-md border-cyber-teal/20 p-4 bg-cyber-dark-blue/20">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="text-cyber-teal font-medium">Kali Linux 2023.1</h4>
+                        <p className="text-sm text-cyber-gray">Status: <span className="text-yellow-400">Not Available</span></p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                          onClick={() => handleVmAction('Start')}
+                        >
+                          Start
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+                          onClick={() => handleVmAction('Stop')}
+                          disabled
+                        >
+                          Stop
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="text-sm text-cyber-gray space-y-1">
+                      <div className="flex justify-between">
+                        <span>IP Address:</span>
+                        <span className="text-cyber-teal font-mono">---.---.---.---</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>CPU Usage:</span>
+                        <span className="text-cyber-teal">---%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Memory Usage:</span>
+                        <span className="text-cyber-teal">--- / ---</span>
                       </div>
                     </div>
                     
@@ -177,44 +175,44 @@ const EmployeeDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {assignedProjects.map((project) => (
-                  <div key={project.id} className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                    <h4 className="text-cyber-teal font-medium">{project.name}</h4>
-                    <div className="flex justify-between text-sm mt-1">
-                      <span className="text-cyber-gray">ID: {project.id}</span>
-                      <span className={
-                        project.status === 'In Progress' 
-                          ? 'text-cyber-blue' 
-                          : project.status === 'Pending' 
-                            ? 'text-yellow-400' 
-                            : 'text-green-400'
-                      }>
-                        {project.status}
-                      </span>
+                {assignedProjects.length > 0 ? (
+                  assignedProjects.map((project) => (
+                    <div key={project.id} className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
+                      <h4 className="text-cyber-teal font-medium">{project.name}</h4>
+                      <div className="flex justify-between text-sm mt-1">
+                        <span className="text-cyber-gray">ID: {project.id}</span>
+                        <span className={
+                          project.status === 'In Progress' 
+                            ? 'text-cyber-blue' 
+                            : project.status === 'Pending' 
+                              ? 'text-yellow-400' 
+                              : 'text-green-400'
+                        }>
+                          {project.status}
+                        </span>
+                      </div>
+                      <div className="text-xs text-cyber-gray mt-2">
+                        Due: {new Date(project.dueDate).toLocaleDateString()}
+                      </div>
+                      <div className="mt-3 flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                        >
+                          View Details
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+                        >
+                          <FileText size={14} className="mr-1" /> Report
+                        </Button>
+                      </div>
                     </div>
-                    <div className="text-xs text-cyber-gray mt-2">
-                      Due: {new Date(project.dueDate).toLocaleDateString()}
-                    </div>
-                    <div className="mt-3 flex space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
-                      >
-                        <FileText size={14} className="mr-1" /> Report
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                
-                {assignedProjects.length === 0 && (
+                  ))
+                ) : (
                   <div className="text-center py-6 text-cyber-gray">
                     No projects assigned to you yet.
                   </div>
@@ -243,11 +241,11 @@ const EmployeeDashboard = () => {
               <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                 <h4 className="text-sm text-cyber-gray">CPU Usage</h4>
                 <div className="flex items-end justify-between mt-2">
-                  <div className="text-3xl font-semibold text-cyber-blue">15%</div>
-                  <div className="text-xs text-cyber-gray">2 Cores / 4 Threads</div>
+                  <div className="text-3xl font-semibold text-cyber-blue">---%</div>
+                  <div className="text-xs text-cyber-gray">--- Cores / --- Threads</div>
                 </div>
                 <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                  <div className="h-full bg-cyber-blue" style={{ width: '15%' }}></div>
+                  <div className="h-full bg-cyber-blue" style={{ width: '0%' }}></div>
                 </div>
               </div>
               
@@ -255,11 +253,11 @@ const EmployeeDashboard = () => {
               <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                 <h4 className="text-sm text-cyber-gray">Memory Usage</h4>
                 <div className="flex items-end justify-between mt-2">
-                  <div className="text-3xl font-semibold text-cyber-green">1.8<span className="text-sm font-normal"> GB</span></div>
-                  <div className="text-xs text-cyber-gray">of 8 GB Allocated</div>
+                  <div className="text-3xl font-semibold text-cyber-green">---<span className="text-sm font-normal"> GB</span></div>
+                  <div className="text-xs text-cyber-gray">of --- GB Allocated</div>
                 </div>
                 <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                  <div className="h-full bg-cyber-green" style={{ width: '23%' }}></div>
+                  <div className="h-full bg-cyber-green" style={{ width: '0%' }}></div>
                 </div>
               </div>
               
@@ -267,11 +265,11 @@ const EmployeeDashboard = () => {
               <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
                 <h4 className="text-sm text-cyber-gray">Storage Usage</h4>
                 <div className="flex items-end justify-between mt-2">
-                  <div className="text-3xl font-semibold text-cyber-teal">45<span className="text-sm font-normal"> GB</span></div>
-                  <div className="text-xs text-cyber-gray">of 100 GB Allocated</div>
+                  <div className="text-3xl font-semibold text-cyber-teal">---<span className="text-sm font-normal"> GB</span></div>
+                  <div className="text-xs text-cyber-gray">of --- GB Allocated</div>
                 </div>
                 <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                  <div className="h-full bg-cyber-teal" style={{ width: '45%' }}></div>
+                  <div className="h-full bg-cyber-teal" style={{ width: '0%' }}></div>
                 </div>
               </div>
             </div>

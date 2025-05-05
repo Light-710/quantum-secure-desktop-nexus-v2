@@ -14,22 +14,15 @@ const SystemPage = () => {
   const [backupInProgress, setBackupInProgress] = useState(false);
   const [recoveryInProgress, setRecoveryInProgress] = useState(false);
   
-  // Sample system data
+  // Empty system data
   const systemInfo = {
-    lastBackup: '2025-04-26 02:00 AM',
-    backupSize: '256 GB',
-    backupStatus: 'Success',
-    recoveryPoints: [
-      { id: 'R001', date: '2025-04-26 02:00 AM', size: '256 GB', type: 'Full', status: 'Complete' },
-      { id: 'R002', date: '2025-04-25 02:00 AM', size: '252 GB', type: 'Full', status: 'Complete' },
-      { id: 'R003', date: '2025-04-24 02:00 AM', size: '249 GB', type: 'Full', status: 'Complete' },
-      { id: 'R004', date: '2025-04-23 02:00 AM', size: '245 GB', type: 'Full', status: 'Complete' },
-      { id: 'R005', date: '2025-04-22 02:00 AM', size: '243 GB', type: 'Full', status: 'Complete' },
-    ],
+    lastBackup: 'No backups found',
+    backupSize: '0 GB',
+    backupStatus: 'Not Available',
+    recoveryPoints: [],
     backupLocations: [
-      { name: 'Primary Storage', type: 'Local', status: 'Online', freeSpace: '1.2 TB' },
-      { name: 'Cloud Backup', type: 'Remote', status: 'Online', freeSpace: '5 TB' },
-      { name: 'Disaster Recovery Site', type: 'Remote', status: 'Online', freeSpace: '2 TB' },
+      { name: 'Primary Storage', type: 'Local', status: 'Online', freeSpace: 'Unknown' },
+      { name: 'Cloud Backup', type: 'Remote', status: 'Offline', freeSpace: 'Unknown' },
     ]
   };
   
@@ -98,11 +91,11 @@ const SystemPage = () => {
                     </div>
                     <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
                       <div className="text-xs text-cyber-gray">Status</div>
-                      <div className="text-green-400 mt-1">{systemInfo.backupStatus}</div>
+                      <div className="text-yellow-400 mt-1">{systemInfo.backupStatus}</div>
                     </div>
                     <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
                       <div className="text-xs text-cyber-gray">Schedule</div>
-                      <div className="text-cyber-teal mt-1">Daily at 2:00 AM</div>
+                      <div className="text-cyber-teal mt-1">Not Configured</div>
                     </div>
                   </div>
                   
@@ -136,7 +129,9 @@ const SystemPage = () => {
                     <div className="text-xs text-cyber-gray mb-2">Recovery Points Available</div>
                     <div className="text-2xl font-semibold text-cyber-blue">{systemInfo.recoveryPoints.length}</div>
                     <div className="text-xs text-cyber-gray mt-1">
-                      Oldest: {systemInfo.recoveryPoints[systemInfo.recoveryPoints.length - 1].date}
+                      {systemInfo.recoveryPoints.length > 0 ? 
+                        `Oldest: ${systemInfo.recoveryPoints[systemInfo.recoveryPoints.length - 1].date}` : 
+                        'No recovery points available'}
                     </div>
                   </div>
                   
@@ -144,6 +139,7 @@ const SystemPage = () => {
                     <Button 
                       className="w-full cyber-button"
                       onClick={() => setIsRecoveryDialogOpen(true)}
+                      disabled={systemInfo.recoveryPoints.length === 0}
                     >
                       <HardDrive className="mr-2 h-4 w-4" />
                       Restore From Backup
@@ -277,35 +273,43 @@ const SystemPage = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-3">
-            <div className="max-h-[300px] overflow-y-auto pr-2">
-              {systemInfo.recoveryPoints.map((point) => (
-                <div 
-                  key={point.id} 
-                  className="mb-3 p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20 hover:bg-cyber-dark-blue/40 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-cyber-teal">{point.date}</div>
-                      <div className="text-xs text-cyber-gray mt-1">
-                        {point.type} Backup • {point.size}
+            {systemInfo.recoveryPoints.length > 0 ? (
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                {systemInfo.recoveryPoints.map((point: any) => (
+                  <div 
+                    key={point.id} 
+                    className="mb-3 p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20 hover:bg-cyber-dark-blue/40 cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-cyber-teal">{point.date}</div>
+                        <div className="text-xs text-cyber-gray mt-1">
+                          {point.type} Backup • {point.size}
+                        </div>
                       </div>
+                      <Button 
+                        size="sm"
+                        className="cyber-button"
+                        onClick={() => handleRecovery(point.id)}
+                        disabled={recoveryInProgress}
+                      >
+                        {recoveryInProgress ? (
+                          <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                        ) : (
+                          "Restore"
+                        )}
+                      </Button>
                     </div>
-                    <Button 
-                      size="sm"
-                      className="cyber-button"
-                      onClick={() => handleRecovery(point.id)}
-                      disabled={recoveryInProgress}
-                    >
-                      {recoveryInProgress ? (
-                        <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                      ) : (
-                        "Restore"
-                      )}
-                    </Button>
                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
+                <div className="text-center py-6 text-cyber-gray">
+                  No recovery points available
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
             
             <div className="p-3 border border-cyber-red/20 rounded-md bg-cyber-dark-blue/20">
               <div className="flex items-center">

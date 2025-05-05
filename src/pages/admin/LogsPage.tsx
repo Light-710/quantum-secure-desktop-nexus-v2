@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -169,7 +168,8 @@ const generateLogs = (): LogEntry[] => {
 
 const LogsPage = () => {
   const { toast } = useToast();
-  const [logs, setLogs] = useState<LogEntry[]>(generateLogs());
+  // Empty array for logs data
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [levelFilter, setLevelFilter] = useState<string>('All');
@@ -181,7 +181,8 @@ const LogsPage = () => {
     });
     
     // In a real app, this would fetch new logs from the server
-    setLogs(generateLogs());
+    // For now, we keep the empty array
+    setLogs([]);
   };
   
   const handleDownloadLogs = () => {
@@ -385,7 +386,7 @@ const LogsPage = () => {
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
               <div className="text-xs text-cyber-gray">Today's Entries</div>
               <div className="text-xl text-cyber-blue mt-1">
-                {logs.filter(log => log.timestamp.includes('2025-04-27')).length}
+                {logs.filter(log => log.timestamp.includes('2025-05-05')).length}
               </div>
             </div>
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
