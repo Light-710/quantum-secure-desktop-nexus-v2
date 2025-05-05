@@ -26,13 +26,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Filter, FileText } from 'lucide-react';
+import { Filter, FileText, Download, FileUp } from 'lucide-react';
 import type { Project } from '@/types/project';
+import { reportService } from '@/services/reportService';
+import { toast } from '@/components/ui/sonner';
 
 const ManagerProjects = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -54,6 +57,49 @@ const ManagerProjects = () => {
   const filteredProjects = projects.filter(project => 
     statusFilter === 'all' ? true : project.status === statusFilter
   );
+
+  const handleGenerateReport = async (projectId: string) => {
+    setLoadingProjectId(projectId);
+    try {
+      const response = await reportService.generateReport(projectId);
+      toast("Report Generation Started", {
+        description: response.message || "Your report is being generated and will be available soon."
+      });
+    } catch (error: any) {
+      toast.error("Report Generation Failed", {
+        description: error.response?.data?.message || "Failed to start report generation."
+      });
+    } finally {
+      setLoadingProjectId(null);
+    }
+  };
+
+  const handleDownloadReport = async (projectId: string) => {
+    setLoadingProjectId(projectId);
+    try {
+      const blob = await reportService.downloadReport(projectId);
+      
+      // Create a link to download the blob
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `project-report-${projectId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast("Report Downloaded", {
+        description: "The project report has been downloaded successfully."
+      });
+    } catch (error: any) {
+      toast.error("Download Failed", {
+        description: error.response?.data?.message || "Failed to download report."
+      });
+    } finally {
+      setLoadingProjectId(null);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -116,15 +162,45 @@ const ManagerProjects = () => {
                             <DialogTrigger asChild>
                               <Button variant="ghost" size="sm">
                                 <FileText className="w-4 h-4 mr-2" />
-                                View Reports
+                                Reports
                               </Button>
                             </DialogTrigger>
                             <DialogContent>
                               <DialogHeader>
                                 <DialogTitle>Project Reports</DialogTitle>
                               </DialogHeader>
-                              <div className="mt-4">
-                                <p className="text-sm text-muted-foreground">No reports available yet.</p>
+                              <div className="mt-4 space-y-4">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm">Generate New Report</span>
+                                  <Button 
+                                    size="sm" 
+                                    onClick={() => handleGenerateReport(project.id)}
+                                    disabled={loadingProjectId === project.id}
+                                  >
+                                    {loadingProjectId === project.id ? (
+                                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full" />
+                                    ) : (
+                                      <FileUp className="h-4 w-4 mr-2" />
+                                    )}
+                                    Generate
+                                  </Button>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-sm">Download Latest Report</span>
+                                  <Button 
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDownloadReport(project.id)}
+                                    disabled={loadingProjectId === project.id}
+                                  >
+                                    {loadingProjectId === project.id ? (
+                                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full" />
+                                    ) : (
+                                      <Download className="h-4 w-4 mr-2" />
+                                    )}
+                                    Download
+                                  </Button>
+                                </div>
                               </div>
                             </DialogContent>
                           </Dialog>

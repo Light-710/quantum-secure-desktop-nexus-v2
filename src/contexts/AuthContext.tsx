@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
+import api from '@/services/api';
 
 // Define types for our auth context
 type User = {
@@ -10,6 +11,7 @@ type User = {
   email: string;
   role: 'Employee' | 'Manager' | 'Admin';
   profile_picture?: string;
+  status?: string;
 };
 
 type AuthContextType = {
@@ -23,37 +25,11 @@ type AuthContextType = {
 // Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Sample user data for demonstration
-const sampleUsers = [
-  {
-    employee_id: 'EMP001',
-    password: 'password123',
-    name: 'John Employee',
-    email: 'john@ptng.com',
-    role: 'Employee',
-  },
-  {
-    employee_id: 'MGR001',
-    password: 'password123',
-    name: 'Jane Manager',
-    email: 'jane@ptng.com',
-    role: 'Manager',
-  },
-  {
-    employee_id: 'ADM001',
-    password: 'password123',
-    name: 'Alex Admin',
-    email: 'alex@ptng.com',
-    role: 'Admin',
-  },
-];
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   // Initialize auth state from local storage
   useEffect(() => {
@@ -63,50 +39,59 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
+      
+      // Validate token by fetching user profile
+      fetchUserProfile(storedToken).catch(() => {
+        // If token is invalid, clear storage and state
+        clearAuthState();
+      });
     }
     
     setIsLoading(false);
   }, []);
+  
+  // Helper to fetch user profile with token
+  const fetchUserProfile = async (authToken: string) => {
+    try {
+      const response = await api.get('/user/get-profile', {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+      setUser(response.data);
+      localStorage.setItem('ptng_user', JSON.stringify(response.data));
+    } catch (error) {
+      throw new Error('Invalid token');
+    }
+  };
 
-  // Login function - in a real app, this would call your API
+  // Login function
   const login = async (employee_id: string, password: string) => {
     setIsLoading(true);
     
     try {
-      // Mock API call using sample users
-      const foundUser = sampleUsers.find(u => u.employee_id === employee_id && u.password === password);
+      const response = await api.post('/auth/login', { 
+        employee_id, 
+        password 
+      });
       
-      if (!foundUser) {
-        throw new Error('Invalid credentials');
-      }
+      const { access_token, role } = response.data;
       
-      // Generate a mock token
-      const mockToken = `mock-token-${Date.now()}`;
+      // Save token
+      setToken(access_token);
+      localStorage.setItem('ptng_token', access_token);
       
-      // Remove the password before saving the user
-      const { password: _, ...userWithoutPassword } = foundUser;
-      
-      // Save to state and local storage
-      setUser(userWithoutPassword as User);
-      setToken(mockToken);
-      
-      localStorage.setItem('ptng_user', JSON.stringify(userWithoutPassword));
-      localStorage.setItem('ptng_token', mockToken);
+      // Fetch user details with the token
+      await fetchUserProfile(access_token);
       
       // Show success toast
-      toast({
-        title: "Login Successful",
-        description: `Welcome, ${userWithoutPassword.name}.`,
-        variant: "default",
+      toast("Login Successful", {
+        description: `Welcome back!`,
       });
       
       // Redirect based on user role
-      navigate(`/dashboard/${userWithoutPassword.role.toLowerCase()}`);
-    } catch (error) {
-      toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive",
+      navigate(`/dashboard/${role.toLowerCase()}`);
+    } catch (error: any) {
+      toast.error("Login Failed", {
+        description: error.response?.data?.message || "Invalid credentials",
       });
     } finally {
       setIsLoading(false);
@@ -114,18 +99,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Logout function
-  const logout = () => {
+  const logout = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Call the logout API endpoint
+      await api.post('/auth/logout');
+    } catch (error) {
+      // Even if the API call fails, proceed with local logout
+      console.error("Error during logout:", error);
+    } finally {
+      // Clear state and storage regardless of API response
+      clearAuthState();
+      setIsLoading(false);
+      
+      toast("Logged Out", {
+        description: "You have been successfully logged out.",
+      });
+      
+      navigate('/login');
+    }
+  };
+  
+  // Helper to clear auth state
+  const clearAuthState = () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem('ptng_user');
     localStorage.removeItem('ptng_token');
-    navigate('/login');
-    
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-      variant: "default",
-    });
   };
 
   return (

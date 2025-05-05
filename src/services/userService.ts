@@ -13,24 +13,38 @@ export const userService = {
     return response.data;
   },
 
-  updateUserRole: async (employeeId: string, role: string) => {
+  updateUserRole: async (employee_id: string, role: string) => {
     const response = await api.put('/admin/user/update-role', {
-      employee_id: employeeId,
+      employee_id,
       role,
     });
     return response.data;
   },
 
-  softDeleteUser: async (employeeId: string) => {
+  softDeleteUser: async (employee_id: string) => {
     const response = await api.put('/admin/user/soft-delete-user', {
-      employee_id: employeeId,
+      employee_id,
     });
     return response.data;
   },
 
-  restoreUser: async (employeeId: string) => {
+  restoreUser: async (employee_id: string) => {
     const response = await api.put('/admin/user/restore-user', {
-      employee_id: employeeId,
+      employee_id,
+    });
+    return response.data;
+  },
+  
+  getUserProfile: async () => {
+    const response = await api.get('/user/get-profile');
+    return response.data;
+  },
+  
+  updateUserProfile: async (formData: FormData) => {
+    const response = await api.put('/user/update-profile', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response.data;
   },

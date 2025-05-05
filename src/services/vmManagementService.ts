@@ -1,3 +1,4 @@
+
 import { vmService } from './vmService';
 import { toast } from '@/components/ui/sonner';
 
@@ -46,22 +47,28 @@ export const handleVMAction = async (
         throw new Error('Invalid action');
     }
 
-    // Fixed toast usage - using the format supported by sonner
+    // Success toast
     toast(`${action} Successful`, {
-      description: `Virtual desktop ${vmId} has been ${action.toLowerCase()}ed.`,
+      description: response.message || `Virtual desktop ${vmId} has been ${action.toLowerCase()}ed.`,
     });
 
+    // If a URL is returned (for Start action), offer to open it
+    if (response.URL) {
+      // Handle URL - could open in new tab or display in UI
+      console.log('VM URL:', response.URL);
+    }
+
     onSuccess?.();
-  } catch (error) {
-    // Fixed toast usage for error case - using sonner's error type instead of variant
+  } catch (error: any) {
+    // Error toast
     toast.error(`Failed to ${action.toLowerCase()} VM`, {
-      description: error.message,
+      description: error.response?.data?.message || error.message || "An error occurred",
     });
   }
 };
 
 export const handleCreateSnapshot = async (vmId: string) => {
-  // Fixed toast usage
+  // This is a placeholder since the API doesn't have snapshot endpoints yet
   toast("Snapshot Created", {
     description: `Snapshot for ${vmId} has been created successfully.`,
   });
