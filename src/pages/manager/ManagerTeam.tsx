@@ -14,29 +14,27 @@ import {
 import { User } from 'lucide-react';
 import type { Employee } from '@/types/employee';
 
-// Sample data - in a real app, this would come from an API
-const employees: Employee[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    role: 'Frontend Developer',
-    tasks: [
-      { id: '1', title: 'Homepage Redesign', status: 'In Progress' },
-      { id: '2', title: 'Bug Fixes', status: 'Completed' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    role: 'Backend Developer',
-    tasks: [
-      { id: '3', title: 'API Integration', status: 'In Progress' },
-      { id: '4', title: 'Database Optimization', status: 'In Progress' },
-    ],
-  },
-];
-
 const ManagerTeam = () => {
+  const [employees, setEmployees] = React.useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        // This would be replaced with an actual API call
+        // const response = await api.get('/manager/team');
+        // setEmployees(response.data.employees);
+        setEmployees([]);
+      } catch (error) {
+        console.error('Failed to fetch team data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -49,42 +47,52 @@ const ManagerTeam = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Current Tasks</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {employees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
-                          {employee.name}
-                        </div>
-                      </TableCell>
-                      <TableCell>{employee.role}</TableCell>
-                      <TableCell>
-                        <ul className="list-disc list-inside">
-                          {employee.tasks.map(task => (
-                            <li key={task.id} className="text-sm">
-                              {task.title}
-                              <span className={`ml-2 text-xs ${
-                                task.status === 'In Progress' ? 'text-blue-500' : 'text-green-500'
-                              }`}>
-                                ({task.status})
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </TableCell>
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-300"></div>
+                </div>
+              ) : employees.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Employee</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Current Tasks</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {employees.map((employee) => (
+                      <TableRow key={employee.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <User className="w-4 h-4" />
+                            {employee.name}
+                          </div>
+                        </TableCell>
+                        <TableCell>{employee.role}</TableCell>
+                        <TableCell>
+                          <ul className="list-disc list-inside">
+                            {employee.tasks.map(task => (
+                              <li key={task.id} className="text-sm">
+                                {task.title}
+                                <span className={`ml-2 text-xs ${
+                                  task.status === 'In Progress' ? 'text-blue-500' : 'text-green-500'
+                                }`}>
+                                  ({task.status})
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center p-4 text-warm-100/70">
+                  No team members found
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

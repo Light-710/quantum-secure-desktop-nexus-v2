@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,15 +29,27 @@ import {
 import { Filter, FileText } from 'lucide-react';
 import type { Project } from '@/types/project';
 
-// Sample data - in a real app, this would come from an API
-const projects: Project[] = [
-  { id: '1', name: 'Website Redesign', status: 'In Progress', dueDate: '2025-05-15' },
-  { id: '2', name: 'Mobile App Development', status: 'Pending', dueDate: '2025-06-01' },
-  { id: '3', name: 'Database Migration', status: 'Completed', dueDate: '2025-04-20' },
-];
-
 const ManagerProjects = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        // This would be replaced with an actual API call
+        // const response = await api.get('/manager/projects');
+        // setProjects(response.data.projects);
+        setProjects([]);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const filteredProjects = projects.filter(project => 
     statusFilter === 'all' ? true : project.status === statusFilter
@@ -71,51 +83,61 @@ const ManagerProjects = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Project Name</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Reports</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProjects.map((project) => (
-                    <TableRow key={project.id}>
-                      <TableCell>{project.name}</TableCell>
-                      <TableCell>
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
-                          project.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
-                          {project.status}
-                        </span>
-                      </TableCell>
-                      <TableCell>{new Date(project.dueDate).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="ghost" size="sm">
-                              <FileText className="w-4 h-4 mr-2" />
-                              View Reports
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Project Reports</DialogTitle>
-                            </DialogHeader>
-                            <div className="mt-4">
-                              <p className="text-sm text-muted-foreground">No reports available yet.</p>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </TableCell>
+              {isLoading ? (
+                <div className="flex justify-center p-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-300"></div>
+                </div>
+              ) : filteredProjects.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Project Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Due Date</TableHead>
+                      <TableHead>Reports</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProjects.map((project) => (
+                      <TableRow key={project.id}>
+                        <TableCell>{project.name}</TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                            project.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                            {project.status}
+                          </span>
+                        </TableCell>
+                        <TableCell>{new Date(project.dueDate).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm">
+                                <FileText className="w-4 h-4 mr-2" />
+                                View Reports
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Project Reports</DialogTitle>
+                              </DialogHeader>
+                              <div className="mt-4">
+                                <p className="text-sm text-muted-foreground">No reports available yet.</p>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center p-4 text-warm-100/70">
+                  No projects found
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
