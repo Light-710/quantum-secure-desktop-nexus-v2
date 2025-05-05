@@ -11,6 +11,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import Contact from "@/pages/Contact";
 import ForgotPassword from "@/pages/ForgotPassword";
+import AdminSetup from "@/pages/AdminSetup";
 
 // Dashboard pages
 import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
             
             {/* Employee Routes */}
             <Route 

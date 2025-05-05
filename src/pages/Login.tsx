@@ -81,6 +81,11 @@ const Login = () => {
               Forgot Password?
             </Link>
           </div>
+          <div className="text-sm text-center text-cyber-gray">
+            <Link to="/admin-setup" className="text-cyber-blue hover:underline">
+              First-time setup? Create admin user
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>
