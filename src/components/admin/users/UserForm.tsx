@@ -23,7 +23,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
       email: initialData?.email ?? "",
       username: initialData?.username ?? "",
       password: "",
-      role: (initialData?.role === 'Admin' ? 'Manager' : initialData?.role) ?? "Employee",
+      role: initialData?.role ?? "Employee",
       notes: "",
     },
   });
@@ -116,10 +116,10 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
                 <select 
                   className="w-full h-10 px-3 py-2 rounded-md border border-cyber-teal/30 bg-cyber-dark-blue/20 text-cyber-gray focus:border-cyber-blue"
                   {...field}
-                  disabled={initialData?.role === 'Admin'}
                 >
                   <option value="Employee">Employee</option>
                   <option value="Manager">Manager</option>
+                  <option value="Admin">Admin</option>
                 </select>
               </FormControl>
               <FormMessage />

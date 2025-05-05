@@ -13,6 +13,14 @@ export const userService = {
     return response.data;
   },
 
+  updateUser: async (employee_id: string, userData: UserFormValues) => {
+    const response = await api.put('/admin/user/update-user', {
+      employee_id,
+      ...userData,
+    });
+    return response.data;
+  },
+
   updateUserRole: async (employee_id: string, role: string) => {
     const response = await api.put('/admin/user/update-role', {
       employee_id,

@@ -18,6 +18,6 @@ export type UserFormValues = {
   email: string;
   username: string;
   password: string;
-  role: Exclude<UserRole, 'Admin'>;
+  role: UserRole;
   notes?: string;
 };

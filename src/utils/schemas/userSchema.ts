@@ -12,8 +12,10 @@ export const userSchema = z.object({
     .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
     .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
     .regex(/[0-9]/, { message: "Password must contain at least one number." })
-    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." }),
-  role: z.enum(["Employee", "Manager"]) as z.ZodType<Exclude<UserRole, 'Admin'>>,
+    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." })
+    .optional()
+    .or(z.literal('')), // Allow empty password for existing users
+  role: z.enum(["Employee", "Manager", "Admin"]) as z.ZodType<UserRole>,
   notes: z.string().optional(),
 });
 

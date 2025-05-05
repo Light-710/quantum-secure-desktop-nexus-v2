@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -67,7 +68,7 @@ const UsersPage = () => {
     if (!selectedUser) return;
 
     try {
-      await userService.updateUserRole(selectedUser.id, data.role);
+      await userService.updateUser(selectedUser.id, data);
       await loadUsers();
       setIsEditUserOpen(false);
       setSelectedUser(null);
