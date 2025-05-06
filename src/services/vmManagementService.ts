@@ -1,4 +1,3 @@
-
 import api from './api';
 
 export type VMStatus = 'Running' | 'Starting' | 'Stopping' | 'Stopped' | 'Error';
@@ -17,7 +16,10 @@ export interface VirtualMachine {
     cpu: number;
     memory: number;
     disk: number;
+    network: number; // Added network property
   };
+  ip_address: string; // Added ip_address property
+  last_snapshot: string; // Added last_snapshot property
 }
 
 export interface VMActionResponse {
@@ -132,9 +134,20 @@ export const userVmService = {
   },
 };
 
+// Add the missing handleCreateSnapshot function
+export const handleCreateSnapshot = async (vmId: string) => {
+  try {
+    const response = await api.post('/vm/create-snapshot', { vm_id: vmId });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error creating snapshot:', error);
+    throw error;
+  }
+};
+
 export const handleVMAction = async (
   vmId: string,
-  action: 'Start' | 'Stop' | 'Reset', 
+  action: 'Start' | 'Stop' | 'Reset' | 'Resume', // Added Resume action
   instanceOs: string,
   employeeId: string,
   onComplete?: () => void
@@ -155,6 +168,9 @@ export const handleVMAction = async (
         response = await adminVmService.stopVM(employeeId, instanceOs);
       } else if (action === 'Reset') {
         response = await adminVmService.restartVM(employeeId, instanceOs);
+      } else if (action === 'Resume') {
+        // Handle resume action (similar to start but potentially different endpoint)
+        response = await adminVmService.startVM(employeeId, instanceOs);
       }
     } else {
       // User actions
@@ -164,6 +180,9 @@ export const handleVMAction = async (
         response = await userVmService.stopVM(instanceOs);
       } else if (action === 'Reset') {
         response = await userVmService.restartVM(instanceOs);
+      } else if (action === 'Resume') {
+        // Handle resume action
+        response = await userVmService.startVM(instanceOs);
       }
     }
     

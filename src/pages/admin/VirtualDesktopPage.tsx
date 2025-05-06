@@ -74,10 +74,13 @@ const VirtualDesktopPage = () => {
           assigned_user: "john.doe",
           uptime: "2d 5h 30m",
           health: "Good",
+          ip_address: "192.168.1.100",
+          last_snapshot: "2023-05-15 14:30",
           resources: {
             cpu: 25,
             memory: 40,
-            disk: 60
+            disk: 60,
+            network: 15
           }
         },
         {
@@ -88,10 +91,13 @@ const VirtualDesktopPage = () => {
           assigned_user: "jane.smith",
           uptime: "0",
           health: "Good",
+          ip_address: "192.168.1.101",
+          last_snapshot: "2023-05-10 09:15",
           resources: {
             cpu: 0,
             memory: 0,
-            disk: 30
+            disk: 30,
+            network: 0
           }
         }
         // Add more mock VMs here
