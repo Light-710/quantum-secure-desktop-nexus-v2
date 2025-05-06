@@ -1,6 +1,7 @@
+
 import api from './api';
 
-export type VMStatus = 'Running' | 'Starting' | 'Stopping' | 'Stopped' | 'Error';
+export type VMStatus = 'Running' | 'Starting' | 'Stopping' | 'Stopped' | 'Error' | 'Paused';
 export type VMHealth = 'Good' | 'Fair' | 'Poor';
 export type VMOsType = 'Windows' | 'Linux' | 'Other';
 
@@ -147,7 +148,7 @@ export const handleCreateSnapshot = async (vmId: string) => {
 
 export const handleVMAction = async (
   vmId: string,
-  action: 'Start' | 'Stop' | 'Reset' | 'Resume', // Added Resume action
+  action: 'Start' | 'Stop' | 'Reset' | 'Resume',
   instanceOs: string,
   employeeId: string,
   onComplete?: () => void
