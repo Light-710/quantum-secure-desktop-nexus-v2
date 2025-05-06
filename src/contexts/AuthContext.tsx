@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
+import { authService } from '@/services/authService';
 import api from '@/services/api';
 
 // Define types for our auth context
@@ -63,17 +64,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Login function
+  // Login function - updated to use authService
   const login = async (employee_id: string, password: string) => {
     setIsLoading(true);
     
     try {
-      const response = await api.post('/auth/login', { 
-        employee_id, 
-        password 
-      });
+      const response = await authService.login(employee_id, password);
       
-      const { access_token, role } = response.data;
+      const { access_token, role } = response;
       
       // Save token
       setToken(access_token);
@@ -98,13 +96,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Logout function
+  // Logout function - updated to use authService
   const logout = async () => {
     setIsLoading(true);
     
     try {
       // Call the logout API endpoint
-      await api.post('/auth/logout');
+      await authService.logout();
     } catch (error) {
       // Even if the API call fails, proceed with local logout
       console.error("Error during logout:", error);

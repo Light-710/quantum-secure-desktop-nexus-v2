@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminInitializer } from '@/components/admin/AdminInitializer';
 import { toast } from '@/components/ui/sonner';
+import { authService } from '@/services/authService';
 
 const AdminSetup = () => {
   const [isChecking, setIsChecking] = useState(true);
@@ -13,10 +14,9 @@ const AdminSetup = () => {
     // Check if admin already exists to prevent creating multiple admins
     const checkAdminExists = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/auth/check-admin-exists`);
-        const data = await response.json();
+        const exists = await authService.checkAdminExists();
         
-        if (data.adminExists) {
+        if (exists) {
           setAdminExists(true);
           toast.error("Admin already exists", {
             description: "An admin user has already been created. Please use the login page.",

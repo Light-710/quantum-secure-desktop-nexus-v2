@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,8 +8,7 @@ import { Monitor, Server, Clock, Plus } from 'lucide-react';
 import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
-import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
-import { vmService } from '@/services/vmService';
+import { VirtualMachine, handleVMAction, adminVmService } from '@/services/vmManagementService';
 import { useToast } from '@/hooks/use-toast';
 
 const VirtualDesktopPage = () => {
@@ -35,21 +35,68 @@ const VirtualDesktopPage = () => {
 
   const handleAction = async (vmId: string, action: string, instanceOs: string, employeeId: string) => {
     setActionLoading(vmId);
-    await handleVMAction(vmId, action as any, instanceOs, employeeId, () => {
-      // Refresh VM list after action
-      loadVMs();
-    });
-    setActionLoading(null);
+    
+    try {
+      await handleVMAction(vmId, action as any, instanceOs, employeeId, () => {
+        // Refresh VM list after action
+        loadVMs();
+      });
+      
+      toast({
+        title: `VM ${action} Successful`,
+        description: `The VM has been ${action.toLowerCase()}ed.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: `VM ${action} Failed`,
+        description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM.`,
+        variant: 'destructive',
+      });
+    } finally {
+      setActionLoading(null);
+    }
   };
 
+  // In a real application, we would transform the API response into VM objects
+  // For now, we'll use mock data until API integration is complete
   const loadVMs = async () => {
     try {
-      const status = await vmService.getVMStatus();
-      // Transform API response to VM list
-      // This is a placeholder - you'll need to implement the actual transformation
-      // based on your API response structure
-      setVMs([]); // Replace with actual VM data
-    } catch (error) {
+      // In a real implementation, you would fetch VM data from the API
+      // and transform it into VirtualMachine objects
+      
+      // This is a placeholder until the API integration is complete
+      setVMs([
+        {
+          id: "vm1",
+          name: "Windows Server",
+          status: "Running",
+          os: "Windows",
+          assigned_user: "john.doe",
+          uptime: "2d 5h 30m",
+          health: "Good",
+          resources: {
+            cpu: 25,
+            memory: 40,
+            disk: 60
+          }
+        },
+        {
+          id: "vm2",
+          name: "Ubuntu Dev",
+          status: "Stopped",
+          os: "Linux",
+          assigned_user: "jane.smith",
+          uptime: "0",
+          health: "Good",
+          resources: {
+            cpu: 0,
+            memory: 0,
+            disk: 30
+          }
+        }
+        // Add more mock VMs here
+      ]);
+    } catch (error: any) {
       toast({
         title: 'Error loading VMs',
         description: error.message,

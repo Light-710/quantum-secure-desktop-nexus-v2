@@ -16,16 +16,18 @@ export interface AdminInitResponse {
 
 export const authService = {
   requestPasswordReset: async (employee_id: string): Promise<PasswordResetResponse> => {
+    // This matches the API spec
     const response = await api.post('/auth/request-password-reset', { employee_id });
     return response.data;
   },
   
   resetPassword: async (token: string, new_password: string): Promise<PasswordResetResponse> => {
+    // This matches the API spec
     const response = await api.post(`/auth/reset-password/${token}`, { new_password });
     return response.data;
   },
 
-  // Function to check if admin exists
+  // Function to check if admin exists - not in API spec but needed for frontend
   checkAdminExists: async (): Promise<boolean> => {
     try {
       const response = await api.get('/auth/check-admin-exists');
@@ -36,11 +38,21 @@ export const authService = {
     }
   },
 
-  // Enhanced function to initialize the first admin user with better error handling
+  // Enhanced function to initialize the first admin user
+  // This endpoint isn't in the API spec but would need to be added
   initializeAdminUser: async (adminData: UserFormValues): Promise<AdminInitResponse> => {
     try {
-      // This endpoint should be protected in your backend to only work when no admin exists
-      const response = await api.post('/auth/initialize-admin', adminData);
+      // Create payload matching the expected format for user creation
+      const payload = {
+        employee_id: adminData.username, // Using username as employee_id
+        name: adminData.name,
+        email: adminData.email,
+        password: adminData.password,
+        role: "Admin" // Force role to be Admin
+      };
+      
+      // This endpoint should be protected in backend to only work when no admin exists
+      const response = await api.post('/auth/initialize-admin', payload);
       
       return { 
         success: true, 
@@ -60,5 +72,20 @@ export const authService = {
         error: errorDetails
       };
     }
+  },
+  
+  // Add login method to match API spec
+  login: async (employee_id: string, password: string) => {
+    const response = await api.post('/auth/login', { 
+      employee_id, 
+      password 
+    });
+    return response.data; // Returns { access_token, role }
+  },
+  
+  // Add logout method to match API spec
+  logout: async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
   }
 };
