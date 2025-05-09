@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -26,11 +25,11 @@ const Login = () => {
       const result = await authService.createTestAdminUser();
       if (result.success) {
         toast.success("Test Admin Created", {
-          description: "Username: admin, Password: Admin123!",
+          description: "Username: 1, Password: 1",
         });
         // Auto-fill the credentials
-        setEmployeeId('admin');
-        setPassword('Admin123!');
+        setEmployeeId('1');
+        setPassword('1');
       } else {
         toast.error("Failed to Create Test Admin", {
           description: result.message,
@@ -116,7 +115,7 @@ const Login = () => {
             </Button>
             <p className="text-xs text-cyber-gray mt-2">
               For testing purposes only. Creates an admin user with:<br />
-              Username: <span className="text-cyber-teal">admin</span>, Password: <span className="text-cyber-teal">Admin123!</span>
+              Username: <span className="text-cyber-teal">1</span>, Password: <span className="text-cyber-teal">1</span>
             </p>
           </div>
         </CardContent>

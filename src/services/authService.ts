@@ -89,10 +89,10 @@ export const authService = {
   createTestAdminUser: async (): Promise<AdminInitResponse> => {
     try {
       const testAdmin = {
-        employee_id: 'admin',
+        employee_id: '1',
         name: 'Test Admin',
         email: 'admin@example.com',
-        password: 'Admin123!',
+        password: '1',
         role: 'Admin'
       };
       
