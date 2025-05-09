@@ -25,7 +25,6 @@ const AdminSetup = () => {
           setTimeout(() => navigate('/login'), 3000);
         }
       } catch (error) {
-        // If the endpoint doesn't exist yet or server is not running, just continue
         console.log("Could not check if admin exists:", error);
       } finally {
         setIsChecking(false);
@@ -35,22 +34,39 @@ const AdminSetup = () => {
     checkAdminExists();
   }, [navigate]);
 
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
-      {/* Background effects */}
-      <div className="cyber-grid-bg" />
-      <div className="scan-line animate-scan-line" />
-      
-      {/* Logo */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
-      </div>
-      
-      {isChecking ? (
+  // Show loading state while checking
+  if (isChecking) {
+    return (
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        {/* Background effects */}
+        <div className="cyber-grid-bg" />
+        <div className="scan-line animate-scan-line" />
+        
+        {/* Logo */}
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
+          <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+        </div>
+        
         <div className="glass-panel border-cyber-teal/30 p-8 text-center">
           <div className="animate-pulse text-cyber-teal text-xl">Checking system status...</div>
         </div>
-      ) : adminExists ? (
+      </div>
+    );
+  }
+
+  // Show admin already exists message
+  if (adminExists) {
+    return (
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+        {/* Background effects */}
+        <div className="cyber-grid-bg" />
+        <div className="scan-line animate-scan-line" />
+        
+        {/* Logo */}
+        <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
+          <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+        </div>
+        
         <div className="glass-panel border-cyber-teal/30 p-8 text-center">
           <h2 className="text-xl text-cyber-teal mb-4">Admin Already Exists</h2>
           <p className="text-cyber-gray mb-4">
@@ -64,9 +80,23 @@ const AdminSetup = () => {
             Go to Login
           </button>
         </div>
-      ) : (
-        <AdminInitializer />
-      )}
+      </div>
+    );
+  }
+
+  // Show admin setup form
+  return (
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
+      {/* Background effects */}
+      <div className="cyber-grid-bg" />
+      <div className="scan-line animate-scan-line" />
+      
+      {/* Logo */}
+      <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
+        <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+      </div>
+      
+      <AdminInitializer />
     </div>
   );
 };

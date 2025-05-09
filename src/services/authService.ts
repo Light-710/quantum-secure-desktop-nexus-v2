@@ -53,7 +53,6 @@ export const authService = {
   },
 
   // Function to initialize the first admin user
-  // This endpoint isn't in the API spec but would need to be added
   initializeAdminUser: async (adminData: any): Promise<AdminInitResponse> => {
     try {
       // Map the UserFormValues to the expected API format
