@@ -40,15 +40,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     console.log('Auth initialization - Token exists:', !!storedToken);
     
     if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
-      
-      // Validate token by fetching user profile
-      fetchUserProfile(storedToken).catch((error) => {
-        // If token is invalid, clear storage and state
-        console.error('Token validation failed:', error);
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        console.log('Stored user data:', parsedUser);
+        setUser(parsedUser);
+        setToken(storedToken);
+        
+        // Validate token by fetching user profile
+        fetchUserProfile(storedToken).catch((error) => {
+          // If token is invalid, clear storage and state
+          console.error('Token validation failed:', error);
+          clearAuthState();
+        });
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
         clearAuthState();
-      });
+        setIsLoading(false);
+      }
     } else {
       console.log('No stored user or token found');
       setIsLoading(false);
@@ -63,6 +71,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         headers: { Authorization: `Bearer ${authToken}` }
       });
       console.log('User profile fetched successfully:', response.data);
+      
+      // Verify the response has the expected structure
+      if (!response.data || !response.data.role) {
+        console.error('Invalid user profile data received:', response.data);
+        throw new Error('Invalid user profile data');
+      }
+      
       setUser(response.data);
       localStorage.setItem('ptng_user', JSON.stringify(response.data));
       setIsLoading(false);
@@ -81,8 +96,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.log(`Attempting login for employee_id: ${employee_id}`);
       const response = await authService.login(employee_id, password);
       
+      console.log('Login response:', response);
+      
+      if (!response || !response.access_token) {
+        throw new Error('No access token received');
+      }
+      
       const { access_token, role } = response;
-      console.log('Login successful, received token and role:', { tokenExists: !!access_token, role });
+      console.log('Login successful, received token and role:', { 
+        tokenExists: !!access_token, 
+        tokenLength: access_token ? access_token.length : 0,
+        role 
+      });
+      
+      if (!role) {
+        console.error('Role is missing in the login response');
+        throw new Error('Invalid login response: role is missing');
+      }
       
       // Save token
       setToken(access_token);
@@ -96,12 +126,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         description: `Welcome back!`,
       });
       
+      // Log before navigation
+      console.log(`Navigating to /dashboard/${role.toLowerCase()}`);
+      
       // Redirect based on user role
       navigate(`/dashboard/${role.toLowerCase()}`);
+      
+      // Log after navigation attempt
+      console.log('Navigation executed');
+      
     } catch (error: any) {
       console.error('Login failed:', error);
       toast.error("Login Failed", {
-        description: error.response?.data?.message || "Invalid credentials",
+        description: error.response?.data?.message || error.message || "Invalid credentials",
       });
       setIsLoading(false);
     }
