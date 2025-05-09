@@ -23,7 +23,7 @@ export interface VirtualMachine {
   };
 }
 
-// Mock implementation of VM action handling
+// Handle VM action
 export const handleVMAction = async (
   vmId: string,
   action: 'Start' | 'Stop' | 'Restart' | 'Snapshot' | 'Reset' | 'Resume',
@@ -31,80 +31,91 @@ export const handleVMAction = async (
   employeeId: string,
   onSuccess?: () => void
 ) => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // Random success (90% chance)
-  const isSuccess = Math.random() > 0.1;
-
-  if (!isSuccess) {
+  try {
+    // In a real app, this would call an API endpoint to perform the action
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    
+    toast.success(`VM ${action} Command Sent`, {
+      description: `Request to ${action.toLowerCase()} VM ${vmId} has been sent.`,
+    });
+    
+    onSuccess?.();
+    return { success: true, message: `VM ${action} command sent` };
+  } catch (error) {
     toast.error(`VM ${action} Failed`, {
       description: `Could not ${action.toLowerCase()} the VM. Please try again later.`,
     });
-    throw new Error(`Failed to ${action.toLowerCase()} VM`);
+    throw error;
   }
-
-  // If successful
-  onSuccess?.();
-  return { success: true, message: `VM ${action} successful` };
 };
 
-// Added handleCreateSnapshot function
+// Create snapshot function
 export const handleCreateSnapshot = async (
   vmId: string,
   onSuccess?: () => void
 ) => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-
-  // Random success (90% chance)
-  const isSuccess = Math.random() > 0.1;
-
-  if (!isSuccess) {
+  try {
+    // In a real app, this would call an API endpoint to create a snapshot
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+    
+    toast.success("Snapshot Creation Initiated", {
+      description: "VM snapshot creation request has been sent.",
+    });
+    
+    onSuccess?.();
+    return { success: true, message: "Snapshot creation initiated" };
+  } catch (error) {
     toast.error("Snapshot Creation Failed", {
       description: "Could not create snapshot. Please try again later.",
     });
-    throw new Error("Failed to create snapshot");
+    throw error;
   }
-
-  // If successful
-  toast.success("Snapshot Created", {
-    description: "VM snapshot has been created successfully.",
-  });
-  
-  onSuccess?.();
-  return { success: true, message: "Snapshot created successfully" };
 };
 
 // VM management API service
 const vmManagementService = {
   // Get all virtual desktops
   getAllVirtualDesktops: async (): Promise<VirtualMachine[]> => {
-    // Empty implementation
-    return [];
+    try {
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      return [];
+    } catch (error) {
+      console.error('Error fetching virtual desktops:', error);
+      return [];
+    }
   },
 
   // Create new virtual desktop
   createVirtualDesktop: async (data: any): Promise<VirtualMachine> => {
-    // Empty implementation
-    const newVM: VirtualMachine = {
-      id: `vm${Math.floor(Math.random() * 1000)}`,
-      name: data.name,
-      status: "Starting",
-      os: data.os,
-      assigned_user: data.assigned_user,
-      uptime: "0",
-      health: "Good",
-      ip_address: `192.168.1.${Math.floor(Math.random() * 255)}`,
-      last_snapshot: "N/A",
-      resources: {
-        cpu: 0,
-        memory: 0,
-        disk: 0,
-        network: 0
-      }
-    };
-    return newVM;
+    try {
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      
+      // Return a basic VM structure with empty/default values
+      const newVM: VirtualMachine = {
+        id: `vm-${Date.now()}`,
+        name: data.name || "New VM",
+        status: "Starting",
+        os: data.os || "Windows",
+        assigned_user: data.assigned_user || "",
+        uptime: "0",
+        health: "Good",
+        ip_address: "",
+        last_snapshot: "N/A",
+        resources: {
+          cpu: 0,
+          memory: 0,
+          disk: 0,
+          network: 0
+        }
+      };
+      
+      return newVM;
+    } catch (error) {
+      console.error('Error creating virtual desktop:', error);
+      throw error;
+    }
   }
 };
 

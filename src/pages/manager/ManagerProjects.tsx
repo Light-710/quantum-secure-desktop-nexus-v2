@@ -29,7 +29,7 @@ import {
 import { Filter, FileText, Download, FileUp } from 'lucide-react';
 import type { Project } from '@/types/project';
 import { reportService } from '@/services/reportService';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 const ManagerProjects = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -40,8 +40,9 @@ const ManagerProjects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // Note: There's no projects endpoint in the API spec yet
-        // This would be replaced with an actual API call when available
+        setIsLoading(true);
+        // In a real app, this would call an API endpoint
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         setProjects([]);
       } catch (error) {
         console.error('Failed to fetch projects:', error);

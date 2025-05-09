@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,15 +15,15 @@ import { User } from 'lucide-react';
 import type { Employee } from '@/types/employee';
 
 const ManagerTeam = () => {
-  const [employees, setEmployees] = React.useState<Employee[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // This would be replaced with an actual API call
-        // const response = await api.get('/manager/team');
-        // setEmployees(response.data.employees);
+        setIsLoading(true);
+        // In a real app, this would call an API endpoint
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
         setEmployees([]);
       } catch (error) {
         console.error('Failed to fetch team data:', error);

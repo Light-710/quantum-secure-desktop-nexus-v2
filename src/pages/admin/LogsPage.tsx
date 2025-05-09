@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,166 +24,52 @@ type LogEntry = {
   ip?: string;
 };
 
-// Sample log data
-const generateLogs = (): LogEntry[] => {
-  const logs: LogEntry[] = [
-    {
-      id: 'LOG0001',
-      timestamp: '2025-04-27 09:32:15',
-      level: 'Info',
-      category: 'User',
-      message: 'User john_emp logged in successfully',
-      user: 'john_emp',
-      ip: '192.168.1.45',
-    },
-    {
-      id: 'LOG0002',
-      timestamp: '2025-04-27 09:28:33',
-      level: 'Warning',
-      category: 'Security',
-      message: 'Failed login attempt for user admin',
-      user: 'admin',
-      ip: '203.0.113.42',
-    },
-    {
-      id: 'LOG0003',
-      timestamp: '2025-04-27 08:45:22',
-      level: 'Info',
-      category: 'VM',
-      message: 'Virtual machine VM001 started',
-      user: 'jane_mgr',
-      ip: '192.168.1.46',
-    },
-    {
-      id: 'LOG0004',
-      timestamp: '2025-04-27 07:12:33',
-      level: 'Error',
-      category: 'Database',
-      message: 'Database connection timeout',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0005',
-      timestamp: '2025-04-27 06:55:10',
-      level: 'Info',
-      category: 'System',
-      message: 'System backup completed successfully',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0006',
-      timestamp: '2025-04-26 23:14:05',
-      level: 'Warning',
-      category: 'System',
-      message: 'High CPU usage detected (92%)',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0007',
-      timestamp: '2025-04-26 21:30:12',
-      level: 'Info',
-      category: 'Security',
-      message: 'Security scan completed',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0008',
-      timestamp: '2025-04-26 19:42:57',
-      level: 'Critical',
-      category: 'Security',
-      message: 'Multiple failed login attempts detected from IP 203.0.113.42',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0009',
-      timestamp: '2025-04-26 18:23:11',
-      level: 'Error',
-      category: 'VM',
-      message: 'VM003 crashed unexpectedly',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0010',
-      timestamp: '2025-04-26 17:05:33',
-      level: 'Info',
-      category: 'User',
-      message: 'User alex_adm modified system settings',
-      user: 'alex_adm',
-      ip: '192.168.1.47',
-    },
-    {
-      id: 'LOG0011',
-      timestamp: '2025-04-26 15:12:09',
-      level: 'Warning',
-      category: 'Database',
-      message: 'Database reaching storage capacity (85%)',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0012',
-      timestamp: '2025-04-26 14:18:22',
-      level: 'Info',
-      category: 'User',
-      message: 'User sam_smith account locked due to inactivity',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0013',
-      timestamp: '2025-04-26 12:05:17',
-      level: 'Info',
-      category: 'VM',
-      message: 'VM002 stopped by user',
-      user: 'john_emp',
-      ip: '192.168.1.45',
-    },
-    {
-      id: 'LOG0014',
-      timestamp: '2025-04-26 10:33:51',
-      level: 'Error',
-      category: 'System',
-      message: 'Failed to apply system updates',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-    {
-      id: 'LOG0015',
-      timestamp: '2025-04-26 09:27:40',
-      level: 'Critical',
-      category: 'Security',
-      message: 'Potential intrusion attempt detected',
-      user: 'system',
-      ip: '127.0.0.1',
-    },
-  ];
-  
-  return logs;
-};
-
 const LogsPage = () => {
   const { toast } = useToast();
-  // Empty array for logs data
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [levelFilter, setLevelFilter] = useState<string>('All');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleRefreshLogs = () => {
-    toast({
-      title: "Logs Refreshed",
-      description: "The log entries have been updated.",
-    });
-    
-    // In a real app, this would fetch new logs from the server
-    // For now, we keep the empty array
-    setLogs([]);
+  // Fetch logs
+  useEffect(() => {
+    const fetchLogs = async () => {
+      setIsLoading(true);
+      try {
+        // In a real app, this would call an API endpoint
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+        setLogs([]);
+      } catch (error) {
+        console.error('Error fetching logs:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLogs();
+  }, []);
+
+  const handleRefreshLogs = async () => {
+    setIsLoading(true);
+    try {
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setLogs([]);
+      toast({
+        title: "Logs Refreshed",
+        description: "The log entries have been updated.",
+      });
+    } catch (error) {
+      console.error('Error refreshing logs:', error);
+      toast({
+        title: "Refresh Failed",
+        description: "Failed to refresh logs. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   const handleDownloadLogs = () => {
@@ -258,14 +145,20 @@ const LogsPage = () => {
               variant="outline"
               className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
               onClick={handleRefreshLogs}
+              disabled={isLoading}
             >
-              <RefreshCw className="mr-2 h-4 w-4" />
+              {isLoading ? (
+                <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+              ) : (
+                <RefreshCw className="mr-2 h-4 w-4" />
+              )}
               Refresh
             </Button>
             <Button
               variant="outline"
               className="border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
               onClick={handleDownloadLogs}
+              disabled={isLoading}
             >
               <Download className="mr-2 h-4 w-4" />
               Export
@@ -327,7 +220,16 @@ const LogsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredLogs.length > 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center text-cyber-gray">
+                      <div className="flex justify-center items-center h-full">
+                        <div className="animate-spin h-6 w-6 border-2 border-cyber-teal border-t-transparent rounded-full mr-2"></div>
+                        <span>Loading logs...</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : filteredLogs.length > 0 ? (
                   filteredLogs.map((log) => (
                     <TableRow key={log.id} className={`hover:bg-cyber-dark-blue/20 ${
                       log.level === 'Critical' ? 'bg-cyber-red/10' :
@@ -386,7 +288,10 @@ const LogsPage = () => {
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
               <div className="text-xs text-cyber-gray">Today's Entries</div>
               <div className="text-xl text-cyber-blue mt-1">
-                {logs.filter(log => log.timestamp.includes('2025-05-05')).length}
+                {logs.filter(log => {
+                  const today = new Date().toISOString().split('T')[0];
+                  return log.timestamp.includes(today);
+                }).length}
               </div>
             </div>
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">

@@ -10,50 +10,40 @@ import { Project } from '@/types/project';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from '@/contexts/AuthContext';
 
-// Sample project-specific messages
-const projectMessages: Record<string, Message[]> = {
-  'PR001': [
-    {
-      id: '1',
-      sender: 'Alex Thompson',
-      content: 'Team, I need an update on the web application security testing. How is it going?',
-      timestamp: new Date(Date.now() - 86400000),
-      senderRole: 'Manager'
-    },
-    {
-      id: '2',
-      sender: 'Sarah Chen',
-      content: 'I\'ve completed the initial reconnaissance phase. Found several potential entry points in the login system.',
-      timestamp: new Date(Date.now() - 82800000),
-      senderRole: 'Employee'
-    }
-  ],
-  'PR003': [
-    {
-      id: '3',
-      sender: 'James Wilson',
-      content: 'Starting the network vulnerability scan now. Will report findings by EOD.',
-      timestamp: new Date(Date.now() - 43200000),
-      senderRole: 'Employee'
-    }
-  ]
-};
-
 const ChatPanel = () => {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  // Sample projects data
-  const projects: Project[] = [
-    { id: 'PR001', name: 'Web Application Penetration Test', status: 'In Progress', dueDate: '2025-05-10' },
-    { id: 'PR003', name: 'Network Vulnerability Scan', status: 'Pending', dueDate: '2025-05-15' },
-  ];
+  useEffect(() => {
+    // In a real app, this would fetch projects from an API
+    const fetchProjects = async () => {
+      try {
+        // API call would go here
+        setProjects([]);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+      }
+    };
+    
+    fetchProjects();
+  }, []);
 
   useEffect(() => {
     if (selectedProject) {
-      setMessages(projectMessages[selectedProject] || []);
+      // In a real app, this would fetch messages for the selected project
+      const fetchMessages = async () => {
+        try {
+          // API call would go here
+          setMessages([]);
+        } catch (error) {
+          console.error('Error fetching messages:', error);
+        }
+      };
+      
+      fetchMessages();
     }
   }, [selectedProject]);
 
@@ -67,10 +57,8 @@ const ChatPanel = () => {
         senderRole: user?.role as 'Employee' | 'Manager' || 'Employee'
       };
       
-      // Update both the local state and the project messages
-      const updatedMessages = [...messages, message];
-      setMessages(updatedMessages);
-      projectMessages[selectedProject] = updatedMessages;
+      // In a real app, this would send the message to an API
+      setMessages(prev => [...prev, message]);
       setNewMessage('');
     }
   };
@@ -85,9 +73,9 @@ const ChatPanel = () => {
         timestamp: new Date(),
         senderRole: user?.role as 'Employee' | 'Manager' || 'Employee'
       };
-      const updatedMessages = [...messages, fileMessage];
-      setMessages(updatedMessages);
-      projectMessages[selectedProject] = updatedMessages;
+      
+      // In a real app, this would upload the file to an API
+      setMessages(prev => [...prev, fileMessage]);
     }
   };
 

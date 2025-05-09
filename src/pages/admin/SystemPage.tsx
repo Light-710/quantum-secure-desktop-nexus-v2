@@ -14,17 +14,17 @@ const SystemPage = () => {
   const [backupInProgress, setBackupInProgress] = useState(false);
   const [recoveryInProgress, setRecoveryInProgress] = useState(false);
   
-  // Empty system data
-  const systemInfo = {
+  // System data state
+  const [systemInfo, setSystemInfo] = useState({
     lastBackup: 'No backups found',
     backupSize: '0 GB',
     backupStatus: 'Not Available',
-    recoveryPoints: [],
+    recoveryPoints: [] as any[],
     backupLocations: [
-      { name: 'Primary Storage', type: 'Local', status: 'Online', freeSpace: 'Unknown' },
+      { name: 'Primary Storage', type: 'Local', status: 'Offline', freeSpace: 'Unknown' },
       { name: 'Cloud Backup', type: 'Remote', status: 'Offline', freeSpace: 'Unknown' },
     ]
-  };
+  });
   
   const handleBackup = () => {
     setBackupInProgress(true);
@@ -35,10 +35,10 @@ const SystemPage = () => {
       setIsBackupDialogOpen(false);
       
       toast({
-        title: "Backup Complete",
-        description: "System backup has been completed successfully.",
+        title: "Backup Initiated",
+        description: "System backup request has been sent.",
       });
-    }, 3000);
+    }, 2000);
   };
   
   const handleRecovery = (recoveryPointId: string) => {
@@ -50,10 +50,10 @@ const SystemPage = () => {
       setIsRecoveryDialogOpen(false);
       
       toast({
-        title: "Recovery Complete",
-        description: `System has been restored to recovery point ${recoveryPointId}.`,
+        title: "Recovery Initiated",
+        description: `System restore request for point ${recoveryPointId} has been sent.`,
       });
-    }, 5000);
+    }, 2000);
   };
 
   return (
@@ -251,7 +251,7 @@ const SystemPage = () => {
                 {backupInProgress ? (
                   <>
                     <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                    Backing Up...
+                    Initiating...
                   </>
                 ) : (
                   "Start Backup"

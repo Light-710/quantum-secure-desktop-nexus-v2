@@ -4,25 +4,55 @@ import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Users, Server, Activity, Database, Monitor, Settings, 
   BarChart3, Cpu, HardDrive, Network, Clock, Shield, 
-  UserPlus, FileText, Check, AlertTriangle, Info, Plus
+  UserPlus, FileText, Check, AlertTriangle, Info
 } from 'lucide-react';
-import api from '@/services/api';
+
+// Empty User Type
+type User = {
+  id: string;
+  name: string;
+  role: string;
+  status: string;
+  email: string;
+  lastLogin: string;
+};
+
+// Empty Log Type
+type LogEntry = {
+  id: string;
+  level: string;
+  event: string;
+  user: string;
+  timestamp: string;
+};
+
+// Empty VM Type
+type VirtualMachine = {
+  id: string;
+  user: string;
+  os: string;
+  status: string;
+  uptime: string;
+  cpu: number;
+  memory: number;
+};
 
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeUserTab, setActiveUserTab] = useState('active');
   
-  // Convert static data to state variables
-  const [users, setUsers] = useState({
+  // State variables with empty defaults
+  const [users, setUsers] = useState<{
+    active: User[];
+    inactive: User[];
+  }>({
     active: [],
     inactive: []
   });
@@ -34,10 +64,10 @@ const AdminDashboard = () => {
     network: 0
   });
   
-  const [recentLogs, setRecentLogs] = useState([]);
-  const [vmStatuses, setVmStatuses] = useState([]);
+  const [recentLogs, setRecentLogs] = useState<LogEntry[]>([]);
+  const [vmStatuses, setVmStatuses] = useState<VirtualMachine[]>([]);
   
-  // Add loading states
+  // Loading states
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
@@ -47,52 +77,12 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      // In a real app, this would be an API call
-      // const response = await api.get('/admin/users');
-      // setUsers(response.data);
-      
-      // Simulate API delay
-      setTimeout(() => {
-        setUsers({
-          active: [
-            {
-              id: 'usr1',
-              name: 'John Doe',
-              role: 'Admin',
-              status: 'Online',
-              email: 'john@example.com',
-              lastLogin: '2023-05-01 10:30'
-            },
-            {
-              id: 'usr2',
-              name: 'Jane Smith',
-              role: 'Manager',
-              status: 'Away',
-              email: 'jane@example.com',
-              lastLogin: '2023-05-01 09:15'
-            },
-            {
-              id: 'usr3',
-              name: 'Alex Johnson',
-              role: 'Employee',
-              status: 'Online',
-              email: 'alex@example.com',
-              lastLogin: '2023-05-01 11:45'
-            }
-          ],
-          inactive: [
-            {
-              id: 'usr4',
-              name: 'Michael Brown',
-              role: 'Employee',
-              status: 'Inactive',
-              email: 'michael@example.com',
-              lastLogin: '2023-04-28 14:20'
-            }
-          ]
-        });
-        setIsLoadingUsers(false);
-      }, 1000);
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setUsers({
+        active: [],
+        inactive: []
+      });
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -100,6 +90,7 @@ const AdminDashboard = () => {
         description: "Failed to load users data",
         variant: "destructive",
       });
+    } finally {
       setIsLoadingUsers(false);
     }
   };
@@ -107,20 +98,14 @@ const AdminDashboard = () => {
   const fetchSystemMetrics = async () => {
     setIsLoadingMetrics(true);
     try {
-      // In a real app, this would be an API call
-      // const response = await api.get('/admin/system-metrics');
-      // setSystemMetrics(response.data);
-      
-      // Simulate API delay
-      setTimeout(() => {
-        setSystemMetrics({
-          cpu: 45,
-          memory: 62,
-          storage: 38,
-          network: 27
-        });
-        setIsLoadingMetrics(false);
-      }, 800);
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setSystemMetrics({
+        cpu: 0,
+        memory: 0,
+        storage: 0,
+        network: 0
+      });
     } catch (error) {
       console.error('Error fetching system metrics:', error);
       toast({
@@ -128,6 +113,7 @@ const AdminDashboard = () => {
         description: "Failed to load system metrics",
         variant: "destructive",
       });
+    } finally {
       setIsLoadingMetrics(false);
     }
   };
@@ -135,37 +121,9 @@ const AdminDashboard = () => {
   const fetchRecentLogs = async () => {
     setIsLoadingLogs(true);
     try {
-      // In a real app, this would be an API call
-      // const response = await api.get('/admin/logs/recent');
-      // setRecentLogs(response.data);
-      
-      // Simulate API delay
-      setTimeout(() => {
-        setRecentLogs([
-          {
-            id: 'log1',
-            level: 'Info',
-            event: 'User login',
-            user: 'John Doe',
-            timestamp: '2023-05-01 12:30:45'
-          },
-          {
-            id: 'log2',
-            level: 'Warning',
-            event: 'Failed login attempt',
-            user: 'Unknown',
-            timestamp: '2023-05-01 12:25:12'
-          },
-          {
-            id: 'log3',
-            level: 'Error',
-            event: 'System backup failed',
-            user: 'System',
-            timestamp: '2023-05-01 12:15:30'
-          }
-        ]);
-        setIsLoadingLogs(false);
-      }, 1200);
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setRecentLogs([]);
     } catch (error) {
       console.error('Error fetching logs:', error);
       toast({
@@ -173,6 +131,7 @@ const AdminDashboard = () => {
         description: "Failed to load activity logs",
         variant: "destructive",
       });
+    } finally {
       setIsLoadingLogs(false);
     }
   };
@@ -180,43 +139,9 @@ const AdminDashboard = () => {
   const fetchVirtualMachines = async () => {
     setIsLoadingVMs(true);
     try {
-      // In a real app, this would be an API call
-      // const response = await api.get('/admin/vm/statuses');
-      // setVmStatuses(response.data);
-      
-      // Simulate API delay
-      setTimeout(() => {
-        setVmStatuses([
-          {
-            id: 'vm001',
-            user: 'john.doe',
-            os: 'Windows',
-            status: 'Running',
-            uptime: '2d 5h 30m',
-            cpu: 35,
-            memory: 42
-          },
-          {
-            id: 'vm002',
-            user: 'jane.smith',
-            os: 'Linux',
-            status: 'Stopped',
-            uptime: '0',
-            cpu: 0,
-            memory: 0
-          },
-          {
-            id: 'vm003',
-            user: 'alex.johnson',
-            os: 'Windows',
-            status: 'Running',
-            uptime: '8h 45m',
-            cpu: 22,
-            memory: 38
-          }
-        ]);
-        setIsLoadingVMs(false);
-      }, 1500);
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      setVmStatuses([]);
     } catch (error) {
       console.error('Error fetching VM statuses:', error);
       toast({
@@ -224,6 +149,7 @@ const AdminDashboard = () => {
         description: "Failed to load virtual machine data",
         variant: "destructive",
       });
+    } finally {
       setIsLoadingVMs(false);
     }
   };
@@ -239,8 +165,8 @@ const AdminDashboard = () => {
   // VM action handler with data refresh
   const handleVmAction = async (vmId: string, action: string) => {
     try {
-      // In a real app, this would be an API call
-      // await api.post('/admin/vm/action', { vmId, action });
+      // In a real app, this would call an API endpoint
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
       
       toast({
         title: `VM ${action} Initiated`,
@@ -248,9 +174,7 @@ const AdminDashboard = () => {
       });
       
       // Refresh VM data after action
-      setTimeout(() => {
-        fetchVirtualMachines();
-      }, 1000);
+      fetchVirtualMachines();
     } catch (error) {
       console.error(`Error performing VM ${action}:`, error);
       toast({
@@ -263,7 +187,7 @@ const AdminDashboard = () => {
   
   const handleAddUser = () => {
     toast({
-      title: "Add User Feature",
+      title: "Add User",
       description: "The user creation form would open here.",
     });
   };
@@ -627,7 +551,7 @@ const AdminDashboard = () => {
                   <th className="text-right py-3 px-4 text-xs font-semibold text-cyber-teal">Actions</th>
                 </tr>
               </thead>
-              <TableBody>
+              <tbody>
                 {isLoadingVMs ? (
                   <tr>
                     <td colSpan={8} className="py-8">
@@ -724,7 +648,7 @@ const AdminDashboard = () => {
                     </td>
                   </tr>
                 )}
-              </TableBody>
+              </tbody>
             </table>
           </div>
         </CardContent>
@@ -750,18 +674,18 @@ const AdminDashboard = () => {
                 {isLoadingMetrics ? (
                   <Skeleton className="h-8 w-16 bg-cyber-blue/10" />
                 ) : (
-                  <div className="text-3xl font-semibold text-cyber-blue">78<span className="text-xl">/100</span></div>
+                  <div className="text-3xl font-semibold text-cyber-blue">0<span className="text-xl">/100</span></div>
                 )}
-                <div className="text-xs text-cyber-gray">Last scan: Today</div>
+                <div className="text-xs text-cyber-gray">Not Available</div>
               </div>
               <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
                 {isLoadingMetrics ? (
                   <Skeleton className="h-full w-full" />
                 ) : (
-                  <div className="h-full bg-cyber-blue" style={{ width: '78%' }}></div>
+                  <div className="h-full bg-cyber-blue" style={{ width: '0%' }}></div>
                 )}
               </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last scan: 2 hours ago</p>
+              <p className="mt-2 text-xs text-cyber-gray">Last scan: Not available</p>
             </div>
             
             {/* Vulnerabilities */}
@@ -771,22 +695,22 @@ const AdminDashboard = () => {
                 {isLoadingMetrics ? (
                   <Skeleton className="h-8 w-8 bg-cyber-blue/10" />
                 ) : (
-                  <div className="text-3xl font-semibold text-cyber-green">3</div>
+                  <div className="text-3xl font-semibold text-cyber-green">0</div>
                 )}
-                <div className="text-xs text-cyber-gray">Last scan: Today</div>
+                <div className="text-xs text-cyber-gray">Not Available</div>
               </div>
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">Critical</span>
-                  <span className="text-cyber-red">1</span>
+                  <span className="text-cyber-red">0</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">High</span>
-                  <span className="text-yellow-400">1</span>
+                  <span className="text-yellow-400">0</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">Medium</span>
-                  <span className="text-cyber-green">1</span>
+                  <span className="text-cyber-green">0</span>
                 </div>
               </div>
             </div>
@@ -798,14 +722,14 @@ const AdminDashboard = () => {
                 {isLoadingMetrics ? (
                   <Skeleton className="h-6 w-24 bg-cyber-blue/10" />
                 ) : (
-                  <div className="text-xl font-semibold text-cyber-teal">Last: 12h ago</div>
+                  <div className="text-xl font-semibold text-cyber-teal">Not Available</div>
                 )}
-                <div className="text-xs text-green-400">
-                  Success
+                <div className="text-xs text-yellow-400">
+                  No Data
                 </div>
               </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last backup: Today, 05:30 AM</p>
-              <p className="text-xs text-cyber-gray">Next backup: Today, 05:30 PM</p>
+              <p className="mt-2 text-xs text-cyber-gray">Last backup: Not available</p>
+              <p className="text-xs text-cyber-gray">Next backup: Not configured</p>
               <div className="mt-4">
                 <Button
                   variant="outline"
