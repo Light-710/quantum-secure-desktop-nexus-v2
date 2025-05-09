@@ -37,29 +37,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem('ptng_user');
     const storedToken = localStorage.getItem('ptng_token');
 
+    console.log('Auth initialization - Token exists:', !!storedToken);
+    
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
       
       // Validate token by fetching user profile
-      fetchUserProfile(storedToken).catch(() => {
+      fetchUserProfile(storedToken).catch((error) => {
         // If token is invalid, clear storage and state
+        console.error('Token validation failed:', error);
         clearAuthState();
       });
+    } else {
+      console.log('No stored user or token found');
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   }, []);
   
   // Helper to fetch user profile with token
   const fetchUserProfile = async (authToken: string) => {
     try {
+      console.log('Fetching user profile with token');
       const response = await api.get('/user/get-profile', {
         headers: { Authorization: `Bearer ${authToken}` }
       });
+      console.log('User profile fetched successfully:', response.data);
       setUser(response.data);
       localStorage.setItem('ptng_user', JSON.stringify(response.data));
+      setIsLoading(false);
     } catch (error) {
+      console.error('Error fetching user profile:', error);
+      setIsLoading(false);
       throw new Error('Invalid token');
     }
   };
@@ -69,9 +78,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     
     try {
+      console.log(`Attempting login for employee_id: ${employee_id}`);
       const response = await authService.login(employee_id, password);
       
       const { access_token, role } = response;
+      console.log('Login successful, received token and role:', { tokenExists: !!access_token, role });
       
       // Save token
       setToken(access_token);
@@ -88,10 +99,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Redirect based on user role
       navigate(`/dashboard/${role.toLowerCase()}`);
     } catch (error: any) {
+      console.error('Login failed:', error);
       toast.error("Login Failed", {
         description: error.response?.data?.message || "Invalid credentials",
       });
-    } finally {
       setIsLoading(false);
     }
   };

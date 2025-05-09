@@ -1,6 +1,6 @@
 
 import api from './api';
-import type { User, UserFormValues } from '@/types/user';
+import type { User, UserFormValues, UserProfile } from '@/types/user';
 
 export const userService = {
   // This matches the API spec GET /admin/user/get-users
@@ -62,19 +62,34 @@ export const userService = {
     return response.data;
   },
   
-  // This matches the API spec GET /user/get-profile
+  // Updated to include better debugging for the /user/get-profile endpoint
   getUserProfile: async () => {
-    const response = await api.get('/user/get-profile');
-    return response.data;
+    console.log('Getting user profile...');
+    try {
+      const token = localStorage.getItem('ptng_token');
+      console.log('Auth token available:', !!token);
+      
+      const response = await api.get('/user/get-profile');
+      console.log('Profile response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      throw error;
+    }
   },
   
   // This matches the API spec PUT /user/update-profile
   updateUserProfile: async (formData: FormData) => {
-    const response = await api.put('/user/update-profile', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+    try {
+      const response = await api.put('/user/update-profile', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
   },
 };

@@ -14,22 +14,34 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ptng_token');
   if (token) {
+    console.log(`API Request to ${config.url} - Adding auth token`);
     config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    console.log(`API Request to ${config.url} - No auth token available`);
   }
   return config;
 });
 
 // Add response interceptor for handling errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`API Response from ${response.config.url} - Status: ${response.status}`);
+    return response;
+  },
   (error) => {
     // Handle common errors
+    console.error('API Error:', error);
+    
     if (error.response) {
       // Server responded with an error status
       const status = error.response.status;
+      const url = error.config?.url || 'unknown endpoint';
+      
+      console.error(`API Error ${status} from ${url}:`, error.response.data);
       
       if (status === 401) {
         // Unauthorized - token expired or invalid
+        console.log('Unauthorized access detected - cleaning up session');
         localStorage.removeItem('ptng_token');
         localStorage.removeItem('ptng_user');
         
@@ -49,6 +61,7 @@ api.interceptors.response.use(
         });
       }
       else if (status === 404) {
+        console.error(`Resource not found: ${url}`);
         // Not found - don't show toast, let the component handle it
       }
       else if (status === 500) {
@@ -58,11 +71,13 @@ api.interceptors.response.use(
       }
     } else if (error.request) {
       // Request made but no response received
+      console.error('Network error - no response received:', error.request);
       toast.error("Network Error", { 
         description: "Unable to connect to the server. Please check your internet connection."
       });
     } else {
       // Something else happened
+      console.error('Request error:', error.message);
       toast.error("Request Error", { 
         description: "An error occurred while processing your request."
       });
