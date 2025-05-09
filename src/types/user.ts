@@ -6,7 +6,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  username: string;
+  username: string; // This corresponds to employee_id in the API
   role: UserRole;
   status: UserStatus;
   lastLogin: string;
@@ -16,8 +16,17 @@ export type User = {
 export type UserFormValues = {
   name: string;
   email: string;
-  username: string;
+  username: string; // This corresponds to employee_id in the API
   password: string;
   role: UserRole;
   notes?: string;
 };
+
+export interface UserProfile {
+  employee_id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  profile_picture?: string;
+}

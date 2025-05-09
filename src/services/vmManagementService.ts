@@ -1,5 +1,7 @@
 
 import api from './api';
+import { vmService } from './vmService';
+import { toast } from '@/components/ui/sonner';
 
 export type VMStatus = 'Running' | 'Starting' | 'Stopping' | 'Stopped' | 'Error' | 'Paused';
 export type VMHealth = 'Good' | 'Fair' | 'Poor';
@@ -28,124 +30,26 @@ export interface VMActionResponse {
   URL?: string;
 }
 
-export interface VMStatusResponse {
-  windows: string;
-  linux: string;
-}
-
-// For admin VM operations
-export const adminVmService = {
-  startVM: async (employee_id: string, instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('employee_id', employee_id);
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/admin/vm/start-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  stopVM: async (employee_id: string, instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('employee_id', employee_id);
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/admin/vm/stop-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  restartVM: async (employee_id: string, instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('employee_id', employee_id);
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/admin/vm/restart-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  getVMStatus: async (employee_id: string): Promise<VMStatusResponse> => {
-    const formData = new FormData();
-    formData.append('employee_id', employee_id);
-
-    const response = await api.post('/admin/vm/vm-status', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-};
-
-// For user VM operations
-export const userVmService = {
-  startVM: async (instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/vm/start-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  stopVM: async (instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/vm/stop-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  restartVM: async (instance_os: string): Promise<VMActionResponse> => {
-    const formData = new FormData();
-    formData.append('instance_os', instance_os);
-
-    const response = await api.post('/vm/restart-vm', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-
-  getVMStatus: async (): Promise<VMStatusResponse> => {
-    const response = await api.post('/vm/get-status', {}, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  },
-};
-
-// Add the missing handleCreateSnapshot function
+// Create snapshot function as it appears in the VM details dialog
 export const handleCreateSnapshot = async (vmId: string) => {
   try {
-    const response = await api.post('/vm/create-snapshot', { vm_id: vmId });
-    return response.data;
+    const response = await vmService.createSnapshot(vmId);
+    toast({
+      title: "Snapshot Created",
+      description: "Virtual machine snapshot has been created successfully",
+    });
+    return response;
   } catch (error: any) {
-    console.error('Error creating snapshot:', error);
+    toast({
+      title: "Error Creating Snapshot",
+      description: error.response?.data?.message || "Failed to create snapshot",
+      variant: "destructive",
+    });
     throw error;
   }
 };
 
+// Handle VM Actions
 export const handleVMAction = async (
   vmId: string,
   action: 'Start' | 'Stop' | 'Reset' | 'Resume',
@@ -164,38 +68,47 @@ export const handleVMAction = async (
     if (isAdmin) {
       // Admin actions
       if (action === 'Start') {
-        response = await adminVmService.startVM(employeeId, instanceOs);
+        response = await vmService.startVM(instanceOs, employeeId);
       } else if (action === 'Stop') {
-        response = await adminVmService.stopVM(employeeId, instanceOs);
+        response = await vmService.stopVM(instanceOs, employeeId);
       } else if (action === 'Reset') {
-        response = await adminVmService.restartVM(employeeId, instanceOs);
+        response = await vmService.restartVM(instanceOs, employeeId);
       } else if (action === 'Resume') {
-        // Handle resume action (similar to start but potentially different endpoint)
-        response = await adminVmService.startVM(employeeId, instanceOs);
+        // Handle resume action (similar to start)
+        response = await vmService.startVM(instanceOs, employeeId);
       }
     } else {
       // User actions
       if (action === 'Start') {
-        response = await userVmService.startVM(instanceOs);
+        response = await vmService.startVM(instanceOs);
       } else if (action === 'Stop') {
-        response = await userVmService.stopVM(instanceOs);
+        response = await vmService.stopVM(instanceOs);
       } else if (action === 'Reset') {
-        response = await userVmService.restartVM(instanceOs);
+        response = await vmService.restartVM(instanceOs);
       } else if (action === 'Resume') {
         // Handle resume action
-        response = await userVmService.startVM(instanceOs);
+        response = await vmService.startVM(instanceOs);
       }
     }
     
-    if (onComplete) onComplete();
+    // Show success toast notification
+    toast({
+      title: `VM ${action} Initiated`,
+      description: response?.message || `VM ${action.toLowerCase()} process has started`,
+    });
     
-    // Show toast or other notification here
+    if (onComplete) onComplete();
     
     return response;
   } catch (error: any) {
     console.error(`Error ${action.toLowerCase()}ing VM:`, error);
     
-    // Show error toast or other notification here
+    // Show error toast notification
+    toast({
+      title: `VM ${action} Failed`,
+      description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM`,
+      variant: "destructive",
+    });
     
     throw error;
   }

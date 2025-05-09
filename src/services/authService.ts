@@ -1,6 +1,5 @@
 
 import api from './api';
-import type { UserFormValues } from '@/types/user';
 
 export interface PasswordResetResponse {
   message: string;
@@ -15,14 +14,29 @@ export interface AdminInitResponse {
 }
 
 export const authService = {
+  // This matches the API spec POST /auth/login
+  login: async (employee_id: string, password: string) => {
+    const response = await api.post('/auth/login', { 
+      employee_id, 
+      password 
+    });
+    return response.data; // Returns { access_token, role }
+  },
+  
+  // This matches the API spec POST /auth/logout
+  logout: async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  },
+
+  // This matches the API spec POST /auth/request-password-reset
   requestPasswordReset: async (employee_id: string): Promise<PasswordResetResponse> => {
-    // This matches the API spec
     const response = await api.post('/auth/request-password-reset', { employee_id });
     return response.data;
   },
   
+  // This matches the API spec POST /auth/reset-password/{token}
   resetPassword: async (token: string, new_password: string): Promise<PasswordResetResponse> => {
-    // This matches the API spec
     const response = await api.post(`/auth/reset-password/${token}`, { new_password });
     return response.data;
   },
@@ -38,21 +52,17 @@ export const authService = {
     }
   },
 
-  // Enhanced function to initialize the first admin user
+  // Function to initialize the first admin user
   // This endpoint isn't in the API spec but would need to be added
-  initializeAdminUser: async (adminData: UserFormValues): Promise<AdminInitResponse> => {
+  initializeAdminUser: async (adminData: {
+    name: string;
+    email: string;
+    employee_id: string;
+    password: string;
+    role: string;
+  }): Promise<AdminInitResponse> => {
     try {
-      // Create payload matching the expected format for user creation
-      const payload = {
-        employee_id: adminData.username, // Using username as employee_id
-        name: adminData.name,
-        email: adminData.email,
-        password: adminData.password,
-        role: "Admin" // Force role to be Admin
-      };
-      
-      // This endpoint should be protected in backend to only work when no admin exists
-      const response = await api.post('/auth/initialize-admin', payload);
+      const response = await api.post('/auth/initialize-admin', adminData);
       
       return { 
         success: true, 
@@ -60,7 +70,6 @@ export const authService = {
         status: response.data.status
       };
     } catch (error: any) {
-      // Extract more detailed error information
       const errorMessage = error.response?.data?.message || 'Failed to create admin user';
       const errorDetails = error.response?.data?.error || '';
       
@@ -72,20 +81,5 @@ export const authService = {
         error: errorDetails
       };
     }
-  },
-  
-  // Add login method to match API spec
-  login: async (employee_id: string, password: string) => {
-    const response = await api.post('/auth/login', { 
-      employee_id, 
-      password 
-    });
-    return response.data; // Returns { access_token, role }
-  },
-  
-  // Add logout method to match API spec
-  logout: async () => {
-    const response = await api.post('/auth/logout');
-    return response.data;
   }
 };
