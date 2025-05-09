@@ -19,7 +19,9 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
       isLoading,
       userExists: !!user,
       userRole: user?.role,
-      allowedRoles
+      allowedRoles,
+      normalizedUserRole: user?.role?.toLowerCase(),
+      normalizedAllowedRoles: allowedRoles?.map(role => role.toLowerCase())
     });
   }, [user, isLoading, location.pathname, allowedRoles]);
 
@@ -46,13 +48,20 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check role permissions if roles are specified
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    console.log('ProtectedRoute redirecting - unauthorized role', {
-      userRole: user.role,
-      allowedRoles
-    });
-    return <Navigate to={`/dashboard/${user.role.toLowerCase()}`} replace />;
+  // Check role permissions if roles are specified - using case insensitive comparison
+  if (allowedRoles && allowedRoles.length > 0) {
+    const userRoleLower = user.role.toLowerCase();
+    const normalizedAllowedRoles = allowedRoles.map(role => role.toLowerCase());
+    
+    if (!normalizedAllowedRoles.includes(userRoleLower)) {
+      console.log('ProtectedRoute redirecting - unauthorized role', {
+        userRole: user.role,
+        userRoleLower,
+        allowedRoles,
+        normalizedAllowedRoles
+      });
+      return <Navigate to={`/dashboard/${userRoleLower}`} replace />;
+    }
   }
 
   // User is authenticated and authorized

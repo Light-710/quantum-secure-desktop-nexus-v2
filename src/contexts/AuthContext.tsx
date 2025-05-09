@@ -43,6 +43,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const parsedUser = JSON.parse(storedUser);
         console.log('Stored user data:', parsedUser);
+        
+        // Ensure the role is properly formatted
+        if (parsedUser && parsedUser.role) {
+          // Normalize role case - ensure first letter is uppercase and rest is lowercase
+          const normalizedRole = parsedUser.role.charAt(0).toUpperCase() + parsedUser.role.slice(1).toLowerCase();
+          parsedUser.role = normalizedRole;
+          console.log('Normalized role:', normalizedRole);
+        }
+        
         setUser(parsedUser);
         setToken(storedToken);
         
@@ -78,8 +87,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Invalid user profile data');
       }
       
-      setUser(response.data);
-      localStorage.setItem('ptng_user', JSON.stringify(response.data));
+      // Normalize role case
+      const userData = { ...response.data };
+      if (userData.role) {
+        // Ensure consistent role format (e.g., 'Admin', 'Employee', 'Manager')
+        userData.role = userData.role.charAt(0).toUpperCase() + userData.role.slice(1).toLowerCase();
+      }
+      
+      console.log('Setting normalized user data:', userData);
+      setUser(userData);
+      localStorage.setItem('ptng_user', JSON.stringify(userData));
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -114,6 +131,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error('Invalid login response: role is missing');
       }
       
+      // Normalize role case
+      const normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+      console.log('Normalized role:', normalizedRole);
+      
       // Save token
       setToken(access_token);
       localStorage.setItem('ptng_token', access_token);
@@ -127,10 +148,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       // Log before navigation
-      console.log(`Navigating to /dashboard/${role.toLowerCase()}`);
+      console.log(`Navigating to /dashboard/${normalizedRole.toLowerCase()}`);
       
-      // Redirect based on user role
-      navigate(`/dashboard/${role.toLowerCase()}`);
+      // Redirect based on normalized user role
+      navigate(`/dashboard/${normalizedRole.toLowerCase()}`);
       
       // Log after navigation attempt
       console.log('Navigation executed');
