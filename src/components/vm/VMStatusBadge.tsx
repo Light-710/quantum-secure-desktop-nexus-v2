@@ -3,7 +3,7 @@ import React from 'react';
 import { VMStatus } from '@/services/vmManagementService';
 
 interface VMStatusBadgeProps {
-  status: VMStatus; // No need for union type now that Paused is part of VMStatus
+  status: VMStatus;
 }
 
 export const VMStatusBadge = ({ status }: VMStatusBadgeProps) => (

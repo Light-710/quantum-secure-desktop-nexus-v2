@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // Virtual Machine types
-export type VMStatus = 'Running' | 'Stopped' | 'Error' | 'Maintenance' | 'Starting' | 'Stopping';
+export type VMStatus = 'Running' | 'Stopped' | 'Error' | 'Maintenance' | 'Starting' | 'Stopping' | 'Paused';
 export type VMOs = 'Windows' | 'Linux' | 'Other';
 
 export interface VirtualMachine {
@@ -26,7 +26,7 @@ export interface VirtualMachine {
 // Mock implementation of VM action handling
 export const handleVMAction = async (
   vmId: string,
-  action: 'Start' | 'Stop' | 'Restart' | 'Snapshot' | 'Reset',
+  action: 'Start' | 'Stop' | 'Restart' | 'Snapshot' | 'Reset' | 'Resume',
   instanceOs: string,
   employeeId: string,
   onSuccess?: () => void
@@ -47,6 +47,33 @@ export const handleVMAction = async (
   // If successful
   onSuccess?.();
   return { success: true, message: `VM ${action} successful` };
+};
+
+// Added handleCreateSnapshot function
+export const handleCreateSnapshot = async (
+  vmId: string,
+  onSuccess?: () => void
+) => {
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
+  // Random success (90% chance)
+  const isSuccess = Math.random() > 0.1;
+
+  if (!isSuccess) {
+    toast.error("Snapshot Creation Failed", {
+      description: "Could not create snapshot. Please try again later.",
+    });
+    throw new Error("Failed to create snapshot");
+  }
+
+  // If successful
+  toast.success("Snapshot Created", {
+    description: "VM snapshot has been created successfully.",
+  });
+  
+  onSuccess?.();
+  return { success: true, message: "Snapshot created successfully" };
 };
 
 // VM management API service

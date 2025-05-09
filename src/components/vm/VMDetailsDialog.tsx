@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -135,10 +134,10 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
                   Connect
                 </Button>
               </>
-            ) : vm.status === 'Paused' || vm.status === 'Stopped' ? (
+            ) : vm.status === 'Stopped' ? (
               <Button
                 className="cyber-button"
-                onClick={() => handleVMAction(vm.id, vm.status === 'Paused' ? 'Resume' : 'Start', vm.os.toLowerCase(), vm.assigned_user)}
+                onClick={() => handleVMAction(vm.id, 'Start', vm.os.toLowerCase(), vm.assigned_user)}
                 disabled={actionLoading === vm.id}
               >
                 {actionLoading === vm.id ? (
@@ -148,7 +147,7 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
                     <polygon points="5,3 19,12 5,21" stroke="currentColor" strokeWidth="2" fill="currentColor" />
                   </svg>
                 )}
-                {vm.status === 'Paused' ? 'Resume' : 'Start'}
+                Start
               </Button>
             ) : (
               <Button
