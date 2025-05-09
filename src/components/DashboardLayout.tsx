@@ -46,13 +46,13 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       ],
     };
 
-    return user?.role ? roleItems[user.role] : [];
+    return user?.role ? roleItems[user.role as keyof typeof roleItems] || [] : [];
   };
 
   return (
-    <div className="min-h-screen bg-cyber-dark flex">
-      <div className="cyber-grid-bg" />
-      <div className="scan-line animate-scan-line" />
+    <div className="dashboard-layout">
+      <div className="cyber-grid-bg"></div>
+      <div className="scan-line"></div>
       
       <aside className={`glass-panel border-r border-cyber-teal/20 h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
         <div className="flex flex-col h-full">

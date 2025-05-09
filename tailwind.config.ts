@@ -69,7 +69,7 @@ export default {
           200: "#FDE1D3",  // Soft Peach
           300: "#F97316",  // Bright Orange
         },
-        // Cyber Theme Colors
+        // Cyber Theme Colors - Enhanced for better contrast and visibility
         cyber: {
           "dark": "#0f0f17",       // Dark background
           "dark-blue": "#121726",  // Darker blue background
@@ -80,6 +80,7 @@ export default {
           "purple": "#9b87f5",     // Purple accent
           "gray": "#9ca3af",       // Gray text
           "black": "#000000e6",    // Transparent black overlay
+          "light": "#f8f8f8",      // Light text color
         },
       },
       backgroundImage: {
@@ -104,8 +105,8 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
         "scan-line": {
-          '0%': { transform: 'translateY(-100%)' },
-          '100%': { transform: 'translateY(100%)' }
+          '0%': { transform: 'translateY(-100vh)' },
+          '100%': { transform: 'translateY(100vh)' }
         },
         "glitch": {
           '0%': { transform: 'translate(0)' },
@@ -131,4 +132,3 @@ export default {
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

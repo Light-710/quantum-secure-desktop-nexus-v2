@@ -1,5 +1,4 @@
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
 
@@ -9,7 +8,7 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-warm-100/10 selection:text-warm-300;
+    @apply border-border;
   }
   
   html, body {
@@ -18,13 +17,13 @@
   }
 
   body {
-    @apply bg-background text-foreground relative min-h-screen;
-    background: linear-gradient(to right, rgba(254,198,161,0.1), rgba(253,225,211,0.2));
+    @apply bg-cyber-dark text-white relative min-h-screen;
+    background: linear-gradient(to right, #121726, #0f0f17);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    @apply font-semibold text-warm-300;
+    @apply font-semibold;
   }
   
   /* Cyber Theme Base Styles */
@@ -37,7 +36,7 @@
 @layer components {
   /* Elegant glass panel effect with warm tones */
   .glass-panel {
-    @apply bg-white/70 backdrop-blur-lg border border-warm-100/50 shadow-warm-subtle rounded-lg;
+    @apply bg-cyber-dark-blue/70 backdrop-blur-lg border border-cyber-teal/30 shadow-md rounded-lg;
   }
   
   /* Warm button style */
@@ -70,7 +69,7 @@
   }
   
   .scan-line {
-    @apply fixed inset-0 z-10 pointer-events-none bg-gradient-to-b from-transparent via-cyber-teal/10 to-transparent opacity-30 h-20;
+    @apply fixed inset-0 z-10 pointer-events-none bg-gradient-to-b from-transparent via-cyber-teal/10 to-transparent opacity-30 h-20 animate-scan-line;
   }
   
   .neon-blue {
@@ -92,5 +91,13 @@
     @apply text-cyber-red;
     text-shadow: 0 0 5px rgba(244, 63, 94, 0.5), 0 0 10px rgba(244, 63, 94, 0.3);
   }
+  
+  /* Fix for the dashboard layout */
+  .dashboard-layout {
+    @apply min-h-screen flex relative;
+  }
+  
+  .terminal-text {
+    @apply cyber-font text-cyber-teal;
+  }
 }
-

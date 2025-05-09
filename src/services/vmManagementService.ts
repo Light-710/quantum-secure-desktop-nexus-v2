@@ -1,109 +1,150 @@
 
-import api from './api';
-import { vmService } from './vmService';
-import { toast } from '@/components/ui/sonner';
+import { toast } from "sonner";
 
-export type VMStatus = 'Running' | 'Starting' | 'Stopping' | 'Stopped' | 'Error' | 'Paused';
-export type VMHealth = 'Good' | 'Fair' | 'Poor';
-export type VMOsType = 'Windows' | 'Linux' | 'Other';
+// Virtual Machine types
+export type VMStatus = 'Running' | 'Stopped' | 'Error' | 'Maintenance' | 'Starting' | 'Stopping';
+export type VMOs = 'Windows' | 'Linux' | 'Other';
 
 export interface VirtualMachine {
   id: string;
   name: string;
   status: VMStatus;
-  os: VMOsType;
+  os: VMOs;
   assigned_user: string;
   uptime: string;
-  health: VMHealth;
+  health: 'Good' | 'Fair' | 'Poor';
+  ip_address: string;
+  last_snapshot: string;
   resources: {
     cpu: number;
     memory: number;
     disk: number;
     network: number;
   };
-  ip_address: string;
-  last_snapshot: string;
 }
 
-export interface VMActionResponse {
-  message: string;
-  URL?: string;
-}
-
-// Create snapshot function as it appears in the VM details dialog
-export const handleCreateSnapshot = async (vmId: string) => {
-  try {
-    const response = await vmService.createSnapshot(vmId);
-    toast("Snapshot Created", {
-      description: "Virtual machine snapshot has been created successfully",
-    });
-    return response;
-  } catch (error: any) {
-    toast.error("Error Creating Snapshot", {
-      description: error.response?.data?.message || "Failed to create snapshot",
-    });
-    throw error;
-  }
-};
-
-// Handle VM Actions
+// Mock implementation of VM action handling
 export const handleVMAction = async (
   vmId: string,
-  action: 'Start' | 'Stop' | 'Reset' | 'Resume',
+  action: 'Start' | 'Stop' | 'Restart' | 'Snapshot' | 'Reset',
   instanceOs: string,
   employeeId: string,
-  onComplete?: () => void
+  onSuccess?: () => void
 ) => {
-  try {
-    let response;
-    
-    // Determine if this is an admin action or user action
-    const isAdmin = localStorage.getItem('ptng_user') ? 
-      JSON.parse(localStorage.getItem('ptng_user') || '{}').role === 'Admin' : 
-      false;
-    
-    if (isAdmin) {
-      // Admin actions
-      if (action === 'Start') {
-        response = await vmService.startVM(instanceOs, employeeId);
-      } else if (action === 'Stop') {
-        response = await vmService.stopVM(instanceOs, employeeId);
-      } else if (action === 'Reset') {
-        response = await vmService.restartVM(instanceOs, employeeId);
-      } else if (action === 'Resume') {
-        // Handle resume action (similar to start)
-        response = await vmService.startVM(instanceOs, employeeId);
-      }
-    } else {
-      // User actions
-      if (action === 'Start') {
-        response = await vmService.startVM(instanceOs);
-      } else if (action === 'Stop') {
-        response = await vmService.stopVM(instanceOs);
-      } else if (action === 'Reset') {
-        response = await vmService.restartVM(instanceOs);
-      } else if (action === 'Resume') {
-        // Handle resume action
-        response = await vmService.startVM(instanceOs);
-      }
-    }
-    
-    // Show success toast notification
-    toast(`VM ${action} Initiated`, {
-      description: response?.message || `VM ${action.toLowerCase()} process has started`,
-    });
-    
-    if (onComplete) onComplete();
-    
-    return response;
-  } catch (error: any) {
-    console.error(`Error ${action.toLowerCase()}ing VM:`, error);
-    
-    // Show error toast notification
+  // Simulate API call delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+
+  // Random success (90% chance)
+  const isSuccess = Math.random() > 0.1;
+
+  if (!isSuccess) {
     toast.error(`VM ${action} Failed`, {
-      description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM`,
+      description: `Could not ${action.toLowerCase()} the VM. Please try again later.`,
     });
-    
-    throw error;
+    throw new Error(`Failed to ${action.toLowerCase()} VM`);
+  }
+
+  // If successful
+  onSuccess?.();
+  return { success: true, message: `VM ${action} successful` };
+};
+
+// VM management API service
+const vmManagementService = {
+  // Get all virtual desktops
+  getAllVirtualDesktops: async (): Promise<VirtualMachine[]> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Return mock data
+    return [
+      {
+        id: "vm1",
+        name: "Windows Server",
+        status: "Running",
+        os: "Windows",
+        assigned_user: "john.doe",
+        uptime: "2d 5h 30m",
+        health: "Good",
+        ip_address: "192.168.1.100",
+        last_snapshot: "2023-05-15 14:30",
+        resources: {
+          cpu: 25,
+          memory: 40,
+          disk: 60,
+          network: 15
+        }
+      },
+      {
+        id: "vm2",
+        name: "Ubuntu Dev",
+        status: "Stopped",
+        os: "Linux",
+        assigned_user: "jane.smith",
+        uptime: "0",
+        health: "Good",
+        ip_address: "192.168.1.101",
+        last_snapshot: "2023-05-10 09:15",
+        resources: {
+          cpu: 0,
+          memory: 0,
+          disk: 30,
+          network: 0
+        }
+      },
+      {
+        id: "vm3",
+        name: "Kali Linux",
+        status: "Running",
+        os: "Linux",
+        assigned_user: "security.team",
+        uptime: "5d 12h 45m",
+        health: "Fair",
+        ip_address: "192.168.1.102",
+        last_snapshot: "2023-05-12 10:00",
+        resources: {
+          cpu: 80,
+          memory: 60,
+          disk: 45,
+          network: 30
+        }
+      }
+    ];
+  },
+
+  // Create new virtual desktop
+  createVirtualDesktop: async (data: any): Promise<VirtualMachine> => {
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    const isSuccess = Math.random() > 0.1;
+
+    if (!isSuccess) {
+      toast.error("Failed to create VM", {
+        description: "An error occurred while creating the VM.",
+      });
+      throw new Error("Failed to create VM");
+    }
+
+    // Mock response
+    return {
+      id: `vm${Math.floor(Math.random() * 1000)}`,
+      name: data.name,
+      status: "Starting",
+      os: data.os,
+      assigned_user: data.assigned_user,
+      uptime: "0",
+      health: "Good",
+      ip_address: `192.168.1.${Math.floor(Math.random() * 255)}`,
+      last_snapshot: "N/A",
+      resources: {
+        cpu: 0,
+        memory: 0,
+        disk: 0,
+        network: 0
+      }
+    };
   }
 };
+
+export default vmManagementService;
