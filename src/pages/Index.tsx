@@ -16,9 +16,9 @@ const Index = () => {
 
   // This will briefly show before redirect happens
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cyber-dark">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-cyber-dark-blue to-cyber-dark">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4 text-cyber-teal">PTNG Security</h1>
+        <h1 className="text-4xl font-bold mb-4 text-cyber-teal animate-pulse-glow">PTNG Security</h1>
         <p className="text-xl text-cyber-gray">Initializing secure connection...</p>
         <div className="mt-6">
           <div className="animate-spin rounded-full h-10 w-10 border-2 border-cyber-teal border-t-transparent mx-auto"></div>
