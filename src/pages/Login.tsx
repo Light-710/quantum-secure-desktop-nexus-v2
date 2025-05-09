@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, User, ChevronRight } from 'lucide-react';
+import { ChevronRight, User, Lock } from 'lucide-react';
 
 const Login = () => {
   const [employeeId, setEmployeeId] = useState('');
@@ -19,17 +19,17 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-white">
       {/* Logo */}
-      <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-4xl md:text-5xl font-bold text-blue-600">PTNG</h1>
+      <div className="absolute top-16 left-1/2 transform -translate-x-1/2">
+        <h1 className="text-5xl md:text-6xl font-bold text-orange-500">PTNG</h1>
       </div>
       
       {/* Login card */}
-      <Card className="w-[350px] sm:w-[400px] shadow-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Access Terminal</CardTitle>
-          <CardDescription className="text-center">
+      <Card className="w-[350px] sm:w-[400px] shadow-sm border-gray-100">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-2xl text-orange-500">Access Terminal</CardTitle>
+          <CardDescription className="text-gray-600">
             Enter your credentials to access the system
           </CardDescription>
         </CardHeader>
@@ -39,7 +39,7 @@ const Login = () => {
               <div className="relative">
                 <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input 
-                  className="pl-10" 
+                  className="pl-10 rounded-md border-gray-200" 
                   type="text" 
                   placeholder="Employee ID" 
                   value={employeeId} 
@@ -50,7 +50,7 @@ const Login = () => {
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input 
-                  className="pl-10" 
+                  className="pl-10 rounded-md border-gray-200" 
                   type="password" 
                   placeholder="Password" 
                   value={password} 
@@ -58,10 +58,10 @@ const Login = () => {
                   required 
                 />
               </div>
-              <Button className="w-full" type="submit" disabled={isLoading}>
+              <Button className="w-full bg-black hover:bg-gray-800 text-white rounded-md" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center justify-center">
-                    <span className="animate-pulse">Authenticating...</span>
+                    <span>Authenticating...</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center">
@@ -73,13 +73,13 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-gray-500">
-            <Link to="/forgot-password" className="text-blue-600 hover:underline">
+          <div className="text-sm text-center text-gray-600">
+            <Link to="/forgot-password" className="text-gray-500 hover:underline">
               Forgot Password?
             </Link>
           </div>
-          <div className="text-sm text-center text-gray-500">
-            <Link to="/admin-setup" className="text-blue-600 hover:underline">
+          <div className="text-sm text-center text-gray-600">
+            <Link to="/admin-setup" className="text-gray-500 hover:underline">
               First-time setup? Create admin user
             </Link>
           </div>

@@ -51,17 +51,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="dashboard-layout">
-      <aside className={`bg-white border-r border-gray-200 h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
+      <aside className={`bg-white border-r border-gray-100 h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
         <div className="flex flex-col h-full">
           <div className="p-4 flex items-center justify-center">
             <Link to={`/dashboard/${user?.role?.toLowerCase()}`} className="flex items-center">
-              <span className={`text-2xl font-bold text-blue-600 ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
-              <span className={`text-2xl font-bold text-blue-600 ${isSidebarOpen ? 'hidden' : 'block'}`}>P</span>
+              <span className={`text-2xl font-bold text-orange-500 ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
+              <span className={`text-2xl font-bold text-orange-500 ${isSidebarOpen ? 'hidden' : 'block'}`}>P</span>
             </Link>
           </div>
           
           <button 
-            className="absolute -right-3 top-6 bg-white border border-gray-200 rounded-full p-1"
+            className="absolute -right-3 top-6 bg-white border border-gray-100 rounded-full p-1"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <svg 
@@ -82,7 +82,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Link 
                 key={index}
                 to={item.path}
-                className="flex items-center px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                className="flex items-center px-4 py-3 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-md transition-colors"
               >
                 <span className="text-gray-400">{item.icon}</span>
                 {isSidebarOpen && <span className="ml-3">{item.name}</span>}
@@ -90,11 +90,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             ))}
           </nav>
           
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-100">
             <div className="flex items-center">
-              <Avatar className="h-10 w-10 border border-gray-200">
+              <Avatar className="h-10 w-10 border border-gray-100">
                 <AvatarImage src={user?.profile_picture} />
-                <AvatarFallback className="bg-blue-100 text-blue-600">
+                <AvatarFallback className="bg-orange-100 text-orange-600">
                   {user?.name ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
@@ -104,7 +104,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <p className="text-xs text-gray-500">
                     <span className={`
                       inline-block w-2 h-2 rounded-full mr-1 
-                      ${user?.role === 'Admin' ? 'bg-red-500' : user?.role === 'Manager' ? 'bg-green-500' : 'bg-blue-500'}
+                      ${user?.role === 'Admin' ? 'bg-red-500' : user?.role === 'Manager' ? 'bg-green-500' : 'bg-orange-500'}
                     `}></span>
                     {user?.role}
                   </p>
@@ -135,9 +135,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </aside>
       
       <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <header className="bg-white sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-gray-200">
+        <header className="bg-white sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-gray-100">
           <div>
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-xl font-semibold text-gray-800">
               {user?.role} Dashboard
             </h1>
           </div>
