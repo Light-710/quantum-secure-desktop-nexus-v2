@@ -1,3 +1,4 @@
+
 import api from './api';
 
 export interface VMResponse {
@@ -106,18 +107,6 @@ export const vmService = {
         }
       });
       return response.data;
-    }
-  },
-
-  // Add a create snapshot function
-  createSnapshot: async (vmId: string): Promise<VMResponse> => {
-    try {
-      // Note: This endpoint is not specified in the API doc, but we'll keep it for UI functionality
-      const response = await api.post('/vm/create-snapshot', { vm_id: vmId });
-      return response.data;
-    } catch (error: any) {
-      console.error('Error creating snapshot:', error);
-      throw error;
     }
   }
 };

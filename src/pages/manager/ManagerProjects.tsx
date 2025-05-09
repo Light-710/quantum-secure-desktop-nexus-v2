@@ -40,9 +40,8 @@ const ManagerProjects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        // This would be replaced with an actual API call
-        // const response = await api.get('/manager/projects');
-        // setProjects(response.data.projects);
+        // Note: There's no projects endpoint in the API spec yet
+        // This would be replaced with an actual API call when available
         setProjects([]);
       } catch (error) {
         console.error('Failed to fetch projects:', error);

@@ -7,11 +7,31 @@ import { Monitor, Server, Clock, Plus } from 'lucide-react';
 import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
-import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/sonner';
+import { vmService } from '@/services/vmService';
+
+// Define interfaces for VM data
+interface VMResources {
+  cpu: number;
+  memory: number;
+  disk: number;
+  network: number;
+}
+
+interface VirtualMachine {
+  id: string;
+  name: string;
+  status: string;
+  os: string;
+  assigned_user: string;
+  uptime: string;
+  health: string;
+  ip_address: string;
+  last_snapshot?: string;
+  resources: VMResources;
+}
 
 const VirtualDesktopPage = () => {
-  const { toast } = useToast();
   const [vms, setVMs] = useState<VirtualMachine[]>([]);
   const [selectedVM, setSelectedVM] = useState<VirtualMachine | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -36,76 +56,48 @@ const VirtualDesktopPage = () => {
     setActionLoading(vmId);
     
     try {
-      await handleVMAction(vmId, action as any, instanceOs, employeeId, () => {
-        // Refresh VM list after action
-        loadVMs();
+      let response;
+      
+      switch (action.toLowerCase()) {
+        case 'start':
+          response = await vmService.startVM(instanceOs, employeeId);
+          break;
+        case 'stop':
+          response = await vmService.stopVM(instanceOs, employeeId);
+          break;
+        case 'restart':
+          response = await vmService.restartVM(instanceOs, employeeId);
+          break;
+        default:
+          throw new Error(`Unknown action: ${action}`);
+      }
+      
+      toast(`VM ${action} Successful`, {
+        description: response.message || `The VM has been ${action.toLowerCase()}ed.`
       });
       
-      toast({
-        title: `VM ${action} Successful`,
-        description: `The VM has been ${action.toLowerCase()}ed.`,
-      });
+      // Refresh VM list after action
+      loadVMs();
     } catch (error: any) {
-      toast({
-        title: `VM ${action} Failed`,
-        description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM.`,
-        variant: 'destructive',
+      toast.error(`VM ${action} Failed`, {
+        description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM.`
       });
     } finally {
       setActionLoading(null);
     }
   };
 
-  // In a real application, we would transform the API response into VM objects
-  // For now, we'll use mock data until API integration is complete
+  // Load VM data from API
   const loadVMs = async () => {
     try {
-      // In a real implementation, you would fetch VM data from the API
-      // and transform it into VirtualMachine objects
-      
-      // This is a placeholder until the API integration is complete
-      setVMs([
-        {
-          id: "vm1",
-          name: "Windows Server",
-          status: "Running",
-          os: "Windows",
-          assigned_user: "john.doe",
-          uptime: "2d 5h 30m",
-          health: "Good",
-          ip_address: "192.168.1.100",
-          last_snapshot: "2023-05-15 14:30",
-          resources: {
-            cpu: 25,
-            memory: 40,
-            disk: 60,
-            network: 15
-          }
-        },
-        {
-          id: "vm2",
-          name: "Ubuntu Dev",
-          status: "Stopped",
-          os: "Linux",
-          assigned_user: "jane.smith",
-          uptime: "0",
-          health: "Good",
-          ip_address: "192.168.1.101",
-          last_snapshot: "2023-05-10 09:15",
-          resources: {
-            cpu: 0,
-            memory: 0,
-            disk: 30,
-            network: 0
-          }
-        }
-        // Add more mock VMs here
-      ]);
+      // This is a placeholder for a real API call that would fetch VM data
+      // In a real implementation, you would make an API call here and transform the response
+      // Since there's no specific VM listing endpoint in the API spec, 
+      // we'll leave this as a placeholder for now
+      setVMs([]);
     } catch (error: any) {
-      toast({
-        title: 'Error loading VMs',
-        description: error.message,
-        variant: 'destructive',
+      toast.error('Error loading VMs', {
+        description: error.message || 'Failed to load virtual machines.'
       });
     }
   };
@@ -148,8 +140,58 @@ const VirtualDesktopPage = () => {
               </CardContent>
             </Card>
 
-            {/* Other stat cards */}
-            {/* ... keep existing code (stat cards for CPU, Memory, and OS Distribution) ... */}
+            {/* CPU Usage Card */}
+            <Card className="glass-panel border-cyber-teal/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-cyber-gray text-sm">Avg CPU Usage</p>
+                    <h3 className="text-3xl font-bold text-cyber-green mt-1">
+                      {totalCPUUsage.toFixed(1)}%
+                    </h3>
+                  </div>
+                  <div className="bg-cyber-green/10 p-3 rounded-full">
+                    <Server className="h-6 w-6 text-cyber-green" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Memory Usage Card */}
+            <Card className="glass-panel border-cyber-teal/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-cyber-gray text-sm">Avg Memory Usage</p>
+                    <h3 className="text-3xl font-bold text-cyber-purple mt-1">
+                      {totalMemoryUsage.toFixed(1)}%
+                    </h3>
+                  </div>
+                  <div className="bg-cyber-purple/10 p-3 rounded-full">
+                    <Server className="h-6 w-6 text-cyber-purple" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* OS Distribution Card */}
+            <Card className="glass-panel border-cyber-teal/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-cyber-gray text-sm">OS Distribution</p>
+                    <div className="flex space-x-2 mt-1">
+                      <p className="text-xs"><span className="font-bold text-blue-500">Win:</span> {vmsByOs.Windows}</p>
+                      <p className="text-xs"><span className="font-bold text-yellow-500">Lin:</span> {vmsByOs.Linux}</p>
+                      <p className="text-xs"><span className="font-bold text-purple-500">Other:</span> {vmsByOs.Other}</p>
+                    </div>
+                  </div>
+                  <div className="bg-cyber-teal/10 p-3 rounded-full">
+                    <Monitor className="h-6 w-6 text-cyber-teal" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* VM Table */}
@@ -167,109 +209,117 @@ const VirtualDesktopPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {vms.map((vm) => (
-                  <TableRow key={vm.id} className={`hover:bg-cyber-dark-blue/20 ${
-                    vm.status === 'Error' ? 'bg-cyber-red/5' : ''
-                  }`}>
-                    {/* VM Info */}
-                    <TableCell>
-                      <div className="flex items-center space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white border ${
-                            vm.os === 'Windows' ? 'bg-blue-500/20 border-blue-500/30' : 
-                            vm.os === 'Linux' ? 'bg-yellow-500/20 border-yellow-500/30' : 
-                            'bg-purple-500/20 border-purple-500/30'
-                          }`}>
-                            {vm.os === 'Windows' ? 'W' : vm.os === 'Linux' ? 'L' : 'O'}
+                {vms.length > 0 ? (
+                  vms.map((vm) => (
+                    <TableRow key={vm.id} className={`hover:bg-cyber-dark-blue/20 ${
+                      vm.status === 'Error' ? 'bg-cyber-red/5' : ''
+                    }`}>
+                      {/* VM Info */}
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <div className="flex-shrink-0">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white border ${
+                              vm.os === 'Windows' ? 'bg-blue-500/20 border-blue-500/30' : 
+                              vm.os === 'Linux' ? 'bg-yellow-500/20 border-yellow-500/30' : 
+                              'bg-purple-500/20 border-purple-500/30'
+                            }`}>
+                              {vm.os === 'Windows' ? 'W' : vm.os === 'Linux' ? 'L' : 'O'}
+                            </div>
+                          </div>
+                          <div>
+                            <button 
+                              className="text-sm font-medium text-cyber-teal hover:text-cyber-blue"
+                              onClick={() => handleViewDetails(vm)}
+                            >
+                              {vm.name}
+                            </button>
+                            <div className="text-xs text-cyber-gray">{vm.id}</div>
                           </div>
                         </div>
-                        <div>
-                          <button 
-                            className="text-sm font-medium text-cyber-teal hover:text-cyber-blue"
-                            onClick={() => handleViewDetails(vm)}
-                          >
-                            {vm.name}
-                          </button>
-                          <div className="text-xs text-cyber-gray">{vm.id}</div>
+                      </TableCell>
+
+                      {/* Status */}
+                      <TableCell>
+                        <VMStatusBadge status={vm.status} />
+                      </TableCell>
+
+                      {/* Other cells */}
+                      <TableCell className="text-sm text-cyber-gray">{vm.assigned_user}</TableCell>
+                      <TableCell className="text-sm text-cyber-gray">
+                        <div className="flex items-center space-x-1">
+                          <Clock size={14} className="text-cyber-blue" />
+                          <span>{vm.uptime}</span>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    {/* Status */}
-                    <TableCell>
-                      <VMStatusBadge status={vm.status} />
-                    </TableCell>
-
-                    {/* Other cells */}
-                    <TableCell className="text-sm text-cyber-gray">{vm.assigned_user}</TableCell>
-                    <TableCell className="text-sm text-cyber-gray">
-                      <div className="flex items-center space-x-1">
-                        <Clock size={14} className="text-cyber-blue" />
-                        <span>{vm.uptime}</span>
-                      </div>
-                    </TableCell>
-
-                    {/* Resources */}
-                    <TableCell>
-                      <div className="space-y-1">
-                        <div className="flex items-center text-xs space-x-2">
-                          <span className="text-cyber-gray w-12">CPU:</span>
-                          <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
-                            <div 
-                              className="bg-cyber-blue rounded-full h-1.5" 
-                              style={{ width: `${vm.resources.cpu}%` }}
-                            ></div>
+                      {/* Resources */}
+                      <TableCell>
+                        <div className="space-y-1">
+                          <div className="flex items-center text-xs space-x-2">
+                            <span className="text-cyber-gray w-12">CPU:</span>
+                            <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
+                              <div 
+                                className="bg-cyber-blue rounded-full h-1.5" 
+                                style={{ width: `${vm.resources.cpu}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-cyber-blue">{vm.resources.cpu}%</span>
                           </div>
-                          <span className="text-xs text-cyber-blue">{vm.resources.cpu}%</span>
-                        </div>
-                        <div className="flex items-center text-xs space-x-2">
-                          <span className="text-cyber-gray w-12">Memory:</span>
-                          <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
-                            <div 
-                              className="bg-cyber-green rounded-full h-1.5" 
-                              style={{ width: `${vm.resources.memory}%` }}
-                            ></div>
+                          <div className="flex items-center text-xs space-x-2">
+                            <span className="text-cyber-gray w-12">Memory:</span>
+                            <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
+                              <div 
+                                className="bg-cyber-green rounded-full h-1.5" 
+                                style={{ width: `${vm.resources.memory}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-cyber-green">{vm.resources.memory}%</span>
                           </div>
-                          <span className="text-xs text-cyber-green">{vm.resources.memory}%</span>
-                        </div>
-                        <div className="flex items-center text-xs space-x-2">
-                          <span className="text-cyber-gray w-12">Disk:</span>
-                          <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
-                            <div 
-                              className="bg-cyber-teal rounded-full h-1.5" 
-                              style={{ width: `${vm.resources.disk}%` }}
-                            ></div>
+                          <div className="flex items-center text-xs space-x-2">
+                            <span className="text-cyber-gray w-12">Disk:</span>
+                            <div className="w-16 bg-cyber-dark-blue rounded-full h-1.5">
+                              <div 
+                                className="bg-cyber-teal rounded-full h-1.5" 
+                                style={{ width: `${vm.resources.disk}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-cyber-teal">{vm.resources.disk}%</span>
                           </div>
-                          <span className="text-xs text-cyber-teal">{vm.resources.disk}%</span>
                         </div>
-                      </div>
-                    </TableCell>
+                      </TableCell>
 
-                    {/* Health */}
-                    <TableCell>
-                      <div className={`text-xs px-2 py-1 rounded-full ${
-                        vm.health === 'Good' ? 'bg-green-400/20 text-green-400' : 
-                        vm.health === 'Fair' ? 'bg-yellow-400/20 text-yellow-400' :
-                        'bg-cyber-red/20 text-cyber-red'
-                      }`}>
-                        {vm.health}
-                      </div>
-                    </TableCell>
+                      {/* Health */}
+                      <TableCell>
+                        <div className={`text-xs px-2 py-1 rounded-full ${
+                          vm.health === 'Good' ? 'bg-green-400/20 text-green-400' : 
+                          vm.health === 'Fair' ? 'bg-yellow-400/20 text-yellow-400' :
+                          'bg-cyber-red/20 text-cyber-red'
+                        }`}>
+                          {vm.health}
+                        </div>
+                      </TableCell>
 
-                    {/* Actions */}
-                    <TableCell>
-                      <VMTableActions
-                        vmId={vm.id}
-                        status={vm.status}
-                        instanceOs={vm.os.toLowerCase()}
-                        employeeId={vm.assigned_user}
-                        actionLoading={actionLoading}
-                        onAction={handleAction}
-                        onViewDetails={() => handleViewDetails(vm)}
-                      />
+                      {/* Actions */}
+                      <TableCell>
+                        <VMTableActions
+                          vmId={vm.id}
+                          status={vm.status}
+                          instanceOs={vm.os.toLowerCase()}
+                          employeeId={vm.assigned_user}
+                          actionLoading={actionLoading}
+                          onAction={handleAction}
+                          onViewDetails={() => handleViewDetails(vm)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-6">
+                      No virtual machines available
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
