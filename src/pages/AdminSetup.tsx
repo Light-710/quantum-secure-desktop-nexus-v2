@@ -37,18 +37,14 @@ const AdminSetup = () => {
   // Show loading state while checking
   if (isChecking) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
-        {/* Background effects */}
-        <div className="cyber-grid-bg" />
-        <div className="scan-line animate-scan-line" />
-        
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
         {/* Logo */}
         <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-          <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-blue-600">PTNG</h1>
         </div>
         
-        <div className="glass-panel border-cyber-teal/30 p-8 text-center">
-          <div className="animate-pulse text-cyber-teal text-xl">Checking system status...</div>
+        <div className="bg-white shadow-md p-8 rounded-lg text-center">
+          <div className="animate-pulse text-blue-600 text-xl">Checking system status...</div>
         </div>
       </div>
     );
@@ -57,25 +53,21 @@ const AdminSetup = () => {
   // Show admin already exists message
   if (adminExists) {
     return (
-      <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
-        {/* Background effects */}
-        <div className="cyber-grid-bg" />
-        <div className="scan-line animate-scan-line" />
-        
+      <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
         {/* Logo */}
         <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-          <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+          <h1 className="text-4xl md:text-5xl font-bold text-blue-600">PTNG</h1>
         </div>
         
-        <div className="glass-panel border-cyber-teal/30 p-8 text-center">
-          <h2 className="text-xl text-cyber-teal mb-4">Admin Already Exists</h2>
-          <p className="text-cyber-gray mb-4">
+        <div className="bg-white shadow-md p-8 rounded-lg text-center">
+          <h2 className="text-xl text-blue-600 mb-4">Admin Already Exists</h2>
+          <p className="text-gray-600 mb-4">
             An admin user has already been created for this system. 
             You will be redirected to the login page.
           </p>
           <button 
             onClick={() => navigate('/login')}
-            className="cyber-button"
+            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded"
           >
             Go to Login
           </button>
@@ -86,14 +78,10 @@ const AdminSetup = () => {
 
   // Show admin setup form
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
-      {/* Background effects */}
-      <div className="cyber-grid-bg" />
-      <div className="scan-line animate-scan-line" />
-      
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
       {/* Logo */}
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-blue-600">PTNG</h1>
       </div>
       
       <AdminInitializer />

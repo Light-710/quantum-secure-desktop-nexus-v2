@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -45,21 +46,17 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4">
-      {/* Background effects */}
-      <div className="cyber-grid-bg" />
-      <div className="scan-line animate-scan-line" />
-      
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
       {/* Logo */}
       <div className="absolute top-8 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-4xl md:text-5xl neon-blue font-black tracking-wider">PTNG</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-blue-600">PTNG</h1>
       </div>
       
       {/* Login card */}
-      <Card className="w-[350px] sm:w-[400px] glass-panel border-cyber-teal/30">
+      <Card className="w-[350px] sm:w-[400px] shadow-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center text-cyber-teal">Access Terminal</CardTitle>
-          <CardDescription className="text-center text-cyber-gray">
+          <CardTitle className="text-2xl text-center">Access Terminal</CardTitle>
+          <CardDescription className="text-center">
             Enter your credentials to access the system
           </CardDescription>
         </CardHeader>
@@ -67,9 +64,9 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-3 h-5 w-5 text-cyber-blue/70" />
+                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input 
-                  className="pl-10 bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal focus:border-cyber-blue focus:ring-cyber-blue" 
+                  className="pl-10" 
                   type="text" 
                   placeholder="Employee ID" 
                   value={employeeId} 
@@ -78,9 +75,9 @@ const Login = () => {
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-cyber-blue/70" />
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <Input 
-                  className="pl-10 bg-cyber-dark-blue/50 border-cyber-teal/30 text-cyber-teal focus:border-cyber-blue focus:ring-cyber-blue" 
+                  className="pl-10" 
                   type="password" 
                   placeholder="Password" 
                   value={password} 
@@ -88,14 +85,14 @@ const Login = () => {
                   required 
                 />
               </div>
-              <Button className="w-full cyber-button group" type="submit" disabled={isLoading}>
+              <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <span className="animate-pulse">Authenticating...</span>
                   </span>
                 ) : (
                   <span className="flex items-center justify-center">
-                    Login <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    Login <ChevronRight className="ml-2 h-4 w-4" />
                   </span>
                 )}
               </Button>
@@ -103,30 +100,30 @@ const Login = () => {
           </form>
           
           {/* Test Admin Button */}
-          <div className="mt-4 pt-2 border-t border-cyber-teal/20">
+          <div className="mt-4 pt-2 border-t border-gray-200">
             <Button 
               onClick={handleCreateTestAdmin}
               disabled={isCreatingTestAdmin}
               variant="outline" 
-              className="w-full text-cyber-blue hover:text-cyber-teal hover:bg-cyber-dark-blue/30 border-cyber-teal/30 flex items-center justify-center gap-2"
+              className="w-full flex items-center justify-center gap-2"
             >
               <Info className="h-4 w-4" />
               {isCreatingTestAdmin ? "Creating Test Admin..." : "Create Test Admin User"}
             </Button>
-            <p className="text-xs text-cyber-gray mt-2">
+            <p className="text-xs text-gray-500 mt-2">
               For testing purposes only. Creates an admin user with:<br />
-              Username: <span className="text-cyber-teal">1</span>, Password: <span className="text-cyber-teal">1</span>
+              Username: <span className="text-blue-600">1</span>, Password: <span className="text-blue-600">1</span>
             </p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-cyber-gray">
-            <Link to="/forgot-password" className="text-cyber-blue hover:underline">
+          <div className="text-sm text-center text-gray-500">
+            <Link to="/forgot-password" className="text-blue-600 hover:underline">
               Forgot Password?
             </Link>
           </div>
-          <div className="text-sm text-center text-cyber-gray">
-            <Link to="/admin-setup" className="text-cyber-blue hover:underline">
+          <div className="text-sm text-center text-gray-500">
+            <Link to="/admin-setup" className="text-blue-600 hover:underline">
               First-time setup? Create admin user
             </Link>
           </div>
