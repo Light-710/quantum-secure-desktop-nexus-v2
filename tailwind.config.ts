@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -68,14 +69,30 @@ export default {
           200: "#FDE1D3",  // Soft Peach
           300: "#F97316",  // Bright Orange
         },
+        // Cyber Theme Colors
+        cyber: {
+          "dark": "#0f0f17",       // Dark background
+          "dark-blue": "#121726",  // Darker blue background
+          "blue": "#1EAEDB",       // Bright blue
+          "teal": "#2de2e6",       // Bright teal
+          "green": "#3df5a5",      // Neon green
+          "red": "#f43f5e",        // Neon red
+          "purple": "#9b87f5",     // Purple accent
+          "gray": "#9ca3af",       // Gray text
+          "black": "#000000e6",    // Transparent black overlay
+        },
       },
       backgroundImage: {
         'warm-gradient': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
+        'cyber-gradient': 'linear-gradient(to right, #121726, #0f0f17)',
       },
       boxShadow: {
         'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'warm-subtle': '0 4px 6px -1px rgba(249,115,22,0.1), 0 2px 4px -1px rgba(249,115,22,0.06)',
+        'cyber-glow': '0 0 10px #2de2e6, 0 0 20px rgba(45, 226, 230, 0.3)',
+        'cyber-red-glow': '0 0 10px #f43f5e, 0 0 20px rgba(244, 63, 94, 0.3)',
+        'cyber-green-glow': '0 0 10px #3df5a5, 0 0 20px rgba(61, 245, 165, 0.3)',
       },
       keyframes: {
         "fade-in": {
@@ -85,13 +102,33 @@ export default {
         "slide-up": {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        "scan-line": {
+          '0%': { transform: 'translateY(-100%)' },
+          '100%': { transform: 'translateY(100%)' }
+        },
+        "glitch": {
+          '0%': { transform: 'translate(0)' },
+          '20%': { transform: 'translate(-2px, 2px)' },
+          '40%': { transform: 'translate(-2px, -2px)' },
+          '60%': { transform: 'translate(2px, 2px)' },
+          '80%': { transform: 'translate(2px, -2px)' },
+          '100%': { transform: 'translate(0)' }
+        },
+        "pulse-glow": {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.6' }
         }
       },
       animation: {
         "fade-in": "fade-in 0.5s ease-out",
         "slide-up": "slide-up 0.5s ease-out",
+        "scan-line": "scan-line 4s linear infinite",
+        "glitch": "glitch 0.5s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite"
       }
     }
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
