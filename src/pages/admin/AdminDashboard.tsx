@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,42 +8,257 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { 
   Users, Server, Activity, Database, Monitor, Settings, 
   BarChart3, Cpu, HardDrive, Network, Clock, Shield, 
   UserPlus, FileText, Check, AlertTriangle, Info, Plus
 } from 'lucide-react';
+import api from '@/services/api';
 
 const AdminDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeUserTab, setActiveUserTab] = useState('active');
   
-  // Empty arrays for users data
-  const users = {
+  // Convert static data to state variables
+  const [users, setUsers] = useState({
     active: [],
     inactive: []
-  };
+  });
   
-  // Empty system metrics
-  const systemMetrics = {
+  const [systemMetrics, setSystemMetrics] = useState({
     cpu: 0,
     memory: 0,
     storage: 0,
     network: 0
+  });
+  
+  const [recentLogs, setRecentLogs] = useState([]);
+  const [vmStatuses, setVmStatuses] = useState([]);
+  
+  // Add loading states
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [isLoadingVMs, setIsLoadingVMs] = useState(true);
+  
+  // API fetch functions
+  const fetchUsers = async () => {
+    setIsLoadingUsers(true);
+    try {
+      // In a real app, this would be an API call
+      // const response = await api.get('/admin/users');
+      // setUsers(response.data);
+      
+      // Simulate API delay
+      setTimeout(() => {
+        setUsers({
+          active: [
+            {
+              id: 'usr1',
+              name: 'John Doe',
+              role: 'Admin',
+              status: 'Online',
+              email: 'john@example.com',
+              lastLogin: '2023-05-01 10:30'
+            },
+            {
+              id: 'usr2',
+              name: 'Jane Smith',
+              role: 'Manager',
+              status: 'Away',
+              email: 'jane@example.com',
+              lastLogin: '2023-05-01 09:15'
+            },
+            {
+              id: 'usr3',
+              name: 'Alex Johnson',
+              role: 'Employee',
+              status: 'Online',
+              email: 'alex@example.com',
+              lastLogin: '2023-05-01 11:45'
+            }
+          ],
+          inactive: [
+            {
+              id: 'usr4',
+              name: 'Michael Brown',
+              role: 'Employee',
+              status: 'Inactive',
+              email: 'michael@example.com',
+              lastLogin: '2023-04-28 14:20'
+            }
+          ]
+        });
+        setIsLoadingUsers(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load users data",
+        variant: "destructive",
+      });
+      setIsLoadingUsers(false);
+    }
   };
   
-  // Empty logs array
-  const recentLogs = [];
+  const fetchSystemMetrics = async () => {
+    setIsLoadingMetrics(true);
+    try {
+      // In a real app, this would be an API call
+      // const response = await api.get('/admin/system-metrics');
+      // setSystemMetrics(response.data);
+      
+      // Simulate API delay
+      setTimeout(() => {
+        setSystemMetrics({
+          cpu: 45,
+          memory: 62,
+          storage: 38,
+          network: 27
+        });
+        setIsLoadingMetrics(false);
+      }, 800);
+    } catch (error) {
+      console.error('Error fetching system metrics:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load system metrics",
+        variant: "destructive",
+      });
+      setIsLoadingMetrics(false);
+    }
+  };
   
-  // Empty VM statuses array
-  const vmStatuses = [];
+  const fetchRecentLogs = async () => {
+    setIsLoadingLogs(true);
+    try {
+      // In a real app, this would be an API call
+      // const response = await api.get('/admin/logs/recent');
+      // setRecentLogs(response.data);
+      
+      // Simulate API delay
+      setTimeout(() => {
+        setRecentLogs([
+          {
+            id: 'log1',
+            level: 'Info',
+            event: 'User login',
+            user: 'John Doe',
+            timestamp: '2023-05-01 12:30:45'
+          },
+          {
+            id: 'log2',
+            level: 'Warning',
+            event: 'Failed login attempt',
+            user: 'Unknown',
+            timestamp: '2023-05-01 12:25:12'
+          },
+          {
+            id: 'log3',
+            level: 'Error',
+            event: 'System backup failed',
+            user: 'System',
+            timestamp: '2023-05-01 12:15:30'
+          }
+        ]);
+        setIsLoadingLogs(false);
+      }, 1200);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load activity logs",
+        variant: "destructive",
+      });
+      setIsLoadingLogs(false);
+    }
+  };
   
-  const handleVmAction = (vmId: string, action: string) => {
-    toast({
-      title: `VM ${action} Initiated`,
-      description: `Virtual desktop ${vmId} ${action.toLowerCase()} command sent.`,
-    });
+  const fetchVirtualMachines = async () => {
+    setIsLoadingVMs(true);
+    try {
+      // In a real app, this would be an API call
+      // const response = await api.get('/admin/vm/statuses');
+      // setVmStatuses(response.data);
+      
+      // Simulate API delay
+      setTimeout(() => {
+        setVmStatuses([
+          {
+            id: 'vm001',
+            user: 'john.doe',
+            os: 'Windows',
+            status: 'Running',
+            uptime: '2d 5h 30m',
+            cpu: 35,
+            memory: 42
+          },
+          {
+            id: 'vm002',
+            user: 'jane.smith',
+            os: 'Linux',
+            status: 'Stopped',
+            uptime: '0',
+            cpu: 0,
+            memory: 0
+          },
+          {
+            id: 'vm003',
+            user: 'alex.johnson',
+            os: 'Windows',
+            status: 'Running',
+            uptime: '8h 45m',
+            cpu: 22,
+            memory: 38
+          }
+        ]);
+        setIsLoadingVMs(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error fetching VM statuses:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load virtual machine data",
+        variant: "destructive",
+      });
+      setIsLoadingVMs(false);
+    }
+  };
+  
+  // Load data on component mount
+  useEffect(() => {
+    fetchUsers();
+    fetchSystemMetrics();
+    fetchRecentLogs();
+    fetchVirtualMachines();
+  }, []);
+  
+  // VM action handler with data refresh
+  const handleVmAction = async (vmId: string, action: string) => {
+    try {
+      // In a real app, this would be an API call
+      // await api.post('/admin/vm/action', { vmId, action });
+      
+      toast({
+        title: `VM ${action} Initiated`,
+        description: `Virtual desktop ${vmId} ${action.toLowerCase()} command sent.`,
+      });
+      
+      // Refresh VM data after action
+      setTimeout(() => {
+        fetchVirtualMachines();
+      }, 1000);
+    } catch (error) {
+      console.error(`Error performing VM ${action}:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to ${action.toLowerCase()} the virtual machine`,
+        variant: "destructive",
+      });
+    }
   };
   
   const handleAddUser = () => {
@@ -72,14 +288,22 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-cyber-gray text-sm">CPU Usage</p>
-                <h3 className="text-3xl font-bold text-cyber-blue mt-1">{systemMetrics.cpu}%</h3>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-9 w-16 bg-cyber-blue/10" />
+                ) : (
+                  <h3 className="text-3xl font-bold text-cyber-blue mt-1">{systemMetrics.cpu}%</h3>
+                )}
               </div>
               <div className="bg-cyber-blue/10 p-3 rounded-full">
                 <Cpu className="h-6 w-6 text-cyber-blue" />
               </div>
             </div>
             <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              <div className="h-full bg-cyber-blue" style={{ width: `${systemMetrics.cpu}%` }}></div>
+              {isLoadingMetrics ? (
+                <Skeleton className="h-full w-full" />
+              ) : (
+                <div className="h-full bg-cyber-blue" style={{ width: `${systemMetrics.cpu}%` }}></div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -90,14 +314,22 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-cyber-gray text-sm">Memory Usage</p>
-                <h3 className="text-3xl font-bold text-cyber-green mt-1">{systemMetrics.memory}%</h3>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-9 w-16 bg-cyber-green/10" />
+                ) : (
+                  <h3 className="text-3xl font-bold text-cyber-green mt-1">{systemMetrics.memory}%</h3>
+                )}
               </div>
               <div className="bg-cyber-green/10 p-3 rounded-full">
                 <HardDrive className="h-6 w-6 text-cyber-green" />
               </div>
             </div>
             <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              <div className="h-full bg-cyber-green" style={{ width: `${systemMetrics.memory}%` }}></div>
+              {isLoadingMetrics ? (
+                <Skeleton className="h-full w-full" />
+              ) : (
+                <div className="h-full bg-cyber-green" style={{ width: `${systemMetrics.memory}%` }}></div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -108,14 +340,22 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-cyber-gray text-sm">Storage Usage</p>
-                <h3 className="text-3xl font-bold text-cyber-teal mt-1">{systemMetrics.storage}%</h3>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-9 w-16 bg-cyber-teal/10" />
+                ) : (
+                  <h3 className="text-3xl font-bold text-cyber-teal mt-1">{systemMetrics.storage}%</h3>
+                )}
               </div>
               <div className="bg-cyber-teal/10 p-3 rounded-full">
                 <Database className="h-6 w-6 text-cyber-teal" />
               </div>
             </div>
             <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              <div className="h-full bg-cyber-teal" style={{ width: `${systemMetrics.storage}%` }}></div>
+              {isLoadingMetrics ? (
+                <Skeleton className="h-full w-full" />
+              ) : (
+                <div className="h-full bg-cyber-teal" style={{ width: `${systemMetrics.storage}%` }}></div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -126,14 +366,22 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-cyber-gray text-sm">Network Load</p>
-                <h3 className="text-3xl font-bold text-purple-400 mt-1">{systemMetrics.network}%</h3>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-9 w-16 bg-purple-400/10" />
+                ) : (
+                  <h3 className="text-3xl font-bold text-purple-400 mt-1">{systemMetrics.network}%</h3>
+                )}
               </div>
               <div className="bg-purple-400/10 p-3 rounded-full">
                 <Network className="h-6 w-6 text-purple-400" />
               </div>
             </div>
             <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              <div className="h-full bg-purple-400" style={{ width: `${systemMetrics.network}%` }}></div>
+              {isLoadingMetrics ? (
+                <Skeleton className="h-full w-full" />
+              ) : (
+                <div className="h-full bg-purple-400" style={{ width: `${systemMetrics.network}%` }}></div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -160,125 +408,133 @@ const AdminDashboard = () => {
               </Button>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="active" onValueChange={(value) => setActiveUserTab(value)}>
-                <TabsList className="grid w-full grid-cols-2 mb-4 bg-cyber-dark-blue/50">
-                  <TabsTrigger value="active" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
-                    Active Users
-                  </TabsTrigger>
-                  <TabsTrigger value="inactive" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
-                    Inactive Users
-                  </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="active" className="space-y-4">
-                  {users.active.length > 0 ? (
-                    users.active.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
-                              {user.name.split(' ').map(n => n[0]).join('')}
+              {isLoadingUsers ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
+                  <Skeleton className="h-16 w-full bg-cyber-dark-blue/20" />
+                  <Skeleton className="h-16 w-full bg-cyber-dark-blue/20" />
+                </div>
+              ) : (
+                <Tabs defaultValue="active" onValueChange={(value) => setActiveUserTab(value)}>
+                  <TabsList className="grid w-full grid-cols-2 mb-4 bg-cyber-dark-blue/50">
+                    <TabsTrigger value="active" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                      Active Users
+                    </TabsTrigger>
+                    <TabsTrigger value="inactive" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                      Inactive Users
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="active" className="space-y-4">
+                    {users.active.length > 0 ? (
+                      users.active.map((user) => (
+                        <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
+                                {user.name.split(' ').map(n => n[0]).join('')}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-cyber-teal">{user.name}</p>
-                            <div className="flex space-x-4 mt-1">
-                              <span className="text-xs text-cyber-gray">ID: {user.id}</span>
-                              <span className={`text-xs ${
-                                user.role === 'Admin' 
-                                  ? 'text-cyber-red' 
-                                  : user.role === 'Manager' 
-                                    ? 'text-cyber-green' 
-                                    : 'text-cyber-blue'
-                              }`}>
-                                {user.role}
-                              </span>
+                            <div>
+                              <p className="text-sm font-medium text-cyber-teal">{user.name}</p>
+                              <div className="flex space-x-4 mt-1">
+                                <span className="text-xs text-cyber-gray">ID: {user.id}</span>
+                                <span className={`text-xs ${
+                                  user.role === 'Admin' 
+                                    ? 'text-cyber-red' 
+                                    : user.role === 'Manager' 
+                                      ? 'text-cyber-green' 
+                                      : 'text-cyber-blue'
+                                }`}>
+                                  {user.role}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4">
-                          <div className={`text-xs px-2 py-1 rounded-full ${
-                            user.status === 'Online' 
-                              ? 'bg-green-400/20 text-green-400' 
-                              : user.status === 'Away' 
-                                ? 'bg-yellow-400/20 text-yellow-400' 
-                                : 'bg-cyber-gray/20 text-cyber-gray'
-                          }`}>
-                            {user.status}
                           </div>
                           
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                            >
-                              <Settings size={14} />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </Button>
+                          <div className="flex items-center space-x-4">
+                            <div className={`text-xs px-2 py-1 rounded-full ${
+                              user.status === 'Online' 
+                                ? 'bg-green-400/20 text-green-400' 
+                                : user.status === 'Away' 
+                                  ? 'bg-yellow-400/20 text-yellow-400' 
+                                  : 'bg-cyber-gray/20 text-cyber-gray'
+                            }`}>
+                              {user.status}
+                            </div>
+                            
+                            <div className="flex space-x-1">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                              >
+                                <Settings size={14} />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </Button>
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-cyber-gray">
+                        No active users found
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-cyber-gray">
-                      No active users found
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="inactive" className="space-y-4">
-                  {users.inactive.length > 0 ? (
-                    users.inactive.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex-shrink-0">
-                            <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-gray border border-cyber-teal/30 opacity-70">
-                              {user.name.split(' ').map(n => n[0]).join('')}
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="inactive" className="space-y-4">
+                    {users.inactive.length > 0 ? (
+                      users.inactive.map((user) => (
+                        <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-shrink-0">
+                              <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-gray border border-cyber-teal/30 opacity-70">
+                                {user.name.split(' ').map(n => n[0]).join('')}
+                              </div>
                             </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-cyber-gray">{user.name}</p>
-                            <div className="flex space-x-4 mt-1">
-                              <span className="text-xs text-cyber-gray">ID: {user.id}</span>
-                              <span className="text-xs text-cyber-gray">{user.role}</span>
+                            <div>
+                              <p className="text-sm font-medium text-cyber-gray">{user.name}</p>
+                              <div className="flex space-x-4 mt-1">
+                                <span className="text-xs text-cyber-gray">ID: {user.id}</span>
+                                <span className="text-xs text-cyber-gray">{user.role}</span>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4">
-                          <div className="text-xs px-2 py-1 rounded-full bg-cyber-red/20 text-cyber-red">
-                            {user.status}
                           </div>
                           
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
-                            >
-                              <Check size={14} />
-                            </Button>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-xs px-2 py-1 rounded-full bg-cyber-red/20 text-cyber-red">
+                              {user.status}
+                            </div>
+                            
+                            <div className="flex space-x-1">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+                              >
+                                <Check size={14} />
+                              </Button>
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 text-cyber-gray">
+                        No inactive users found
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-cyber-gray">
-                      No inactive users found
-                    </div>
-                  )}
-                </TabsContent>
-              </Tabs>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -297,7 +553,13 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {recentLogs.length > 0 ? (
+                {isLoadingLogs ? (
+                  <>
+                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
+                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
+                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
+                  </>
+                ) : recentLogs.length > 0 ? (
                   recentLogs.map((log) => (
                     <div key={log.id} className="border border-cyber-teal/20 rounded-md p-2 bg-cyber-dark-blue/20">
                       <div className="flex items-start space-x-2">
@@ -366,7 +628,15 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <TableBody>
-                {vmStatuses.length > 0 ? (
+                {isLoadingVMs ? (
+                  <tr>
+                    <td colSpan={8} className="py-8">
+                      <div className="flex justify-center">
+                        <div className="animate-spin h-8 w-8 border-2 border-cyber-teal border-t-transparent rounded-full"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : vmStatuses.length > 0 ? (
                   vmStatuses.map((vm) => (
                     <tr key={vm.id} className="hover:bg-cyber-dark-blue/20">
                       <td className="py-3 px-4 text-sm text-cyber-teal">{vm.id}</td>
@@ -477,34 +747,46 @@ const AdminDashboard = () => {
             <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
               <h4 className="text-sm text-cyber-gray">Security Score</h4>
               <div className="flex items-end justify-between mt-2">
-                <div className="text-3xl font-semibold text-cyber-blue">--<span className="text-xl">/100</span></div>
-                <div className="text-xs text-cyber-gray">Not Available</div>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-8 w-16 bg-cyber-blue/10" />
+                ) : (
+                  <div className="text-3xl font-semibold text-cyber-blue">78<span className="text-xl">/100</span></div>
+                )}
+                <div className="text-xs text-cyber-gray">Last scan: Today</div>
               </div>
               <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                <div className="h-full bg-cyber-blue" style={{ width: '0%' }}></div>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-full w-full" />
+                ) : (
+                  <div className="h-full bg-cyber-blue" style={{ width: '78%' }}></div>
+                )}
               </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last scan: Never</p>
+              <p className="mt-2 text-xs text-cyber-gray">Last scan: 2 hours ago</p>
             </div>
             
             {/* Vulnerabilities */}
             <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
               <h4 className="text-sm text-cyber-gray">Active Vulnerabilities</h4>
               <div className="flex items-end justify-between mt-2">
-                <div className="text-3xl font-semibold text-cyber-green">0</div>
-                <div className="text-xs text-cyber-gray">Not Scanned</div>
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-8 w-8 bg-cyber-blue/10" />
+                ) : (
+                  <div className="text-3xl font-semibold text-cyber-green">3</div>
+                )}
+                <div className="text-xs text-cyber-gray">Last scan: Today</div>
               </div>
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">Critical</span>
-                  <span className="text-cyber-gray">0</span>
+                  <span className="text-cyber-red">1</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">High</span>
-                  <span className="text-cyber-gray">0</span>
+                  <span className="text-yellow-400">1</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-cyber-gray">Medium</span>
-                  <span className="text-cyber-gray">0</span>
+                  <span className="text-cyber-green">1</span>
                 </div>
               </div>
             </div>
@@ -513,13 +795,17 @@ const AdminDashboard = () => {
             <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
               <h4 className="text-sm text-cyber-gray">Backup Status</h4>
               <div className="flex items-end justify-between mt-2">
-                <div className="text-xl font-semibold text-cyber-gray">Not Available</div>
-                <div className="text-xs text-cyber-gray">
-                  No backups
+                {isLoadingMetrics ? (
+                  <Skeleton className="h-6 w-24 bg-cyber-blue/10" />
+                ) : (
+                  <div className="text-xl font-semibold text-cyber-teal">Last: 12h ago</div>
+                )}
+                <div className="text-xs text-green-400">
+                  Success
                 </div>
               </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last backup: Never</p>
-              <p className="text-xs text-cyber-gray">Next backup: Not scheduled</p>
+              <p className="mt-2 text-xs text-cyber-gray">Last backup: Today, 05:30 AM</p>
+              <p className="text-xs text-cyber-gray">Next backup: Today, 05:30 PM</p>
               <div className="mt-4">
                 <Button
                   variant="outline"
