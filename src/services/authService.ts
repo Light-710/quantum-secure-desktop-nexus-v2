@@ -83,5 +83,37 @@ export const authService = {
         error: errorDetails
       };
     }
+  },
+
+  // Function to create a test admin user for development/testing purposes
+  createTestAdminUser: async (): Promise<AdminInitResponse> => {
+    try {
+      const testAdmin = {
+        employee_id: 'admin',
+        name: 'Test Admin',
+        email: 'admin@example.com',
+        password: 'Admin123!',
+        role: 'Admin'
+      };
+      
+      const response = await api.post('/auth/initialize-admin', testAdmin);
+      
+      return { 
+        success: true, 
+        message: 'Test admin user created successfully',
+        status: response.data.status
+      };
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || 'Failed to create test admin user';
+      const errorDetails = error.response?.data?.error || '';
+      
+      console.error('Test admin creation error:', error.response?.data || error);
+      
+      return { 
+        success: false, 
+        message: errorMessage,
+        error: errorDetails
+      };
+    }
   }
 };

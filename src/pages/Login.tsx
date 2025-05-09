@@ -5,16 +5,44 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, User, ChevronRight } from 'lucide-react';
+import { Lock, User, ChevronRight, Info } from 'lucide-react';
+import { authService } from '@/services/authService';
+import { toast } from '@/components/ui/sonner';
 
 const Login = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
+  const [isCreatingTestAdmin, setIsCreatingTestAdmin] = useState(false);
   const { login, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await login(employeeId, password);
+  };
+
+  const handleCreateTestAdmin = async () => {
+    setIsCreatingTestAdmin(true);
+    try {
+      const result = await authService.createTestAdminUser();
+      if (result.success) {
+        toast.success("Test Admin Created", {
+          description: "Username: admin, Password: Admin123!",
+        });
+        // Auto-fill the credentials
+        setEmployeeId('admin');
+        setPassword('Admin123!');
+      } else {
+        toast.error("Failed to Create Test Admin", {
+          description: result.message,
+        });
+      }
+    } catch (error) {
+      toast.error("Error", {
+        description: "Failed to create test admin user.",
+      });
+    } finally {
+      setIsCreatingTestAdmin(false);
+    }
   };
 
   return (
@@ -74,6 +102,23 @@ const Login = () => {
               </Button>
             </div>
           </form>
+          
+          {/* Test Admin Button */}
+          <div className="mt-4 pt-2 border-t border-cyber-teal/20">
+            <Button 
+              onClick={handleCreateTestAdmin}
+              disabled={isCreatingTestAdmin}
+              variant="outline" 
+              className="w-full text-cyber-blue hover:text-cyber-teal hover:bg-cyber-dark-blue/30 border-cyber-teal/30 flex items-center justify-center gap-2"
+            >
+              <Info className="h-4 w-4" />
+              {isCreatingTestAdmin ? "Creating Test Admin..." : "Create Test Admin User"}
+            </Button>
+            <p className="text-xs text-cyber-gray mt-2">
+              For testing purposes only. Creates an admin user with:<br />
+              Username: <span className="text-cyber-teal">admin</span>, Password: <span className="text-cyber-teal">Admin123!</span>
+            </p>
+          </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="text-sm text-center text-cyber-gray">
