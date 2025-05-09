@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
 import { vmService } from '@/services/vmService';
+import { VMStatus, VirtualMachine as ManagementVirtualMachine } from '@/services/vmManagementService';
 
 // Define interfaces for VM data
 interface VMResources {
@@ -21,7 +23,7 @@ interface VMResources {
 interface VirtualMachine {
   id: string;
   name: string;
-  status: string;
+  status: VMStatus;
   os: string;
   assigned_user: string;
   uptime: string;
@@ -327,12 +329,14 @@ const VirtualDesktopPage = () => {
       </Card>
 
       {/* VM Details Dialog */}
-      <VMDetailsDialog
-        vm={selectedVM}
-        isOpen={isDetailsOpen}
-        onOpenChange={setIsDetailsOpen}
-        actionLoading={actionLoading}
-      />
+      {selectedVM && (
+        <VMDetailsDialog
+          vm={selectedVM as unknown as ManagementVirtualMachine}
+          isOpen={isDetailsOpen}
+          onOpenChange={setIsDetailsOpen}
+          actionLoading={actionLoading}
+        />
+      )}
     </DashboardLayout>
   );
 };

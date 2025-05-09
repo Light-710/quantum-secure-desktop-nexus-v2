@@ -3,7 +3,7 @@ import React from 'react';
 import { VMStatus } from '@/services/vmManagementService';
 
 interface VMStatusBadgeProps {
-  status: VMStatus;
+  status: VMStatus | string;
 }
 
 export const VMStatusBadge = ({ status }: VMStatusBadgeProps) => (

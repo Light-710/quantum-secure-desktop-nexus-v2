@@ -6,7 +6,7 @@ import { VMStatus } from '@/services/vmManagementService';
 
 interface VMTableActionsProps {
   vmId: string;
-  status: VMStatus;
+  status: VMStatus | string;
   instanceOs: string;
   employeeId: string;
   actionLoading: string | null;
