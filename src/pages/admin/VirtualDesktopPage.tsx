@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +7,7 @@ import { Monitor, Server, Clock, Plus } from 'lucide-react';
 import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
-import { VirtualMachine, handleVMAction, adminVmService } from '@/services/vmManagementService';
+import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
 import { useToast } from '@/hooks/use-toast';
 
 const VirtualDesktopPage = () => {

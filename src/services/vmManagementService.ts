@@ -19,10 +19,10 @@ export interface VirtualMachine {
     cpu: number;
     memory: number;
     disk: number;
-    network: number; // Added network property
+    network: number;
   };
-  ip_address: string; // Added ip_address property
-  last_snapshot: string; // Added last_snapshot property
+  ip_address: string;
+  last_snapshot: string;
 }
 
 export interface VMActionResponse {
@@ -34,14 +34,12 @@ export interface VMActionResponse {
 export const handleCreateSnapshot = async (vmId: string) => {
   try {
     const response = await vmService.createSnapshot(vmId);
-    toast({
-      title: "Snapshot Created",
+    toast("Snapshot Created", {
       description: "Virtual machine snapshot has been created successfully",
     });
     return response;
   } catch (error: any) {
-    toast({
-      title: "Error Creating Snapshot",
+    toast("Error Creating Snapshot", {
       description: error.response?.data?.message || "Failed to create snapshot",
       variant: "destructive",
     });
@@ -92,8 +90,7 @@ export const handleVMAction = async (
     }
     
     // Show success toast notification
-    toast({
-      title: `VM ${action} Initiated`,
+    toast(`VM ${action} Initiated`, {
       description: response?.message || `VM ${action.toLowerCase()} process has started`,
     });
     
@@ -104,8 +101,7 @@ export const handleVMAction = async (
     console.error(`Error ${action.toLowerCase()}ing VM:`, error);
     
     // Show error toast notification
-    toast({
-      title: `VM ${action} Failed`,
+    toast(`VM ${action} Failed`, {
       description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM`,
       variant: "destructive",
     });

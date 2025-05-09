@@ -54,15 +54,18 @@ export const authService = {
 
   // Function to initialize the first admin user
   // This endpoint isn't in the API spec but would need to be added
-  initializeAdminUser: async (adminData: {
-    name: string;
-    email: string;
-    employee_id: string;
-    password: string;
-    role: string;
-  }): Promise<AdminInitResponse> => {
+  initializeAdminUser: async (adminData: any): Promise<AdminInitResponse> => {
     try {
-      const response = await api.post('/auth/initialize-admin', adminData);
+      // Map the UserFormValues to the expected API format
+      const payload = {
+        employee_id: adminData.username, // Use username as employee_id
+        name: adminData.name,
+        email: adminData.email,
+        password: adminData.password,
+        role: adminData.role
+      };
+      
+      const response = await api.post('/auth/initialize-admin', payload);
       
       return { 
         success: true, 
