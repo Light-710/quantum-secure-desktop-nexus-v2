@@ -39,9 +39,8 @@ export const handleCreateSnapshot = async (vmId: string) => {
     });
     return response;
   } catch (error: any) {
-    toast("Error Creating Snapshot", {
+    toast.error("Error Creating Snapshot", {
       description: error.response?.data?.message || "Failed to create snapshot",
-      variant: "destructive",
     });
     throw error;
   }
@@ -101,9 +100,8 @@ export const handleVMAction = async (
     console.error(`Error ${action.toLowerCase()}ing VM:`, error);
     
     // Show error toast notification
-    toast(`VM ${action} Failed`, {
+    toast.error(`VM ${action} Failed`, {
       description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM`,
-      variant: "destructive",
     });
     
     throw error;
