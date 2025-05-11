@@ -102,7 +102,9 @@ const UsersPage = () => {
     if (!userToDelete) return;
     
     try {
-      await userService.softDeleteUser(userToDelete.id);
+      console.log('User to delete:', userToDelete);
+      // The key fix: Use the username as employee_id
+      await userService.softDeleteUser(userToDelete.username);
       await loadUsers();
       setIsDeleteDialogOpen(false);
       setUserToDelete(null);
@@ -135,9 +137,10 @@ const UsersPage = () => {
 
     try {
       if (user.status === 'Active') {
-        await userService.softDeleteUser(userId);
+        // Use username as employee_id for API calls
+        await userService.softDeleteUser(user.username);
       } else {
-        await userService.restoreUser(userId);
+        await userService.restoreUser(user.username);
       }
       await loadUsers();
 
