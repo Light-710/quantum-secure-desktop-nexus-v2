@@ -50,10 +50,12 @@ export const userService = {
   softDeleteUser: async (employee_id: string) => {
     try {
       console.log('Attempting to soft-delete user with ID:', employee_id);
-      // The key issue is here - we need to send employee_id in the payload
+      
+      // Send employee_id in the request body as expected by the backend
       const response = await api.put('/admin/user/soft-delete-user', {
-        employee_id: employee_id,  // Make sure employee_id is sent in the request body
+        employee_id: employee_id,
       });
+      
       console.log('Soft delete response:', response.data);
       return response.data;
     } catch (error: any) {
@@ -77,8 +79,9 @@ export const userService = {
   // This matches the API spec PUT /admin/user/restore-user
   restoreUser: async (employee_id: string) => {
     try {
+      // Ensure we're sending employee_id in the request body
       const response = await api.put('/admin/user/restore-user', {
-        employee_id,
+        employee_id: employee_id,
       });
       return response.data;
     } catch (error: any) {

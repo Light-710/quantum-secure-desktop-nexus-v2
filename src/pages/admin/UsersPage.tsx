@@ -103,8 +103,12 @@ const UsersPage = () => {
     
     try {
       console.log('User to delete:', userToDelete);
-      // The key fix: Use the username as employee_id
+      // Debug logs to verify what we're sending
+      console.log('Employee ID to send:', userToDelete.username);
+      
+      // Use username as employee_id (which should be the employee_id in the backend)
       await userService.softDeleteUser(userToDelete.username);
+      
       await loadUsers();
       setIsDeleteDialogOpen(false);
       setUserToDelete(null);
@@ -113,6 +117,7 @@ const UsersPage = () => {
         description: "The user has been removed from the system."
       });
     } catch (error: any) {
+      console.error('Delete user error:', error);
       toast.error("Error Deleting User", {
         description: error.message || "Failed to delete user. Please try again."
       });
@@ -136,6 +141,9 @@ const UsersPage = () => {
     }
 
     try {
+      console.log('Toggling status for user:', user);
+      console.log('Using employee_id (username):', user.username);
+      
       if (user.status === 'Active') {
         // Use username as employee_id for API calls
         await userService.softDeleteUser(user.username);
@@ -148,6 +156,7 @@ const UsersPage = () => {
         description: `${user.name}'s status has been updated.`
       });
     } catch (error: any) {
+      console.error('Status toggle error:', error);
       toast.error("Error Updating Status", {
         description: error.message || "Failed to update user status. Please try again."
       });
