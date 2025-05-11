@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -53,7 +52,21 @@ export default {
           DEFAULT: "hsl(0 0% 100%)",
           foreground: "hsl(0 0% 3.9%)",
         },
-        // Luxury Simple Color Palette
+        // Modern Color Palette
+        modern: {
+          50: "#f9fafb",   // Lightest
+          100: "#f3f4f6",  // Light
+          200: "#e5e7eb",  // Light Gray
+          300: "#d1d5db",  // Medium Gray
+          400: "#9ca3af",  // Dark Gray
+          500: "#6b7280",  // Darkest Gray
+          blue: "#3b82f6", // Primary Blue
+          teal: "#14b8a6", // Teal
+          green: "#22c55e", // Green
+          red: "#ef4444",  // Red
+          purple: "#8b5cf6", // Purple
+        },
+        // Keep existing colors
         luxury: {
           50: "hsl(0, 0%, 98%)",   // Lightest
           100: "hsl(0, 0%, 94%)",  // Light
@@ -69,15 +82,14 @@ export default {
           200: "#FDE1D3",  // Soft Peach
           300: "#F97316",  // Bright Orange
         },
-        // Cyber Theme Colors - Enhanced for better contrast and visibility
         cyber: {
           "dark": "#0f0f17",       // Dark background
           "dark-blue": "#121726",  // Darker blue background
-          "blue": "#1EAEDB",       // Bright blue
-          "teal": "#2de2e6",       // Bright teal
-          "green": "#3df5a5",      // Neon green
-          "red": "#f43f5e",        // Neon red
-          "purple": "#9b87f5",     // Purple accent
+          "blue": "#3b82f6",       // Updated to more modern blue
+          "teal": "#14b8a6",       // Updated to more modern teal
+          "green": "#22c55e",      // Updated to more modern green
+          "red": "#ef4444",        // Updated to more modern red
+          "purple": "#8b5cf6",     // Updated to more modern purple
           "gray": "#9ca3af",       // Gray text
           "black": "#000000e6",    // Transparent black overlay
           "light": "#f8f8f8",      // Light text color
@@ -85,15 +97,16 @@ export default {
       },
       backgroundImage: {
         'warm-gradient': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
-        'cyber-gradient': 'linear-gradient(to right, #121726, #0f0f17)',
+        'cyber-gradient': 'linear-gradient(to right, #f3f4f6, #ffffff)',
+        'blue-gradient': 'linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)',
+        'green-gradient': 'linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%)',
       },
       boxShadow: {
-        'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        'warm-subtle': '0 4px 6px -1px rgba(249,115,22,0.1), 0 2px 4px -1px rgba(249,115,22,0.06)',
-        'cyber-glow': '0 0 10px #2de2e6, 0 0 20px rgba(45, 226, 230, 0.3)',
-        'cyber-red-glow': '0 0 10px #f43f5e, 0 0 20px rgba(244, 63, 94, 0.3)',
-        'cyber-green-glow': '0 0 10px #3df5a5, 0 0 20px rgba(61, 245, 165, 0.3)',
+        'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+        'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
+        'warm-subtle': '0 4px 6px -1px rgba(249,115,22,0.05), 0 2px 4px -1px rgba(249,115,22,0.03)',
+        'blue-glow': '0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.2)',
+        'green-glow': '0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.2)',
       },
       keyframes: {
         "fade-in": {

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -67,16 +68,16 @@ export function AdminInitializer() {
 
   if (isComplete) {
     return (
-      <Card className="glass-panel border-cyber-teal/30 w-[450px] mx-auto">
+      <Card className="glass-panel w-[450px] mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl text-cyber-teal">Setup Complete</CardTitle>
-          <CardDescription className="text-cyber-gray">
+          <CardTitle className="text-2xl text-blue-500">Setup Complete</CardTitle>
+          <CardDescription className="text-gray-600">
             Your admin account has been created successfully
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center space-y-4">
-            <p className="text-cyber-gray">
+            <p className="text-gray-600">
               You can now log in using the credentials you provided.
             </p>
             <Button 
@@ -92,16 +93,16 @@ export function AdminInitializer() {
   }
 
   return (
-    <Card className="glass-panel border-cyber-teal/30 w-[450px] mx-auto">
+    <Card className="glass-panel w-[450px] mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl text-cyber-teal">Create Admin User</CardTitle>
-        <CardDescription className="text-cyber-gray">
+        <CardTitle className="text-2xl text-blue-500">Create Admin User</CardTitle>
+        <CardDescription className="text-gray-600">
           Set up the first admin account for your system
         </CardDescription>
       </CardHeader>
       <CardContent>
         {errorMessage && (
-          <div className="mb-4 p-3 bg-red-950/30 border border-red-700/50 rounded-md text-sm text-red-400 flex items-start">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 flex items-start">
             <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium mb-1">Backend Error</p>
@@ -123,11 +124,11 @@ export function AdminInitializer() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-cyber-teal">Full Name</FormLabel>
+                  <FormLabel className="text-gray-700">Full Name</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's full name" 
-                      className="border-cyber-teal/30 focus:border-cyber-blue"
+                      className="border-gray-200 focus:border-blue-300"
                       {...field} 
                     />
                   </FormControl>
@@ -141,11 +142,11 @@ export function AdminInitializer() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-cyber-teal">Email</FormLabel>
+                  <FormLabel className="text-gray-700">Email</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's email address" 
-                      className="border-cyber-teal/30 focus:border-cyber-blue"
+                      className="border-gray-200 focus:border-blue-300"
                       {...field} 
                     />
                   </FormControl>
@@ -159,11 +160,11 @@ export function AdminInitializer() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-cyber-teal">Employee ID</FormLabel>
+                  <FormLabel className="text-gray-700">Employee ID</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's employee ID" 
-                      className="border-cyber-teal/30 focus:border-cyber-blue"
+                      className="border-gray-200 focus:border-blue-300"
                       {...field} 
                     />
                   </FormControl>
@@ -177,12 +178,12 @@ export function AdminInitializer() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-cyber-teal">Password</FormLabel>
+                  <FormLabel className="text-gray-700">Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password"
                       placeholder="Enter a secure password"
-                      className="border-cyber-teal/30 focus:border-cyber-blue"
+                      className="border-gray-200 focus:border-blue-300"
                       {...field} 
                     />
                   </FormControl>
@@ -206,11 +207,11 @@ export function AdminInitializer() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="text-sm text-cyber-gray text-center flex flex-col space-y-2">
+      <CardFooter className="text-sm text-gray-600 text-center flex flex-col space-y-2">
         <p>This setup should only be used once to create the first admin account.</p>
         
-        <div className="text-xs p-3 bg-cyber-dark-blue/50 border border-cyber-teal/30 rounded-md">
-          <p className="font-medium text-cyber-teal mb-1">Backend Implementation Required</p>
+        <div className="text-xs p-3 bg-blue-50 border border-blue-100 rounded-md">
+          <p className="font-medium text-blue-600 mb-1">Backend Implementation Required</p>
           <p>For this admin creation to work, make sure your backend has:</p>
           <ul className="list-disc list-inside mt-1">
             <li>An endpoint at <code>/auth/initialize-admin</code> that accepts POST requests</li>
