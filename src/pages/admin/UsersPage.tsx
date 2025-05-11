@@ -82,7 +82,11 @@ const UsersPage = () => {
     }
   };
 
-  const confirmDeleteUser = (user: User) => {
+  const confirmDeleteUser = (userId: string) => {
+    const user = users.find(u => u.id === userId);
+    
+    if (!user) return;
+    
     if (user.role === 'Admin') {
       toast.error("Cannot Delete Admin", {
         description: "The admin user cannot be deleted."
