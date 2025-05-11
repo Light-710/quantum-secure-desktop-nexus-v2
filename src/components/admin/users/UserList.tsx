@@ -1,4 +1,3 @@
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Shield, Pencil, Trash2, Key } from "lucide-react";
@@ -7,9 +6,9 @@ import type { User } from "@/types/user";
 interface UserListProps {
   users: User[];
   onEditUser: (user: User) => void;
-  onDeleteUser: (userId: string) => void;
+  onDeleteUser: (username: string) => void;
   onViewPermissions: (user: User) => void;
-  onToggleStatus: (userId: string) => void;
+  onToggleStatus: (username: string) => void;
 }
 
 export function UserList({ 
@@ -95,7 +94,7 @@ export function UserList({
                     variant="outline" 
                     size="sm" 
                     className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                    onClick={() => onDeleteUser(user.id)}
+                    onClick={() => onDeleteUser(user.username)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -107,7 +106,7 @@ export function UserList({
                         ? 'hover:bg-yellow-400/20 hover:text-yellow-400'
                         : 'hover:bg-green-400/20 hover:text-green-400'
                     }`}
-                    onClick={() => onToggleStatus(user.id)}
+                    onClick={() => onToggleStatus(user.username)}
                   >
                     <Key className="h-4 w-4" />
                   </Button>

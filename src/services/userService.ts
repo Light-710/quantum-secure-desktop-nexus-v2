@@ -1,4 +1,3 @@
-
 import api from './api';
 import type { User, UserFormValues, UserProfile } from '@/types/user';
 
@@ -46,23 +45,35 @@ export const userService = {
     return response.data;
   },
 
-  // This matches the API spec PUT /admin/user/soft-delete-user
+  // Enhanced softDeleteUser method with better debugging
   softDeleteUser: async (employee_id: string) => {
     try {
-      console.log('Attempting to soft-delete user with ID:', employee_id);
+      console.log('softDeleteUser called with employee_id:', employee_id);
       
-      // FIXED: Make sure we're using the exact endpoint expected by the backend
-      // The backend code expects `/admin/user/soft-delete-user` with employee_id in body
-      const response = await api.put('/admin/user/soft-delete-user', {
-        employee_id: employee_id,
-      });
+      // Create and log the request payload
+      const payload = { employee_id };
+      console.log('Request payload:', payload);
+      
+      const response = await api.put('/admin/user/soft-delete-user', payload);
       
       console.log('Soft delete response:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('Error in softDeleteUser:', error);
-      console.error('Error request details:', error.config);
-      console.error('Error response details:', error.response?.data);
+      
+      // Detailed error logging
+      if (error.config) {
+        console.error('Request URL:', error.config.url);
+        console.error('Request method:', error.config.method);
+        console.error('Request headers:', error.config.headers);
+        console.error('Request data:', error.config.data);
+      }
+      
+      if (error.response) {
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+        console.error('Error data:', error.response.data);
+      }
       
       // Extract meaningful error message
       let errorMessage = 'Failed to delete user. Please try again.';
@@ -81,18 +92,33 @@ export const userService = {
     }
   },
 
-  // This matches the API spec PUT /admin/user/restore-user
+  // Also update restoreUser for consistency
   restoreUser: async (employee_id: string) => {
     try {
-      // Ensure we're sending employee_id in the request body
-      const response = await api.put('/admin/user/restore-user', {
-        employee_id: employee_id,
-      });
+      console.log('restoreUser called with employee_id:', employee_id);
+      
+      // Create and log the request payload
+      const payload = { employee_id };
+      console.log('Request payload:', payload);
+      
+      const response = await api.put('/admin/user/restore-user', payload);
       return response.data;
     } catch (error: any) {
       console.error('Error in restoreUser:', error);
-      console.error('Error request details:', error.config);
-      console.error('Error response details:', error.response?.data);
+      
+      // Detailed error logging (same as in softDeleteUser)
+      if (error.config) {
+        console.error('Request URL:', error.config.url);
+        console.error('Request method:', error.config.method);
+        console.error('Request headers:', error.config.headers);
+        console.error('Request data:', error.config.data);
+      }
+      
+      if (error.response) {
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+        console.error('Error data:', error.response.data);
+      }
       
       // Extract meaningful error message
       let errorMessage = 'Failed to restore user. Please try again.';

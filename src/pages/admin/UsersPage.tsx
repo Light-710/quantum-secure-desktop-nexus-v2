@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -82,10 +81,14 @@ const UsersPage = () => {
     }
   };
 
-  const confirmDeleteUser = (userId: string) => {
-    const user = users.find(u => u.id === userId);
+  const confirmDeleteUser = (username: string) => {
+    console.log('confirmDeleteUser called with username:', username);
+    const user = users.find(u => u.username === username);
     
-    if (!user) return;
+    if (!user) {
+      console.error('User not found with username:', username);
+      return;
+    }
     
     if (user.role === 'Admin') {
       toast.error("Cannot Delete Admin", {
@@ -99,14 +102,17 @@ const UsersPage = () => {
   };
 
   const handleDeleteUser = async () => {
-    if (!userToDelete) return;
+    if (!userToDelete) {
+      console.error('No user to delete. userToDelete is null or undefined');
+      return;
+    }
     
     try {
       console.log('User to delete:', userToDelete);
-      // Debug logs to verify what we're sending
-      console.log('Employee ID to send:', userToDelete.username);
+      // Direct debug logs to verify the username right before the API call
+      console.log('About to delete user with username:', userToDelete.username);
       
-      // IMPORTANT: Make sure we're using the correct field for employee_id
+      // Using username directly for the API call
       await userService.softDeleteUser(userToDelete.username);
       
       await loadUsers();
@@ -129,9 +135,13 @@ const UsersPage = () => {
     setIsPermissionsOpen(true);
   };
 
-  const handleStatusToggle = async (userId: string) => {
-    const user = users.find(u => u.id === userId);
-    if (!user) return;
+  const handleStatusToggle = async (username: string) => {
+    console.log('handleStatusToggle called with username:', username);
+    const user = users.find(u => u.username === username);
+    if (!user) {
+      console.error('User not found with username:', username);
+      return;
+    }
 
     if (user.role === 'Admin') {
       toast.error("Cannot Change Admin Status", {
@@ -142,10 +152,9 @@ const UsersPage = () => {
 
     try {
       console.log('Toggling status for user:', user);
-      console.log('Using employee_id (username):', user.username);
+      console.log('Using username:', user.username);
       
       if (user.status === 'Active') {
-        // Use username as employee_id for API calls
         await userService.softDeleteUser(user.username);
       } else {
         await userService.restoreUser(user.username);
