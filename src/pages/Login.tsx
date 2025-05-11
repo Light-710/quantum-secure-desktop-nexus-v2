@@ -19,17 +19,17 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-white">
+    <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-background">
       {/* Logo */}
       <div className="absolute top-16 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-5xl md:text-6xl font-bold text-orange-500">PTNG</h1>
+        <h1 className="text-5xl md:text-6xl font-bold text-primary">PTNG</h1>
       </div>
       
       {/* Login card */}
-      <Card className="w-[350px] sm:w-[400px] shadow-sm border-gray-100">
+      <Card className="w-[350px] sm:w-[400px] shadow-sm border-secondary">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl text-orange-500">Access Terminal</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl text-primary">Access Terminal</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Enter your credentials to access the system
           </CardDescription>
         </CardHeader>
@@ -37,9 +37,9 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input 
-                  className="pl-10 rounded-md border-gray-200" 
+                  className="pl-10 rounded-md border-secondary" 
                   type="text" 
                   placeholder="Employee ID" 
                   value={employeeId} 
@@ -48,9 +48,9 @@ const Login = () => {
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input 
-                  className="pl-10 rounded-md border-gray-200" 
+                  className="pl-10 rounded-md border-secondary" 
                   type="password" 
                   placeholder="Password" 
                   value={password} 
@@ -58,7 +58,7 @@ const Login = () => {
                   required 
                 />
               </div>
-              <Button className="w-full bg-black hover:bg-gray-800 text-white rounded-md" type="submit" disabled={isLoading}>
+              <Button className="w-full bg-primary hover:bg-primary/80 text-white rounded-md" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <span>Authenticating...</span>
@@ -73,13 +73,13 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-gray-600">
-            <Link to="/forgot-password" className="text-gray-500 hover:underline">
+          <div className="text-sm text-center text-muted-foreground">
+            <Link to="/forgot-password" className="text-primary hover:underline">
               Forgot Password?
             </Link>
           </div>
-          <div className="text-sm text-center text-gray-600">
-            <Link to="/admin-setup" className="text-gray-500 hover:underline">
+          <div className="text-sm text-center text-muted-foreground">
+            <Link to="/admin-setup" className="text-primary hover:underline">
               First-time setup? Create admin user
             </Link>
           </div>

@@ -22,51 +22,51 @@ export default {
         border: "hsl(0 0% 89%)",
         input: "hsl(0 0% 94%)",
         ring: "hsl(0 0% 30%)",
-        background: "hsl(0 0% 100%)",
-        foreground: "hsl(0 0% 3.9%)",
+        background: "#F8F9FA",      // Off-White background
+        foreground: "#2C3E50",      // Deep Navy text
         primary: {
-          DEFAULT: "hsl(0 0% 9%)",
+          DEFAULT: "#2C3E50",       // Deep Navy primary
           foreground: "hsl(0 0% 98%)",
         },
         secondary: {
-          DEFAULT: "hsl(0 0% 96.3%)",
-          foreground: "hsl(0 0% 9%)",
+          DEFAULT: "#E9ECEF",       // Light Gray secondary
+          foreground: "#2C3E50",    // Deep Navy text on secondary
         },
         destructive: {
           DEFAULT: "hsl(0 84.2% 60.2%)",
           foreground: "hsl(0 0% 98%)",
         },
         muted: {
-          DEFAULT: "hsl(0 0% 96.3%)",
-          foreground: "hsl(0 0% 45.1%)",
+          DEFAULT: "#E9ECEF",       // Light Gray for muted components
+          foreground: "#6c757d",    // Muted text 
         },
         accent: {
-          DEFAULT: "hsl(0 0% 96.3%)",
-          foreground: "hsl(0 0% 9%)",
+          DEFAULT: "#E9ECEF",       // Light Gray accent
+          foreground: "#2C3E50",    // Deep Navy on accent
         },
         popover: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(0 0% 3.9%)",
+          foreground: "#2C3E50",    // Deep Navy text
         },
         card: {
           DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(0 0% 3.9%)",
+          foreground: "#2C3E50",    // Deep Navy text
         },
-        // Modern Color Palette
+        // Keep existing color groups but update key colors
         modern: {
-          50: "#f9fafb",   // Lightest
-          100: "#f3f4f6",  // Light
-          200: "#e5e7eb",  // Light Gray
-          300: "#d1d5db",  // Medium Gray
-          400: "#9ca3af",  // Dark Gray
-          500: "#6b7280",  // Darkest Gray
-          blue: "#3b82f6", // Primary Blue
-          teal: "#14b8a6", // Teal
-          green: "#22c55e", // Green
-          red: "#ef4444",  // Red
-          purple: "#8b5cf6", // Purple
+          50: "#F8F9FA",   // Lightest - off-white
+          100: "#E9ECEF",  // Light - light gray
+          200: "#dee2e6",  // Light Gray
+          300: "#ced4da",  // Medium Gray
+          400: "#adb5bd",  // Dark Gray
+          500: "#6c757d",  // Darkest Gray
+          blue: "#2C3E50", // Primary Blue - deep navy
+          teal: "#4aa3df", // Lighter blue accent
+          green: "#2ecc71", // Green
+          red: "#e74c3c",  // Red
+          purple: "#9b59b6", // Purple
         },
-        // Keep existing colors
+        // Keep existing colors but not actively using
         luxury: {
           50: "hsl(0, 0%, 98%)",   // Lightest
           100: "hsl(0, 0%, 94%)",  // Light
@@ -85,11 +85,11 @@ export default {
         cyber: {
           "dark": "#0f0f17",       // Dark background
           "dark-blue": "#121726",  // Darker blue background
-          "blue": "#3b82f6",       // Updated to more modern blue
-          "teal": "#14b8a6",       // Updated to more modern teal
-          "green": "#22c55e",      // Updated to more modern green
-          "red": "#ef4444",        // Updated to more modern red
-          "purple": "#8b5cf6",     // Updated to more modern purple
+          "blue": "#2C3E50",       // Updated to more modern blue
+          "teal": "#4aa3df",       // Updated to more modern teal
+          "green": "#2ecc71",      // Updated to more modern green
+          "red": "#e74c3c",        // Updated to more modern red
+          "purple": "#9b59b6",     // Updated to more modern purple
           "gray": "#9ca3af",       // Gray text
           "black": "#000000e6",    // Transparent black overlay
           "light": "#f8f8f8",      // Light text color
@@ -98,8 +98,9 @@ export default {
       backgroundImage: {
         'warm-gradient': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
         'cyber-gradient': 'linear-gradient(to right, #f3f4f6, #ffffff)',
-        'blue-gradient': 'linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%)',
+        'blue-gradient': 'linear-gradient(135deg, #E9ECEF 0%, #F8F9FA 100%)',
         'green-gradient': 'linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%)',
+        'light-gradient': 'linear-gradient(to right, #F8F9FA, #ffffff)',
       },
       boxShadow: {
         'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',

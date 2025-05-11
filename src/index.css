@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 relative min-h-screen;
+    @apply bg-background text-foreground relative min-h-screen;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -27,12 +27,12 @@
 @layer components {
   /* Simple panel effect */
   .glass-panel {
-    @apply bg-white border border-gray-100 shadow-sm rounded-lg;
+    @apply bg-white border border-secondary shadow-sm rounded-lg;
   }
   
   /* Simple button */
   .cyber-button {
-    @apply bg-blue-500 text-white hover:bg-blue-600 
+    @apply bg-primary text-white hover:bg-primary/80 
     transition-all duration-300 rounded px-4 py-2 flex items-center;
   }
   
@@ -44,5 +44,31 @@
   /* Simple hover effect */
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
+  }
+  
+  /* Light theme specific styles */
+  .light-panel {
+    @apply bg-white border border-secondary/50 shadow-sm rounded-lg;
+  }
+  
+  .light-button {
+    @apply bg-primary text-white hover:bg-primary/80
+    transition-all duration-300 rounded-md px-4 py-2 flex items-center;
+  }
+  
+  .light-card {
+    @apply bg-white border border-secondary/50 shadow-sm rounded-lg p-6;
+  }
+  
+  .light-input {
+    @apply bg-white border border-secondary rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+  
+  .light-header {
+    @apply text-primary font-semibold;
+  }
+  
+  .light-link {
+    @apply text-primary hover:text-primary/80 transition-colors;
   }
 }
