@@ -24,7 +24,6 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
       username: initialData?.username ?? "",
       password: "",
       role: initialData?.role ?? "Employee",
-      notes: "",
     },
   });
 
@@ -72,10 +71,10 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">Username</FormLabel>
+              <FormLabel className="text-cyber-teal">Employee ID</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Enter username" 
+                  placeholder="Enter employee ID" 
                   className="border-cyber-teal/30 focus:border-cyber-blue"
                   {...field} 
                 />
@@ -121,24 +120,6 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
                   <option value="Manager">Manager</option>
                   <option value="Admin">Admin</option>
                 </select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="notes"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-cyber-teal">Notes (Optional)</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Additional notes about this user" 
-                  className="border-cyber-teal/30 focus:border-cyber-blue"
-                  {...field} 
-                />
               </FormControl>
               <FormMessage />
             </FormItem>

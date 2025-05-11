@@ -19,7 +19,6 @@ export type UserFormValues = {
   username: string; // This corresponds to employee_id in the API
   password: string;
   role: UserRole;
-  notes?: string;
 };
 
 export interface UserProfile {

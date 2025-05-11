@@ -5,7 +5,7 @@ import type { UserRole } from "@/types/user";
 export const userSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  username: z.string().min(3, { message: "Username must be at least 3 characters." }),
+  username: z.string().min(3, { message: "Employee ID must be at least 3 characters." }),
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters." })
@@ -16,7 +16,6 @@ export const userSchema = z.object({
     .optional()
     .or(z.literal('')), // Allow empty password for existing users
   role: z.enum(["Employee", "Manager", "Admin"]) as z.ZodType<UserRole>,
-  notes: z.string().optional(),
 });
 
 export type UserFormSchema = z.infer<typeof userSchema>;
