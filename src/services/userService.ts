@@ -51,7 +51,8 @@ export const userService = {
     try {
       console.log('Attempting to soft-delete user with ID:', employee_id);
       
-      // Send employee_id in the request body as expected by the backend
+      // FIXED: Make sure we're using the exact endpoint expected by the backend
+      // The backend code expects `/admin/user/soft-delete-user` with employee_id in body
       const response = await api.put('/admin/user/soft-delete-user', {
         employee_id: employee_id,
       });
@@ -60,6 +61,8 @@ export const userService = {
       return response.data;
     } catch (error: any) {
       console.error('Error in softDeleteUser:', error);
+      console.error('Error request details:', error.config);
+      console.error('Error response details:', error.response?.data);
       
       // Extract meaningful error message
       let errorMessage = 'Failed to delete user. Please try again.';
@@ -69,6 +72,8 @@ export const userService = {
           errorMessage = 'User not found. They may have been already deleted.';
         } else if (error.response.data && error.response.data.message) {
           errorMessage = error.response.data.message;
+        } else if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
         }
       }
       
@@ -86,6 +91,8 @@ export const userService = {
       return response.data;
     } catch (error: any) {
       console.error('Error in restoreUser:', error);
+      console.error('Error request details:', error.config);
+      console.error('Error response details:', error.response?.data);
       
       // Extract meaningful error message
       let errorMessage = 'Failed to restore user. Please try again.';
@@ -95,6 +102,8 @@ export const userService = {
           errorMessage = 'User not found.';
         } else if (error.response.data && error.response.data.message) {
           errorMessage = error.response.data.message;
+        } else if (error.response.data && error.response.data.error) {
+          errorMessage = error.response.data.error;
         }
       }
       

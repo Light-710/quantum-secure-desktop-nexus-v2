@@ -106,7 +106,7 @@ const UsersPage = () => {
       // Debug logs to verify what we're sending
       console.log('Employee ID to send:', userToDelete.username);
       
-      // Use username as employee_id (which should be the employee_id in the backend)
+      // IMPORTANT: Make sure we're using the correct field for employee_id
       await userService.softDeleteUser(userToDelete.username);
       
       await loadUsers();
