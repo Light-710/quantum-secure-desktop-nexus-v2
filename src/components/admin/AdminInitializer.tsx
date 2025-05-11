@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +26,6 @@ export function AdminInitializer() {
       username: '',
       password: '',
       role: 'Admin',
-      notes: '',
     },
   });
 
@@ -161,10 +159,10 @@ export function AdminInitializer() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-cyber-teal">Username</FormLabel>
+                  <FormLabel className="text-cyber-teal">Employee ID</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="Enter admin's username" 
+                      placeholder="Enter admin's employee ID" 
                       className="border-cyber-teal/30 focus:border-cyber-blue"
                       {...field} 
                     />
