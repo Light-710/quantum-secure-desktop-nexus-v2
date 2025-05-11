@@ -98,4 +98,18 @@
   .warm-card {
     @apply bg-[#FCFAF7] shadow-[0_4px_10px_-2px_rgba(214,210,201,0.2)] rounded-lg border border-[#D6D2C9]/50;
   }
+  
+  /* Error toast styles */
+  .error-toast {
+    @apply bg-[#A84332] text-white border-[#A84332]/80;
+  }
+  
+  .warning-toast {
+    @apply bg-[#E5A17D] text-[#3E3D3A] border-[#E5A17D]/80;
+  }
+  
+  .success-toast {
+    @apply bg-[#6B8E23] text-white border-[#6B8E23]/80;
+  }
 }
+

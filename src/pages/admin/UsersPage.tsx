@@ -5,21 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { UserPlus } from 'lucide-react';
 import { UserForm } from '@/components/admin/users/UserForm';
 import { UserList } from '@/components/admin/users/UserList';
 import { UserPermissions } from '@/components/admin/users/UserPermissions';
 import type { User, UserFormValues } from '@/types/user';
 import { userService } from '@/services/userService';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 const UsersPage = () => {
-  const { toast } = useToast();
+  const { toast: uiToast } = useToast();
   const [users, setUsers] = useState<User[]>([]);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   const [isPermissionsOpen, setIsPermissionsOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -30,10 +34,8 @@ const UsersPage = () => {
       const fetchedUsers = await userService.getAllUsers();
       setUsers(fetchedUsers);
     } catch (error) {
-      toast({
-        title: "Error Loading Users",
-        description: "Failed to load users. Please try again.",
-        variant: "destructive",
+      toast.error("Error Loading Users", {
+        description: "Failed to load users. Please try again."
       });
     } finally {
       setIsLoading(false);
@@ -46,15 +48,12 @@ const UsersPage = () => {
       await loadUsers();
       setIsAddUserOpen(false);
       
-      toast({
-        title: "User Added",
-        description: `${data.name} has been added successfully.`,
+      toast.success("User Added", {
+        description: `${data.name} has been added successfully.`
       });
     } catch (error) {
-      toast({
-        title: "Error Adding User",
-        description: "Failed to add user. Please try again.",
-        variant: "destructive",
+      toast.error("Error Adding User", {
+        description: "Failed to add user. Please try again."
       });
     }
   };
@@ -73,43 +72,43 @@ const UsersPage = () => {
       setIsEditUserOpen(false);
       setSelectedUser(null);
       
-      toast({
-        title: "User Updated",
-        description: `${data.name}'s details have been updated.`,
+      toast.success("User Updated", {
+        description: `${data.name}'s details have been updated.`
       });
     } catch (error) {
-      toast({
-        title: "Error Updating User",
-        description: "Failed to update user. Please try again.",
-        variant: "destructive",
+      toast.error("Error Updating User", {
+        description: "Failed to update user. Please try again."
       });
     }
   };
 
-  const handleDeleteUser = async (userId: string) => {
-    const userToDelete = users.find(user => user.id === userId);
-    if (userToDelete?.role === 'Admin') {
-      toast({
-        title: "Cannot Delete Admin",
-        description: "The admin user cannot be deleted.",
-        variant: "destructive",
+  const confirmDeleteUser = (user: User) => {
+    if (user.role === 'Admin') {
+      toast.error("Cannot Delete Admin", {
+        description: "The admin user cannot be deleted."
       });
       return;
     }
     
+    setUserToDelete(user);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+    
     try {
-      await userService.softDeleteUser(userId);
+      await userService.softDeleteUser(userToDelete.id);
       await loadUsers();
+      setIsDeleteDialogOpen(false);
+      setUserToDelete(null);
       
-      toast({
-        title: "User Deleted",
-        description: "The user has been removed from the system.",
+      toast.success("User Deleted", {
+        description: "The user has been removed from the system."
       });
-    } catch (error) {
-      toast({
-        title: "Error Deleting User",
-        description: "Failed to delete user. Please try again.",
-        variant: "destructive",
+    } catch (error: any) {
+      toast.error("Error Deleting User", {
+        description: error.message || "Failed to delete user. Please try again."
       });
     }
   };
@@ -124,10 +123,8 @@ const UsersPage = () => {
     if (!user) return;
 
     if (user.role === 'Admin') {
-      toast({
-        title: "Cannot Change Admin Status",
-        description: "The admin user status cannot be changed.",
-        variant: "destructive",
+      toast.error("Cannot Change Admin Status", {
+        description: "The admin user status cannot be changed."
       });
       return;
     }
@@ -140,15 +137,12 @@ const UsersPage = () => {
       }
       await loadUsers();
 
-      toast({
-        title: "Status Updated",
-        description: `${user.name}'s status has been updated.`,
+      toast.success("Status Updated", {
+        description: `${user.name}'s status has been updated.`
       });
-    } catch (error) {
-      toast({
-        title: "Error Updating Status",
-        description: "Failed to update user status. Please try again.",
-        variant: "destructive",
+    } catch (error: any) {
+      toast.error("Error Updating Status", {
+        description: error.message || "Failed to update user status. Please try again."
       });
     }
   };
@@ -157,7 +151,7 @@ const UsersPage = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyber-teal"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
         </div>
       </DashboardLayout>
     );
@@ -165,15 +159,15 @@ const UsersPage = () => {
 
   return (
     <DashboardLayout>
-      <Card className="glass-panel border-cyber-teal/30 mb-6">
+      <Card className="glass-panel border-primary/30 mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-2xl text-cyber-teal">User Management</CardTitle>
-            <CardDescription className="text-cyber-gray">
+            <CardTitle className="text-2xl text-primary">User Management</CardTitle>
+            <CardDescription className="text-[#5F5D58]">
               Manage system users, their roles and permissions
             </CardDescription>
           </div>
-          <Button className="cyber-button" onClick={() => setIsAddUserOpen(true)}>
+          <Button className="light-button" onClick={() => setIsAddUserOpen(true)}>
             <UserPlus className="mr-2 h-4 w-4" /> Add User
           </Button>
         </CardHeader>
@@ -181,7 +175,7 @@ const UsersPage = () => {
           <UserList 
             users={users}
             onEditUser={handleEditUser}
-            onDeleteUser={handleDeleteUser}
+            onDeleteUser={confirmDeleteUser}
             onViewPermissions={handleViewPermissions}
             onToggleStatus={handleStatusToggle}
           />
@@ -190,7 +184,7 @@ const UsersPage = () => {
 
       {/* Add User Dialog */}
       <Dialog open={isAddUserOpen} onOpenChange={setIsAddUserOpen}>
-        <DialogContent className="glass-panel border-cyber-teal/30 sm:max-w-md">
+        <DialogContent className="glass-panel border-primary/30 sm:max-w-md">
           <UserForm 
             onSubmit={handleAddUser}
             onCancel={() => setIsAddUserOpen(false)}
@@ -200,7 +194,7 @@ const UsersPage = () => {
       
       {/* Edit User Dialog */}
       <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
-        <DialogContent className="glass-panel border-cyber-teal/30 sm:max-w-md">
+        <DialogContent className="glass-panel border-primary/30 sm:max-w-md">
           <UserForm 
             onSubmit={handleUpdateUser}
             onCancel={() => setIsEditUserOpen(false)}
@@ -212,7 +206,7 @@ const UsersPage = () => {
       
       {/* Permissions Dialog */}
       <Dialog open={isPermissionsOpen} onOpenChange={setIsPermissionsOpen}>
-        <DialogContent className="glass-panel border-cyber-teal/30 sm:max-w-md">
+        <DialogContent className="glass-panel border-primary/30 sm:max-w-md">
           {selectedUser && (
             <UserPermissions 
               user={selectedUser}
@@ -221,6 +215,29 @@ const UsersPage = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="glass-panel border-primary/30">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#3E3D3A]">Confirm User Deletion</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#5F5D58]">
+              Are you sure you want to delete {userToDelete?.name}? This action will deactivate their account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2] hover:text-[#3E3D3A]">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#A84332] text-white hover:bg-[#A84332]/90"
+              onClick={handleDeleteUser}
+            >
+              Delete User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </DashboardLayout>
   );
 };

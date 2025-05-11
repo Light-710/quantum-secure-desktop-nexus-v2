@@ -48,18 +48,54 @@ export const userService = {
 
   // This matches the API spec PUT /admin/user/soft-delete-user
   softDeleteUser: async (employee_id: string) => {
-    const response = await api.put('/admin/user/soft-delete-user', {
-      employee_id,
-    });
-    return response.data;
+    try {
+      console.log('Attempting to soft-delete user with ID:', employee_id);
+      const response = await api.put('/admin/user/soft-delete-user', {
+        employee_id,
+      });
+      console.log('Soft delete response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error in softDeleteUser:', error);
+      
+      // Extract meaningful error message
+      let errorMessage = 'Failed to delete user. Please try again.';
+      
+      if (error.response) {
+        if (error.response.status === 404) {
+          errorMessage = 'User not found. They may have been already deleted.';
+        } else if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
   },
 
   // This matches the API spec PUT /admin/user/restore-user
   restoreUser: async (employee_id: string) => {
-    const response = await api.put('/admin/user/restore-user', {
-      employee_id,
-    });
-    return response.data;
+    try {
+      const response = await api.put('/admin/user/restore-user', {
+        employee_id,
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Error in restoreUser:', error);
+      
+      // Extract meaningful error message
+      let errorMessage = 'Failed to restore user. Please try again.';
+      
+      if (error.response) {
+        if (error.response.status === 404) {
+          errorMessage = 'User not found.';
+        } else if (error.response.data && error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      }
+      
+      throw new Error(errorMessage);
+    }
   },
   
   // Updated to include better debugging for the /user/get-profile endpoint
