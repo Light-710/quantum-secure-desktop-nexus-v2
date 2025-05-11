@@ -68,20 +68,20 @@ export function AdminInitializer() {
 
   if (isComplete) {
     return (
-      <Card className="glass-panel w-[450px] mx-auto">
+      <Card className="bg-[#FCFAF7] border-[#D6D2C9] shadow-subtle w-[450px] mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl text-blue-500">Setup Complete</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl text-[#C47D5F]">Setup Complete</CardTitle>
+          <CardDescription className="text-[#5F5D58]">
             Your admin account has been created successfully
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center space-y-4">
-            <p className="text-gray-600">
+            <p className="text-[#5F5D58]">
               You can now log in using the credentials you provided.
             </p>
             <Button 
-              className="cyber-button" 
+              className="bg-[#C47D5F] hover:bg-[#C47D5F]/90 text-white" 
               onClick={() => navigate('/login')}
             >
               Go to Login
@@ -93,16 +93,16 @@ export function AdminInitializer() {
   }
 
   return (
-    <Card className="glass-panel w-[450px] mx-auto">
+    <Card className="bg-[#FCFAF7] border-[#D6D2C9] shadow-subtle w-[450px] mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl text-blue-500">Create Admin User</CardTitle>
-        <CardDescription className="text-gray-600">
+        <CardTitle className="text-2xl text-[#C47D5F]">Create Admin User</CardTitle>
+        <CardDescription className="text-[#5F5D58]">
           Set up the first admin account for your system
         </CardDescription>
       </CardHeader>
       <CardContent>
         {errorMessage && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 flex items-start">
+          <div className="mb-4 p-3 bg-[#A84332]/10 border border-[#A84332]/30 rounded-md text-sm text-[#A84332] flex items-start">
             <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium mb-1">Backend Error</p>
@@ -124,11 +124,11 @@ export function AdminInitializer() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Full Name</FormLabel>
+                  <FormLabel className="text-[#3E3D3A]">Full Name</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's full name" 
-                      className="border-gray-200 focus:border-blue-300"
+                      className="border-[#D6D2C9] bg-white focus-visible:border-[#C47D5F] focus-visible:ring-[#C47D5F]/20"
                       {...field} 
                     />
                   </FormControl>
@@ -142,11 +142,11 @@ export function AdminInitializer() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Email</FormLabel>
+                  <FormLabel className="text-[#3E3D3A]">Email</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's email address" 
-                      className="border-gray-200 focus:border-blue-300"
+                      className="border-[#D6D2C9] bg-white focus-visible:border-[#C47D5F] focus-visible:ring-[#C47D5F]/20"
                       {...field} 
                     />
                   </FormControl>
@@ -160,11 +160,11 @@ export function AdminInitializer() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Employee ID</FormLabel>
+                  <FormLabel className="text-[#3E3D3A]">Employee ID</FormLabel>
                   <FormControl>
                     <Input 
                       placeholder="Enter admin's employee ID" 
-                      className="border-gray-200 focus:border-blue-300"
+                      className="border-[#D6D2C9] bg-white focus-visible:border-[#C47D5F] focus-visible:ring-[#C47D5F]/20"
                       {...field} 
                     />
                   </FormControl>
@@ -178,12 +178,12 @@ export function AdminInitializer() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-700">Password</FormLabel>
+                  <FormLabel className="text-[#3E3D3A]">Password</FormLabel>
                   <FormControl>
                     <Input 
                       type="password"
                       placeholder="Enter a secure password"
-                      className="border-gray-200 focus:border-blue-300"
+                      className="border-[#D6D2C9] bg-white focus-visible:border-[#C47D5F] focus-visible:ring-[#C47D5F]/20"
                       {...field} 
                     />
                   </FormControl>
@@ -198,7 +198,7 @@ export function AdminInitializer() {
             <div className="pt-4">
               <Button 
                 type="submit" 
-                className="cyber-button w-full"
+                className="bg-[#C47D5F] hover:bg-[#C47D5F]/90 text-white w-full"
                 disabled={isLoading}
               >
                 {isLoading ? "Creating Admin..." : "Create Admin User"}
@@ -207,14 +207,14 @@ export function AdminInitializer() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="text-sm text-gray-600 text-center flex flex-col space-y-2">
+      <CardFooter className="text-sm text-[#5F5D58] text-center flex flex-col space-y-2">
         <p>This setup should only be used once to create the first admin account.</p>
         
-        <div className="text-xs p-3 bg-blue-50 border border-blue-100 rounded-md">
-          <p className="font-medium text-blue-600 mb-1">Backend Implementation Required</p>
-          <p>For this admin creation to work, make sure your backend has:</p>
-          <ul className="list-disc list-inside mt-1">
-            <li>An endpoint at <code>/auth/initialize-admin</code> that accepts POST requests</li>
+        <div className="text-xs p-3 bg-[#8A9B6E]/10 border border-[#8A9B6E]/30 rounded-md">
+          <p className="font-medium text-[#8A9B6E] mb-1">Backend Implementation Required</p>
+          <p className="text-[#5F5D58]">For this admin creation to work, make sure your backend has:</p>
+          <ul className="list-disc list-inside mt-1 text-[#5F5D58]">
+            <li>An endpoint at <code className="bg-[#F7F5F2] px-1 py-0.5 rounded text-[#3E3D3A]">/auth/initialize-admin</code> that accepts POST requests</li>
             <li>Logic to verify no admin exists before creating a new one</li>
             <li>Proper validation and error handling</li>
             <li>User credential storage in your database</li>

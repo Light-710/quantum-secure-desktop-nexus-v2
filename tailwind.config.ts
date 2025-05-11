@@ -19,95 +19,95 @@ export default {
     },
     extend: {
       colors: {
-        border: "hsl(0 0% 89%)",
-        input: "hsl(0 0% 94%)",
-        ring: "hsl(0 0% 30%)",
-        background: "#F8F9FA",      // Off-White background
-        foreground: "#2C3E50",      // Deep Navy text
+        border: "#D6D2C9",       // Muted Beige-Gray
+        input: "#D6D2C9",        // Muted Beige-Gray
+        ring: "#C47D5F",         // Terracotta
+        background: "#F7F5F2",   // Warm Off-White
+        foreground: "#5F5D58",   // Soft Gray-Brown
         primary: {
-          DEFAULT: "#2C3E50",       // Deep Navy primary
-          foreground: "hsl(0 0% 98%)",
+          DEFAULT: "#C47D5F",    // Muted Terracotta
+          foreground: "#FFFFFF", // White for text on primary
         },
         secondary: {
-          DEFAULT: "#E9ECEF",       // Light Gray secondary
-          foreground: "#2C3E50",    // Deep Navy text on secondary
+          DEFAULT: "#8A9B6E",    // Sage Green
+          foreground: "#FFFFFF", // White for text on secondary
         },
         destructive: {
-          DEFAULT: "hsl(0 84.2% 60.2%)",
-          foreground: "hsl(0 0% 98%)",
+          DEFAULT: "#A84332",    // Brick Red
+          foreground: "#FFFFFF", // White for text on destructive
         },
         muted: {
-          DEFAULT: "#E9ECEF",       // Light Gray for muted components
-          foreground: "#6c757d",    // Muted text 
+          DEFAULT: "#F7F5F2",    // Warm Off-White (same as background)
+          foreground: "#A8A39D", // Muted Beige
         },
         accent: {
-          DEFAULT: "#E9ECEF",       // Light Gray accent
-          foreground: "#2C3E50",    // Deep Navy on accent
+          DEFAULT: "#8A9B6E",    // Sage Green (same as secondary)
+          foreground: "#FFFFFF", // White for text on accent
         },
         popover: {
-          DEFAULT: "hsl(0 0% 100%)",
-          foreground: "#2C3E50",    // Deep Navy text
+          DEFAULT: "#FCFAF7",    // Cream
+          foreground: "#3E3D3A", // Warm Charcoal
         },
         card: {
-          DEFAULT: "hsl(0 0% 100%)",
-          foreground: "#2C3E50",    // Deep Navy text
+          DEFAULT: "#FCFAF7",    // Cream
+          foreground: "#3E3D3A", // Warm Charcoal
         },
-        // Keep existing color groups but update key colors
+        // Keep previous color groups but update with new palette
         modern: {
-          50: "#F8F9FA",   // Lightest - off-white
-          100: "#E9ECEF",  // Light - light gray
-          200: "#dee2e6",  // Light Gray
-          300: "#ced4da",  // Medium Gray
-          400: "#adb5bd",  // Dark Gray
-          500: "#6c757d",  // Darkest Gray
-          blue: "#2C3E50", // Primary Blue - deep navy
-          teal: "#4aa3df", // Lighter blue accent
-          green: "#2ecc71", // Green
-          red: "#e74c3c",  // Red
-          purple: "#9b59b6", // Purple
+          50: "#F7F5F2",        // Warm Off-White
+          100: "#FCFAF7",       // Cream
+          200: "#D6D2C9",       // Muted Beige-Gray
+          300: "#A8A39D",       // Muted Beige
+          400: "#5F5D58",       // Soft Gray-Brown
+          500: "#3E3D3A",       // Warm Charcoal
+          blue: "#C47D5F",      // Terracotta (replacing blue)
+          teal: "#8A9B6E",      // Sage Green (replacing teal)
+          green: "#6B8E23",     // Olive Green
+          red: "#A84332",       // Brick Red
+          purple: "#9B8579",    // Warm Brown (replacing purple)
         },
-        // Keep existing colors but not actively using
+        // Update existing colors to match new theme
         luxury: {
-          50: "hsl(0, 0%, 98%)",   // Lightest
-          100: "hsl(0, 0%, 94%)",  // Light
-          200: "hsl(0, 0%, 89%)",  // Light Gray
-          300: "hsl(0, 0%, 70%)",  // Medium Gray
-          400: "hsl(0, 0%, 45%)",  // Dark Gray
-          500: "hsl(0, 0%, 30%)",  // Darkest Gray
-          accent: "hsl(40, 100%, 70%)", // Warm Gold
+          50: "#FCFAF7",        // Cream
+          100: "#F7F5F2",       // Warm Off-White
+          200: "#D6D2C9",       // Muted Beige-Gray
+          300: "#A8A39D",       // Muted Beige
+          400: "#5F5D58",       // Soft Gray-Brown
+          500: "#3E3D3A",       // Warm Charcoal
+          accent: "#E5A17D",    // Peach
         },
         warm: {
-          50: "#FEF7CD",   // Soft Yellow
-          100: "#FEC6A1",  // Soft Orange
-          200: "#FDE1D3",  // Soft Peach
-          300: "#F97316",  // Bright Orange
+          50: "#FCFAF7",        // Cream
+          100: "#E5A17D",       // Peach
+          200: "#C47D5F",       // Terracotta
+          300: "#A84332",       // Brick Red
         },
         cyber: {
-          "dark": "#0f0f17",       // Dark background
-          "dark-blue": "#121726",  // Darker blue background
-          "blue": "#2C3E50",       // Updated to more modern blue
-          "teal": "#4aa3df",       // Updated to more modern teal
-          "green": "#2ecc71",      // Updated to more modern green
-          "red": "#e74c3c",        // Updated to more modern red
-          "purple": "#9b59b6",     // Updated to more modern purple
-          "gray": "#9ca3af",       // Gray text
-          "black": "#000000e6",    // Transparent black overlay
-          "light": "#f8f8f8",      // Light text color
+          "dark": "#3E3D3A",       // Warm Charcoal
+          "dark-blue": "#5F5D58",  // Soft Gray-Brown
+          "blue": "#C47D5F",       // Terracotta
+          "teal": "#8A9B6E",       // Sage Green
+          "green": "#6B8E23",      // Olive Green
+          "red": "#A84332",        // Brick Red
+          "purple": "#9B8579",     // Warm Brown
+          "gray": "#A8A39D",       // Muted Beige
+          "black": "#3E3D3A",      // Warm Charcoal
+          "light": "#F7F5F2",      // Warm Off-White
         },
       },
       backgroundImage: {
-        'warm-gradient': 'linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%)',
-        'cyber-gradient': 'linear-gradient(to right, #f3f4f6, #ffffff)',
-        'blue-gradient': 'linear-gradient(135deg, #E9ECEF 0%, #F8F9FA 100%)',
-        'green-gradient': 'linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%)',
-        'light-gradient': 'linear-gradient(to right, #F8F9FA, #ffffff)',
+        'warm-gradient': 'linear-gradient(135deg, #FCFAF7 0%, #E5A17D 100%)',
+        'cyber-gradient': 'linear-gradient(to right, #F7F5F2, #FCFAF7)',
+        'blue-gradient': 'linear-gradient(135deg, #FCFAF7 0%, #E5A17D 100%)',
+        'green-gradient': 'linear-gradient(135deg, #F7F5F2 0%, #8A9B6E 50%)',
+        'light-gradient': 'linear-gradient(to right, #F7F5F2, #FCFAF7)',
       },
       boxShadow: {
-        'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-        'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025)',
-        'warm-subtle': '0 4px 6px -1px rgba(249,115,22,0.05), 0 2px 4px -1px rgba(249,115,22,0.03)',
-        'blue-glow': '0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.2)',
-        'green-glow': '0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.2)',
+        'subtle': '0 4px 6px -1px rgba(214, 210, 201, 0.1), 0 2px 4px -1px rgba(214, 210, 201, 0.06)',
+        'elegant': '0 10px 15px -3px rgba(214, 210, 201, 0.1), 0 4px 6px -2px rgba(214, 210, 201, 0.05)',
+        'warm-subtle': '0 4px 6px -1px rgba(196, 125, 95, 0.05), 0 2px 4px -1px rgba(196, 125, 95, 0.03)',
+        'blue-glow': '0 0 10px rgba(196, 125, 95, 0.5), 0 0 20px rgba(196, 125, 95, 0.2)',
+        'green-glow': '0 0 10px rgba(138, 155, 110, 0.5), 0 0 20px rgba(138, 155, 110, 0.2)',
       },
       keyframes: {
         "fade-in": {

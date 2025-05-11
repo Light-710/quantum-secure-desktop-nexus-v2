@@ -20,19 +20,19 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold;
+    @apply font-semibold text-[#3E3D3A]; /* Warm Charcoal for headers */
   }
 }
 
 @layer components {
   /* Simple panel effect */
   .glass-panel {
-    @apply bg-white border border-secondary shadow-sm rounded-lg;
+    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg;
   }
   
   /* Simple button */
   .cyber-button {
-    @apply bg-primary text-white hover:bg-primary/80 
+    @apply bg-primary text-white hover:bg-primary/90 
     transition-all duration-300 rounded px-4 py-2 flex items-center;
   }
   
@@ -48,20 +48,20 @@
   
   /* Light theme specific styles */
   .light-panel {
-    @apply bg-white border border-secondary/50 shadow-sm rounded-lg;
+    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg;
   }
   
   .light-button {
-    @apply bg-primary text-white hover:bg-primary/80
+    @apply bg-primary text-white hover:bg-primary/90
     transition-all duration-300 rounded-md px-4 py-2 flex items-center;
   }
   
   .light-card {
-    @apply bg-white border border-secondary/50 shadow-sm rounded-lg p-6;
+    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg p-6;
   }
   
   .light-input {
-    @apply bg-white border border-secondary rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply bg-white border border-[#D6D2C9] rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
   }
   
   .light-header {
@@ -70,5 +70,32 @@
   
   .light-link {
     @apply text-primary hover:text-primary/80 transition-colors;
+  }
+
+  /* Table styles */
+  .warm-table-header {
+    @apply bg-background text-[#3E3D3A];
+  }
+  
+  .warm-table-row-odd {
+    @apply bg-[#FCFAF7];
+  }
+  
+  .warm-table-row-even {
+    @apply bg-[#F7F5F2];
+  }
+  
+  .warm-table-row-hover {
+    @apply hover:bg-[#00000005];
+  }
+
+  /* Form elements */
+  .warm-input {
+    @apply bg-white border border-[#D6D2C9] rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#C47D5F]/20 focus:border-[#C47D5F];
+  }
+
+  /* Card with warm shadow */
+  .warm-card {
+    @apply bg-[#FCFAF7] shadow-[0_4px_10px_-2px_rgba(214,210,201,0.2)] rounded-lg border border-[#D6D2C9]/50;
   }
 }

@@ -51,21 +51,21 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   return (
     <div className="dashboard-layout">
-      <aside className={`bg-white border-r border-gray-100 h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
+      <aside className={`bg-[#FCFAF7] border-r border-[#D6D2C9] h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
         <div className="flex flex-col h-full">
           <div className="p-4 flex items-center justify-center">
             <Link to={`/dashboard/${user?.role?.toLowerCase()}`} className="flex items-center">
-              <span className={`text-2xl font-bold text-orange-500 ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
-              <span className={`text-2xl font-bold text-orange-500 ${isSidebarOpen ? 'hidden' : 'block'}`}>P</span>
+              <span className={`text-2xl font-bold text-[#C47D5F] ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
+              <span className={`text-2xl font-bold text-[#C47D5F] ${isSidebarOpen ? 'hidden' : 'block'}`}>P</span>
             </Link>
           </div>
           
           <button 
-            className="absolute -right-3 top-6 bg-white border border-gray-100 rounded-full p-1"
+            className="absolute -right-3 top-6 bg-[#FCFAF7] border border-[#D6D2C9] rounded-full p-1"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             <svg 
-              className={`w-3 h-3 text-gray-500 transition-transform ${isSidebarOpen ? 'rotate-0' : 'rotate-180'}`} 
+              className={`w-3 h-3 text-[#5F5D58] transition-transform ${isSidebarOpen ? 'rotate-0' : 'rotate-180'}`} 
               viewBox="0 0 24 24"
             >
               <path 
@@ -75,36 +75,36 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </svg>
           </button>
           
-          <Separator className="my-4" />
+          <Separator className="my-4 bg-[#D6D2C9]" />
           
           <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
             {getNavItems().map((item, index) => (
               <Link 
                 key={index}
                 to={item.path}
-                className="flex items-center px-4 py-3 text-gray-600 hover:text-orange-500 hover:bg-orange-50 rounded-md transition-colors"
+                className="flex items-center px-4 py-3 text-[#5F5D58] hover:text-[#C47D5F] hover:bg-[#F7F5F2] rounded-md transition-colors"
               >
-                <span className="text-gray-400">{item.icon}</span>
+                <span className="text-[#A8A39D]">{item.icon}</span>
                 {isSidebarOpen && <span className="ml-3">{item.name}</span>}
               </Link>
             ))}
           </nav>
           
-          <div className="p-4 border-t border-gray-100">
+          <div className="p-4 border-t border-[#D6D2C9]">
             <div className="flex items-center">
-              <Avatar className="h-10 w-10 border border-gray-100">
+              <Avatar className="h-10 w-10 border border-[#D6D2C9]">
                 <AvatarImage src={user?.profile_picture} />
-                <AvatarFallback className="bg-orange-100 text-orange-600">
+                <AvatarFallback className="bg-[#C47D5F]/10 text-[#C47D5F]">
                   {user?.name ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
               {isSidebarOpen && (
                 <div className="ml-3">
-                  <p className="text-sm font-medium truncate max-w-[140px]">{user?.name}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm font-medium text-[#3E3D3A] truncate max-w-[140px]">{user?.name}</p>
+                  <p className="text-xs text-[#A8A39D]">
                     <span className={`
                       inline-block w-2 h-2 rounded-full mr-1 
-                      ${user?.role === 'Admin' ? 'bg-red-500' : user?.role === 'Manager' ? 'bg-green-500' : 'bg-orange-500'}
+                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : user?.role === 'Manager' ? 'bg-[#8A9B6E]' : 'bg-[#C47D5F]'}
                     `}></span>
                     {user?.role}
                   </p>
@@ -115,7 +115,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button 
                 variant="outline" 
                 size="icon"
-                className="rounded-full"
+                className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
                 onClick={() => navigate(`/dashboard/${user?.role?.toLowerCase()}/settings`)}
               >
                 <Settings size={18} />
@@ -124,7 +124,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <Button 
                 variant="outline" 
                 size="icon"
-                className="rounded-full hover:bg-red-50 hover:text-red-500"
+                className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#A84332]/10 hover:text-[#A84332]"
                 onClick={logout}
               >
                 <LogOut size={18} />
@@ -135,9 +135,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </aside>
       
       <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <header className="bg-white sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-gray-100">
+        <header className="bg-[#FCFAF7] sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-[#D6D2C9]">
           <div>
-            <h1 className="text-xl font-semibold text-gray-800">
+            <h1 className="text-xl font-semibold text-[#3E3D3A]">
               {user?.role} Dashboard
             </h1>
           </div>
@@ -146,17 +146,17 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             <Button 
               variant="outline" 
               size="icon"
-              className="rounded-full"
+              className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2]"
             >
               <Bell size={18} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#A84332] text-white text-xs rounded-full flex items-center justify-center">
                 3
               </span>
             </Button>
           </div>
         </header>
         
-        <div className="p-6 bg-gray-50">
+        <div className="p-6 bg-[#F7F5F2]">
           {children}
         </div>
       </main>
