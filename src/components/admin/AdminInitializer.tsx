@@ -24,7 +24,7 @@ export function AdminInitializer() {
     defaultValues: {
       name: '',
       email: '',
-      username: '',
+      employee_id: '',
       password: '',
       role: 'Admin',
     },
@@ -157,7 +157,7 @@ export function AdminInitializer() {
             
             <FormField
               control={form.control}
-              name="username"
+              name="employee_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-[#3E3D3A]">Employee ID</FormLabel>
