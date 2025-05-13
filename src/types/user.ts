@@ -6,7 +6,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  employee_id: string; // Changing from username to employee_id to match API
+  employee_id: string; // This is the correct field expected by the API
   role: UserRole;
   status: UserStatus;
   lastLogin: string;
@@ -16,7 +16,7 @@ export type User = {
 export type UserFormValues = {
   name: string;
   email: string;
-  employee_id: string; // Changing from username to employee_id to match API
+  employee_id: string; // Using employee_id instead of username
   password: string;
   role: UserRole;
 };

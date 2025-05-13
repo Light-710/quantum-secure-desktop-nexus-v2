@@ -12,7 +12,7 @@ export const userService = {
   // This matches the API spec POST /admin/user/create-user
   createUser: async (userData: UserFormValues) => {
     const payload = {
-      employee_id: userData.employee_id, // Using employee_id directly
+      employee_id: userData.employee_id,
       name: userData.name,
       email: userData.email,
       password: userData.password,
@@ -23,7 +23,7 @@ export const userService = {
     return response.data;
   },
 
-  // This matches the API spec PUT /admin/user/update-user (although not in the Swagger doc)
+  // This matches the API spec PUT /admin/user/update-user
   updateUser: async (employee_id: string, userData: UserFormValues) => {
     const payload = {
       employee_id,
@@ -49,12 +49,18 @@ export const userService = {
   // This matches the API spec PUT /admin/user/soft-delete-user
   softDeleteUser: async (employee_id: string) => {
     try {
-      console.log('Attempting to soft-delete user with ID:', employee_id);
+      // Validate input to prevent sending undefined values
+      if (!employee_id) {
+        throw new Error('Employee ID is required for deletion');
+      }
       
-      // Send employee_id in the request body as expected by the backend
-      const response = await api.put('/admin/user/soft-delete-user', {
-        employee_id: employee_id,
-      });
+      console.log('Attempting to soft-delete user with employee_id:', employee_id);
+      
+      // Explicitly structure the payload as expected by the API
+      const payload = { employee_id };
+      console.log('Sending payload:', payload);
+      
+      const response = await api.put('/admin/user/soft-delete-user', payload);
       
       console.log('Soft delete response:', response.data);
       return response.data;
@@ -79,10 +85,18 @@ export const userService = {
   // This matches the API spec PUT /admin/user/restore-user
   restoreUser: async (employee_id: string) => {
     try {
-      // Ensure we're sending employee_id in the request body
-      const response = await api.put('/admin/user/restore-user', {
-        employee_id: employee_id,
-      });
+      // Validate input to prevent sending undefined values
+      if (!employee_id) {
+        throw new Error('Employee ID is required for restoration');
+      }
+      
+      console.log('Attempting to restore user with employee_id:', employee_id);
+      
+      // Explicitly structure the payload as expected by the API
+      const payload = { employee_id };
+      console.log('Sending payload:', payload);
+      
+      const response = await api.put('/admin/user/restore-user', payload);
       return response.data;
     } catch (error: any) {
       console.error('Error in restoreUser:', error);

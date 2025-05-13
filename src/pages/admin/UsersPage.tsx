@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -104,11 +105,20 @@ const UsersPage = () => {
   const handleDeleteUser = async () => {
     if (!userToDelete) {
       console.error('No user to delete. userToDelete is null or undefined');
+      toast.error("Error Deleting User", {
+        description: "User information is missing. Please try again."
+      });
       return;
     }   
     
     try {
       console.log('User to delete:', userToDelete);
+      console.log('Employee ID to use for deletion:', userToDelete.employee_id);
+      
+      // Validate employee_id exists before making the API call
+      if (!userToDelete.employee_id) {
+        throw new Error('Employee ID is missing or invalid');
+      }
       
       // Use employee_id consistently for the API call
       await userService.softDeleteUser(userToDelete.employee_id);
@@ -126,11 +136,6 @@ const UsersPage = () => {
         description: error.message || "Failed to delete user. Please try again."
       });
     }
-  };
-
-  const handleViewPermissions = (user: User) => {
-    setSelectedUser(user);
-    setIsPermissionsOpen(true);
   };
 
   const handleStatusToggle = async (employee_id: string) => {
@@ -151,6 +156,11 @@ const UsersPage = () => {
     try {
       console.log('Toggling status for user:', user);
       console.log('Using employee_id:', user.employee_id);
+      
+      // Validate employee_id exists before making the API call
+      if (!user.employee_id) {
+        throw new Error('Employee ID is missing or invalid');
+      }
       
       if (user.status === 'Active') {
         await userService.softDeleteUser(user.employee_id);
