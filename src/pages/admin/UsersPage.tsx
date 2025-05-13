@@ -109,25 +109,8 @@ const UsersPage = () => {
     
     try {
       console.log('User to delete:', userToDelete);
-      // Direct debug logs to verify the username right before the API call
-      console.log('About to delete user with username:', userToDelete.id);
       
-      // Using username directly for the API call
-      await userService.softDeleteUser(userToDelete.id);
-      // Direct debug logs to verify the employee_id right before the API call
-      console.log('About to delete user with employee_id:', userToDelete.employee_id);
-      
-      // Using employee_id directly for the API call
-      await userService.softDeleteUser(userToDelete.employee_id);
-      // Direct debug logs to verify the employee_id right before the API call
-      console.log('About to delete user with employee_id:', userToDelete.employee_id);
-      
-      // Using employee_id directly for the API call
-      await userService.softDeleteUser(userToDelete.employee_id);
-      // Direct debug logs to verify the employee_id right before the API call
-      console.log('About to delete user with employee_id:', userToDelete.employee_id);
-      
-      // Using employee_id directly for the API call
+      // Use employee_id consistently for the API call
       await userService.softDeleteUser(userToDelete.employee_id);
       
       await loadUsers();
