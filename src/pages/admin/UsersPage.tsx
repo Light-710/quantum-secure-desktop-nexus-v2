@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -100,6 +99,11 @@ const UsersPage = () => {
     
     setUserToDelete(user);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleViewPermissions = (user: User) => {
+    setSelectedUser(user);
+    setIsPermissionsOpen(true);
   };
 
   const handleDeleteUser = async () => {
