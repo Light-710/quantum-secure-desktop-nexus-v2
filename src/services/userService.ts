@@ -11,7 +11,7 @@ export const userService = {
   // This matches the API spec POST /admin/user/create-user
   createUser: async (userData: UserFormValues) => {
     const payload = {
-      employee_id: userData.username, // Using username as employee_id
+      employee_id: userData.employee_id, // Using employee_id directly
       name: userData.name,
       email: userData.email,
       password: userData.password,
