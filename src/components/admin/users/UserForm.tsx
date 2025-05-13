@@ -21,7 +21,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
     defaultValues: {
       name: initialData?.name ?? "",
       email: initialData?.email ?? "",
-      username: initialData?.username ?? "",
+      employee_id: initialData?.employee_id ?? "",
       password: "",
       role: initialData?.role ?? "Employee",
     },
@@ -68,7 +68,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
         
         <FormField
           control={form.control}
-          name="username"
+          name="employee_id"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-cyber-teal">Employee ID</FormLabel>

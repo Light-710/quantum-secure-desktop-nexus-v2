@@ -1,3 +1,4 @@
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Shield, Pencil, Trash2, Key } from "lucide-react";
@@ -6,9 +7,9 @@ import type { User } from "@/types/user";
 interface UserListProps {
   users: User[];
   onEditUser: (user: User) => void;
-  onDeleteUser: (username: string) => void;
+  onDeleteUser: (employee_id: string) => void;
   onViewPermissions: (user: User) => void;
-  onToggleStatus: (username: string) => void;
+  onToggleStatus: (employee_id: string) => void;
 }
 
 export function UserList({ 
@@ -43,7 +44,7 @@ export function UserList({
                   <div>
                     <p className="text-sm font-medium text-cyber-teal">{user.name}</p>
                     <div className="text-xs text-cyber-gray">{user.email}</div>
-                    <div className="text-xs text-cyber-gray/70">@{user.username}</div>
+                    <div className="text-xs text-cyber-gray/70">@{user.employee_id}</div>
                   </div>
                 </div>
               </TableCell>
@@ -94,7 +95,7 @@ export function UserList({
                     variant="outline" 
                     size="sm" 
                     className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                    onClick={() => onDeleteUser(user.username)}
+                    onClick={() => onDeleteUser(user.employee_id)}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -106,7 +107,7 @@ export function UserList({
                         ? 'hover:bg-yellow-400/20 hover:text-yellow-400'
                         : 'hover:bg-green-400/20 hover:text-green-400'
                     }`}
-                    onClick={() => onToggleStatus(user.username)}
+                    onClick={() => onToggleStatus(user.employee_id)}
                   >
                     <Key className="h-4 w-4" />
                   </Button>

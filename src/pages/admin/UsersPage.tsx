@@ -66,7 +66,7 @@ const UsersPage = () => {
     if (!selectedUser) return;
 
     try {
-      await userService.updateUser(selectedUser.id, data);
+      await userService.updateUser(selectedUser.employee_id, data);
       await loadUsers();
       setIsEditUserOpen(false);
       setSelectedUser(null);
@@ -81,12 +81,12 @@ const UsersPage = () => {
     }
   };
 
-  const confirmDeleteUser = (username: string) => {
-    console.log('confirmDeleteUser called with username:', username);
-    const user = users.find(u => u.username === username);
+  const confirmDeleteUser = (employee_id: string) => {
+    console.log('confirmDeleteUser called with employee_id:', employee_id);
+    const user = users.find(u => u.employee_id === employee_id);
     
     if (!user) {
-      console.error('User not found with username:', username);
+      console.error('User not found with employee_id:', employee_id);
       return;
     }
     
@@ -105,15 +105,31 @@ const UsersPage = () => {
     if (!userToDelete) {
       console.error('No user to delete. userToDelete is null or undefined');
       return;
-    }
+    }   
     
     try {
       console.log('User to delete:', userToDelete);
+<<<<<<< HEAD
+<<<<<<< HEAD
       // Direct debug logs to verify the username right before the API call
-      console.log('About to delete user with username:', userToDelete.username);
+      console.log('About to delete user with username:', userToDelete.id);
       
       // Using username directly for the API call
-      await userService.softDeleteUser(userToDelete.username);
+      await userService.softDeleteUser(userToDelete.id);
+=======
+      // Direct debug logs to verify the employee_id right before the API call
+      console.log('About to delete user with employee_id:', userToDelete.employee_id);
+      
+      // Using employee_id directly for the API call
+      await userService.softDeleteUser(userToDelete.employee_id);
+>>>>>>> 8e05a2dc387326a17c9543bdcc29711c22c88208
+=======
+      // Direct debug logs to verify the employee_id right before the API call
+      console.log('About to delete user with employee_id:', userToDelete.employee_id);
+      
+      // Using employee_id directly for the API call
+      await userService.softDeleteUser(userToDelete.employee_id);
+>>>>>>> 8e05a2dc387326a17c9543bdcc29711c22c88208
       
       await loadUsers();
       setIsDeleteDialogOpen(false);
@@ -135,11 +151,11 @@ const UsersPage = () => {
     setIsPermissionsOpen(true);
   };
 
-  const handleStatusToggle = async (username: string) => {
-    console.log('handleStatusToggle called with username:', username);
-    const user = users.find(u => u.username === username);
+  const handleStatusToggle = async (employee_id: string) => {
+    console.log('handleStatusToggle called with employee_id:', employee_id);
+    const user = users.find(u => u.employee_id === employee_id);
     if (!user) {
-      console.error('User not found with username:', username);
+      console.error('User not found with employee_id:', employee_id);
       return;
     }
 
@@ -152,12 +168,12 @@ const UsersPage = () => {
 
     try {
       console.log('Toggling status for user:', user);
-      console.log('Using username:', user.username);
+      console.log('Using employee_id:', user.employee_id);
       
       if (user.status === 'Active') {
-        await userService.softDeleteUser(user.username);
+        await userService.softDeleteUser(user.employee_id);
       } else {
-        await userService.restoreUser(user.username);
+        await userService.restoreUser(user.employee_id);
       }
       await loadUsers();
 
