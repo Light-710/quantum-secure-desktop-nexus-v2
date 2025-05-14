@@ -88,6 +88,7 @@ export function UserList({
                     size="sm" 
                     className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
                     onClick={() => onEditUser(user)}
+                    title="Edit User"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -96,6 +97,8 @@ export function UserList({
                     size="sm" 
                     className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
                     onClick={() => onDeleteUser(user.employee_id)}
+                    disabled={user.status.toLowerCase() !== 'active'}
+                    title="Deactivate User"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -108,6 +111,8 @@ export function UserList({
                         : 'hover:bg-green-400/20 hover:text-green-400'
                     }`}
                     onClick={() => onToggleStatus(user.employee_id)}
+                    disabled={user.status.toLowerCase() === 'active'}
+                    title="Activate User"
                   >
                     <Key className="h-4 w-4" />
                   </Button>
