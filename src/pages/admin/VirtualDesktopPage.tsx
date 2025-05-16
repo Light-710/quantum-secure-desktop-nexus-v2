@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,34 +9,20 @@ import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
 import { vmService } from '@/services/vmService';
-import { VMStatus, VirtualMachine as ManagementVirtualMachine } from '@/services/vmManagementService';
-
-// Define interfaces for VM data
-interface VMResources {
-  cpu: number;
-  memory: number;
-  disk: number;
-  network: number;
-}
-
-interface VirtualMachine {
-  id: string;
-  name: string;
-  status: VMStatus;
-  os: string;
-  assigned_user: string;
-  uptime: string;
-  health: string;
-  ip_address: string;
-  last_snapshot?: string;
-  resources: VMResources;
-}
+import { 
+  VirtualMachine,
+  VMStatus,
+  loadUserVMs,
+  handleVMAction,
+  mockVMs
+} from '@/services/vmManagementService';
 
 const VirtualDesktopPage = () => {
   const [vms, setVMs] = useState<VirtualMachine[]>([]);
   const [selectedVM, setSelectedVM] = useState<VirtualMachine | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleViewDetails = (vm: VirtualMachine) => {
     setSelectedVM(vm);
@@ -51,39 +36,19 @@ const VirtualDesktopPage = () => {
   const vmsByOs = {
     Windows: vms.filter(vm => vm.os === 'Windows').length,
     Linux: vms.filter(vm => vm.os === 'Linux').length,
-    Other: vms.filter(vm => vm.os === 'Other').length,
+    Other: vms.filter(vm => vm.os !== 'Windows' && vm.os !== 'Linux').length,
   };
 
   const handleAction = async (vmId: string, action: string, instanceOs: string, employeeId: string) => {
     setActionLoading(vmId);
     
     try {
-      let response;
-      
-      switch (action.toLowerCase()) {
-        case 'start':
-          response = await vmService.startVM(instanceOs, employeeId);
-          break;
-        case 'stop':
-          response = await vmService.stopVM(instanceOs, employeeId);
-          break;
-        case 'restart':
-          response = await vmService.restartVM(instanceOs, employeeId);
-          break;
-        default:
-          throw new Error(`Unknown action: ${action}`);
-      }
-      
-      toast(`VM ${action} Successful`, {
-        description: response.message || `The VM has been ${action.toLowerCase()}ed.`
-      });
+      await handleVMAction(vmId, action, instanceOs, employeeId);
       
       // Refresh VM list after action
-      loadVMs();
-    } catch (error: any) {
-      toast.error(`VM ${action} Failed`, {
-        description: error.response?.data?.message || `Failed to ${action.toLowerCase()} VM.`
-      });
+      await loadVMs();
+    } catch (error) {
+      console.error(`Error executing VM action:`, error);
     } finally {
       setActionLoading(null);
     }
@@ -91,16 +56,19 @@ const VirtualDesktopPage = () => {
 
   // Load VM data from API
   const loadVMs = async () => {
+    setIsLoading(true);
     try {
-      // This is a placeholder for a real API call that would fetch VM data
-      // In a real implementation, you would make an API call here and transform the response
-      // Since there's no specific VM listing endpoint in the API spec, 
-      // we'll leave this as a placeholder for now
-      setVMs([]);
+      // Load VMs without specific employee_id to get all VMs (admin view)
+      const loadedVMs = await loadUserVMs();
+      setVMs(loadedVMs);
     } catch (error: any) {
       toast.error('Error loading VMs', {
         description: error.message || 'Failed to load virtual machines.'
       });
+      // Fallback to mock data in case of error
+      setVMs(mockVMs);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -211,7 +179,16 @@ const VirtualDesktopPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {vms.length > 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-6">
+                      <div className="flex justify-center">
+                        <div className="animate-spin h-8 w-8 border-2 border-cyber-teal border-t-transparent rounded-full"></div>
+                      </div>
+                      <div className="mt-2 text-cyber-gray">Loading virtual machines...</div>
+                    </TableCell>
+                  </TableRow>
+                ) : vms.length > 0 ? (
                   vms.map((vm) => (
                     <TableRow key={vm.id} className={`hover:bg-cyber-dark-blue/20 ${
                       vm.status === 'Error' ? 'bg-cyber-red/5' : ''
@@ -331,7 +308,7 @@ const VirtualDesktopPage = () => {
       {/* VM Details Dialog */}
       {selectedVM && (
         <VMDetailsDialog
-          vm={selectedVM as unknown as ManagementVirtualMachine}
+          vm={selectedVM}
           isOpen={isDetailsOpen}
           onOpenChange={setIsDetailsOpen}
           actionLoading={actionLoading}
