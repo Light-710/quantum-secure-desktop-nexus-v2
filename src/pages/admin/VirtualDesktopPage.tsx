@@ -4,7 +4,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { RefreshCw, Windows, Linux } from 'lucide-react';
+import { RefreshCw, LayoutGrid, Terminal } from 'lucide-react';
 import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
@@ -186,9 +186,9 @@ const VirtualDesktopPage = () => {
                               'bg-purple-500/20 border-purple-500/30'
                             }`}>
                               {vm.os.toLowerCase() === 'windows' ? (
-                                <Windows className="h-4 w-4" />
+                                <LayoutGrid className="h-4 w-4" />
                               ) : vm.os.toLowerCase() === 'linux' ? (
-                                <Linux className="h-4 w-4" />
+                                <Terminal className="h-4 w-4" />
                               ) : (
                                 vm.os.substring(0, 1).toUpperCase()
                               )}

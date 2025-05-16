@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Monitor, Power, ExternalLink, Windows, Linux } from 'lucide-react';
+import { Monitor, Power, ExternalLink, LayoutGrid, Terminal } from 'lucide-react';
 import { VMStatusBadge } from './VMStatusBadge';
 import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
 
@@ -44,9 +44,9 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
                 'text-purple-400'
               }`}>
                 {vm.os.toLowerCase() === 'windows' ? (
-                  <Windows className="h-4 w-4" />
+                  <LayoutGrid className="h-4 w-4" />
                 ) : vm.os.toLowerCase() === 'linux' ? (
-                  <Linux className="h-4 w-4" />
+                  <Terminal className="h-4 w-4" />
                 ) : null}
                 {vm.os}
               </div>
