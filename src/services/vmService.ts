@@ -11,7 +11,30 @@ export interface VMStatus {
   windows: string;
 }
 
+export interface VMInfo {
+  id: number;
+  employee_id: string;
+  instance_id: string;
+  instance_os: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  guacamole_url: string;
+  user_name: string;
+  user_email: string;
+}
+
+export interface AllVMsResponse {
+  vms: VMInfo[];
+}
+
 export const vmService = {
+  // Get all VMs for admin view
+  getAllVMs: async (): Promise<AllVMsResponse> => {
+    const response = await api.get('/admin/vm/get-all-vms');
+    return response.data;
+  },
+
   // This matches the API spec POST /vm/get-status and POST /admin/vm/vm-status
   getVMStatus: async (employeeId?: string): Promise<VMStatus> => {
     if (employeeId) {

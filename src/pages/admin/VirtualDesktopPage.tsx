@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Monitor, Server, Clock, Plus } from 'lucide-react';
+import { Monitor, Server, Clock, Plus, RefreshCw } from 'lucide-react';
 import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
@@ -23,6 +24,7 @@ const VirtualDesktopPage = () => {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleViewDetails = (vm: VirtualMachine) => {
     setSelectedVM(vm);
@@ -34,9 +36,9 @@ const VirtualDesktopPage = () => {
   const totalCPUUsage = vms.reduce((sum, vm) => sum + vm.resources.cpu, 0) / (vms.length || 1);
   const totalMemoryUsage = vms.reduce((sum, vm) => sum + vm.resources.memory, 0) / (vms.length || 1);
   const vmsByOs = {
-    Windows: vms.filter(vm => vm.os === 'Windows').length,
-    Linux: vms.filter(vm => vm.os === 'Linux').length,
-    Other: vms.filter(vm => vm.os !== 'Windows' && vm.os !== 'Linux').length,
+    Windows: vms.filter(vm => vm.os.toLowerCase() === 'windows').length,
+    Linux: vms.filter(vm => vm.os.toLowerCase() === 'linux').length,
+    Other: vms.filter(vm => !['windows', 'linux'].includes(vm.os.toLowerCase())).length,
   };
 
   const handleAction = async (vmId: string, action: string, instanceOs: string, employeeId: string) => {
@@ -69,7 +71,13 @@ const VirtualDesktopPage = () => {
       setVMs(mockVMs);
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadVMs();
   };
 
   useEffect(() => {
@@ -86,9 +94,21 @@ const VirtualDesktopPage = () => {
               Monitor and control virtual desktop instances
             </CardDescription>
           </div>
-          <Button className="cyber-button">
-            <Plus className="mr-2 h-4 w-4" /> New VM
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              className="cyber-button" 
+              size="sm" 
+              variant="outline"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button className="cyber-button">
+              <Plus className="mr-2 h-4 w-4" /> New VM
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {/* System Overview Stats */}
@@ -198,11 +218,11 @@ const VirtualDesktopPage = () => {
                         <div className="flex items-center space-x-3">
                           <div className="flex-shrink-0">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white border ${
-                              vm.os === 'Windows' ? 'bg-blue-500/20 border-blue-500/30' : 
-                              vm.os === 'Linux' ? 'bg-yellow-500/20 border-yellow-500/30' : 
+                              vm.os.toLowerCase() === 'windows' ? 'bg-blue-500/20 border-blue-500/30' : 
+                              vm.os.toLowerCase() === 'linux' ? 'bg-yellow-500/20 border-yellow-500/30' : 
                               'bg-purple-500/20 border-purple-500/30'
                             }`}>
-                              {vm.os === 'Windows' ? 'W' : vm.os === 'Linux' ? 'L' : 'O'}
+                              {vm.os.substring(0, 1).toUpperCase()}
                             </div>
                           </div>
                           <div>
@@ -212,7 +232,7 @@ const VirtualDesktopPage = () => {
                             >
                               {vm.name}
                             </button>
-                            <div className="text-xs text-cyber-gray">{vm.id}</div>
+                            <div className="text-xs text-cyber-gray">{vm.instance_id || vm.id}</div>
                           </div>
                         </div>
                       </TableCell>
@@ -222,8 +242,14 @@ const VirtualDesktopPage = () => {
                         <VMStatusBadge status={vm.status} />
                       </TableCell>
 
-                      {/* Other cells */}
-                      <TableCell className="text-sm text-cyber-gray">{vm.assigned_user}</TableCell>
+                      {/* User information */}
+                      <TableCell className="text-sm text-cyber-gray">
+                        <div>
+                          <div>{vm.user_name || 'N/A'}</div>
+                          <div className="text-xs opacity-70">{vm.assigned_user}</div>
+                        </div>
+                      </TableCell>
+                      
                       <TableCell className="text-sm text-cyber-gray">
                         <div className="flex items-center space-x-1">
                           <Clock size={14} className="text-cyber-blue" />
@@ -288,6 +314,7 @@ const VirtualDesktopPage = () => {
                           actionLoading={actionLoading}
                           onAction={handleAction}
                           onViewDetails={() => handleViewDetails(vm)}
+                          guacamoleUrl={vm.guacamole_url}
                         />
                       </TableCell>
                     </TableRow>
