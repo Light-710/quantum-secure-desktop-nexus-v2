@@ -2,10 +2,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Monitor, HardDrive, Power } from 'lucide-react';
-import { ResourceUtilization } from './ResourceUtilization';
+import { Monitor, Power, ExternalLink, Windows, Linux } from 'lucide-react';
 import { VMStatusBadge } from './VMStatusBadge';
-import { VirtualMachine, handleVMAction, handleCreateSnapshot } from '@/services/vmManagementService';
+import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
 
 interface VMDetailsDialogProps {
   vm: VirtualMachine | null;
@@ -16,6 +15,12 @@ interface VMDetailsDialogProps {
 
 export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMDetailsDialogProps) => {
   if (!vm) return null;
+
+  const handleConnect = () => {
+    if (vm.guacamole_url) {
+      window.open(vm.guacamole_url, '_blank');
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -33,11 +38,16 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
             {/* OS Info */}
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
               <div className="text-xs text-cyber-gray">Operating System</div>
-              <div className={`text-sm mt-1 ${
-                vm.os === 'Windows' ? 'text-blue-400' : 
-                vm.os === 'Linux' ? 'text-yellow-400' : 
+              <div className={`text-sm mt-1 flex items-center gap-2 ${
+                vm.os.toLowerCase() === 'windows' ? 'text-blue-400' : 
+                vm.os.toLowerCase() === 'linux' ? 'text-yellow-400' : 
                 'text-purple-400'
               }`}>
+                {vm.os.toLowerCase() === 'windows' ? (
+                  <Windows className="h-4 w-4" />
+                ) : vm.os.toLowerCase() === 'linux' ? (
+                  <Linux className="h-4 w-4" />
+                ) : null}
                 {vm.os}
               </div>
             </div>
@@ -50,72 +60,36 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
               </div>
             </div>
 
-            {/* Other Info Fields */}
+            {/* User Info */}
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
               <div className="text-xs text-cyber-gray">Assigned User</div>
               <div className="text-sm text-cyber-teal mt-1">{vm.assigned_user}</div>
             </div>
 
+            {/* User Email */}
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
-              <div className="text-xs text-cyber-gray">IP Address</div>
-              <div className="text-sm text-cyber-teal mt-1">{vm.ip_address}</div>
+              <div className="text-xs text-cyber-gray">User Email</div>
+              <div className="text-sm text-cyber-teal mt-1">{vm.user_email || 'N/A'}</div>
             </div>
 
+            {/* Instance ID */}
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
-              <div className="text-xs text-cyber-gray">Uptime</div>
-              <div className="text-sm text-cyber-teal mt-1">{vm.uptime}</div>
+              <div className="text-xs text-cyber-gray">Instance ID</div>
+              <div className="text-sm text-cyber-teal mt-1">{vm.instance_id || vm.id}</div>
             </div>
-
+            
+            {/* Created At */}
             <div className="p-3 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
-              <div className="text-xs text-cyber-gray">Health</div>
-              <div className={`text-sm mt-1 ${
-                vm.health === 'Good' ? 'text-green-400' : 
-                vm.health === 'Fair' ? 'text-yellow-400' :
-                'text-cyber-red'
-              }`}>
-                {vm.health}
+              <div className="text-xs text-cyber-gray">Created</div>
+              <div className="text-sm text-cyber-teal mt-1">
+                {vm.created_at ? new Date(vm.created_at).toLocaleString() : 'N/A'}
               </div>
-            </div>
-          </div>
-
-          {/* Resources Section */}
-          <div className="p-4 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
-            <div className="text-sm text-cyber-teal mb-3">Resource Utilization</div>
-            <div className="space-y-3">
-              <ResourceUtilization label="CPU" value={vm.resources.cpu} color="cyber-blue" />
-              <ResourceUtilization label="Memory" value={vm.resources.memory} color="cyber-green" />
-              <ResourceUtilization label="Disk" value={vm.resources.disk} color="cyber-teal" />
-              <ResourceUtilization label="Network" value={vm.resources.network} color="purple-400" />
-            </div>
-          </div>
-
-          {/* Snapshot Section */}
-          <div className="p-4 border border-cyber-teal/20 rounded-md bg-cyber-dark-blue/20">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-sm text-cyber-teal">Snapshot</div>
-                <div className="text-xs text-cyber-gray mt-1">Last: {vm.last_snapshot}</div>
-              </div>
-              <Button 
-                variant="outline"
-                size="sm"
-                className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                onClick={() => handleCreateSnapshot(vm.id)}
-                disabled={actionLoading === vm.id}
-              >
-                {actionLoading === vm.id ? (
-                  <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                ) : (
-                  <HardDrive className="mr-2 h-4 w-4" />
-                )}
-                Create Snapshot
-              </Button>
             </div>
           </div>
 
           {/* Actions */}
           <div className="flex justify-end space-x-2">
-            {vm.status === 'Running' ? (
+            {vm.status.toLowerCase() === 'running' ? (
               <>
                 <Button
                   variant="outline"
@@ -130,10 +104,15 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
                   )}
                   Stop
                 </Button>
-                <Button className="cyber-button">
-                  <Monitor className="mr-2 h-4 w-4" />
-                  Connect
-                </Button>
+                {vm.guacamole_url && (
+                  <Button 
+                    className="cyber-button"
+                    onClick={handleConnect}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Connect
+                  </Button>
+                )}
               </>
             ) : vm.status === 'Paused' ? (
               <Button
@@ -150,7 +129,7 @@ export const VMDetailsDialog = ({ vm, isOpen, onOpenChange, actionLoading }: VMD
                 )}
                 Resume
               </Button>
-            ) : vm.status === 'Stopped' ? (
+            ) : vm.status === 'Stopped' || vm.status === 'Error' ? (
               <Button
                 className="cyber-button"
                 onClick={() => handleVMAction(vm.id, 'Start', vm.os.toLowerCase(), vm.assigned_user)}
