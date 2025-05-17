@@ -34,7 +34,7 @@ export const projectService = {
         start_date: projectData.start_date,
         end_date: projectData.end_date,
         scope: projectData.scope,
-        manager: projectData.managerId,
+        manager: projectData.manager,
       };
       
       const response = await api.post('/admin/project/create-project', payload);

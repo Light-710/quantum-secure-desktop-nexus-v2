@@ -61,7 +61,7 @@ const projectSchema = z.object({
   end_date: z.string().min(1, "End date is required"),
   status: z.string().optional(),
   scope: z.string().optional(),
-  managerId: z.union([z.string(), z.number()]).optional(),
+  manager: z.union([z.string(), z.number()]).optional(),
 });
 
 const AdminProjects = () => {
@@ -233,7 +233,7 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      managerId: project.managerId,
+      manager: project.manager,
     });
     
     setIsEditDialogOpen(true);
@@ -388,7 +388,7 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="managerId"
+                      name="manager"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Manager ID</FormLabel>
@@ -658,7 +658,7 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="managerId"
+                name="manager"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Manager ID</FormLabel>
