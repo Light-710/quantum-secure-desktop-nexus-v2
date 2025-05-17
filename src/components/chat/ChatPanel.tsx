@@ -37,26 +37,46 @@ const ChatPanel = () => {
 
   // Fetch messages for selected project
   const { 
-    data: messages = [], 
+    data: messagesData, 
     refetch: refetchMessages 
   } = useQuery({
     queryKey: ['messages', selectedProject],
     queryFn: async () => {
-      if (!selectedProject) return [];
+      if (!selectedProject) return { messages: [] };
       
       try {
         const response = await api.get(`/chat/messages/${selectedProject}`);
-        return response.data || [];
+        console.log('Messages response:', response.data);
+        // Ensure we're returning the proper structure with messages array
+        return response.data || { messages: [] };
       } catch (error) {
         console.error('Error fetching messages:', error);
         toast.error('Failed to load messages', {
           description: 'Unable to load chat messages. Please try again later.'
         });
-        return [];
+        return { messages: [] };
       }
     },
     enabled: !!selectedProject
   });
+
+  // Prepare messages array from the response data
+  const messages: Message[] = React.useMemo(() => {
+    if (!messagesData || !messagesData.messages) return [];
+    
+    // Ensure we're working with an array
+    const messageArray = Array.isArray(messagesData.messages) 
+      ? messagesData.messages 
+      : [];
+    
+    return messageArray.map((msg: any) => ({
+      id: msg.message_id,
+      sender: msg.sender_name,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp),
+      senderRole: msg.sender_role
+    }));
+  }, [messagesData]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
