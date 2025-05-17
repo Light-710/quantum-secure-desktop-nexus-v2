@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, LogOut, LayoutDashboard, Users, Server, Monitor, Activity, Database, Bell, MessageCircle } from 'lucide-react';
+import { Settings, LogOut, LayoutDashboard, Users, Monitor, Activity, Database, Bell, MessageCircle, FolderOpen } from 'lucide-react';
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -31,6 +31,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/employee/desktop' },
         { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/employee/chat' },
       ],
+      Tester: [
+        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/employee' },
+        { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/employee/desktop' },
+        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/employee/chat' },
+      ],
       Manager: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/manager' },
         { name: 'Projects', icon: <Activity size={20} />, path: '/dashboard/manager/projects' },
@@ -40,9 +45,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       Admin: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/admin' },
         { name: 'Users', icon: <Users size={20} />, path: '/dashboard/admin/users' },
-        { name: 'System', icon: <Server size={20} />, path: '/dashboard/admin/system' },
         { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/admin/virtual-desktops' },
-        { name: 'Logs', icon: <Database size={20} />, path: '/dashboard/admin/logs' },
+        { name: 'Projects', icon: <FolderOpen size={20} />, path: '/dashboard/admin/projects' },
+        { name: 'Chats', icon: <MessageCircle size={20} />, path: '/dashboard/admin/chats' },
       ],
     };
 
@@ -104,7 +109,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <p className="text-xs text-[#A8A39D]">
                     <span className={`
                       inline-block w-2 h-2 rounded-full mr-1 
-                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : user?.role === 'Manager' ? 'bg-[#8A9B6E]' : 'bg-[#C47D5F]'}
+                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : user?.role === 'Manager' ? 'bg-[#8A9B6E]' : user?.role === 'Tester' ? 'bg-[#C47D5F]' : 'bg-[#C47D5F]'}
                     `}></span>
                     {user?.role}
                   </p>

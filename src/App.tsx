@@ -23,9 +23,9 @@ import ManagerTeam from "@/pages/manager/ManagerTeam";
 import ManagerChat from "@/pages/manager/ManagerChat";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersPage from "@/pages/admin/UsersPage";
-import SystemPage from "@/pages/admin/SystemPage";
-import LogsPage from "@/pages/admin/LogsPage";
 import VirtualDesktopPage from "@/pages/admin/VirtualDesktopPage";
+import AdminProjects from "@/pages/admin/AdminProjects";
+import AdminChats from "@/pages/admin/AdminChats";
 
 // Error page
 import NotFound from "@/pages/NotFound";
@@ -51,7 +51,7 @@ const App = () => (
             <Route 
               path="/dashboard/employee" 
               element={
-                <ProtectedRoute allowedRoles={['Employee']}>
+                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               } 
@@ -59,7 +59,7 @@ const App = () => (
             <Route 
               path="/dashboard/employee/chat" 
               element={
-                <ProtectedRoute allowedRoles={['Employee']}>
+                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
                   <EmployeeChat />
                 </ProtectedRoute>
               } 
@@ -67,7 +67,7 @@ const App = () => (
             <Route 
               path="/dashboard/employee/desktop" 
               element={
-                <ProtectedRoute allowedRoles={['Employee']}>
+                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
                   <EmployeeVirtualDesktop />
                 </ProtectedRoute>
               } 
@@ -125,26 +125,26 @@ const App = () => (
               } 
             />
             <Route 
-              path="/dashboard/admin/system" 
-              element={
-                <ProtectedRoute allowedRoles={['Admin']}>
-                  <SystemPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard/admin/logs" 
-              element={
-                <ProtectedRoute allowedRoles={['Admin']}>
-                  <LogsPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
               path="/dashboard/admin/virtual-desktops" 
               element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <VirtualDesktopPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/projects" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/chats" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminChats />
                 </ProtectedRoute>
               } 
             />

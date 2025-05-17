@@ -8,12 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
-  Users, Server, Activity, Database, Monitor, Settings, 
-  BarChart3, Cpu, HardDrive, Network, Clock, Shield, 
-  UserPlus, FileText, Check, AlertTriangle, Info
+  Users, Monitor, Activity, MessageCircle,
+  UserPlus, FolderOpen, RefreshCw
 } from 'lucide-react';
 
-// Empty User Type
+// User Type
 type User = {
   id: string;
   name: string;
@@ -23,24 +22,22 @@ type User = {
   lastLogin: string;
 };
 
-// Empty Log Type
-type LogEntry = {
-  id: string;
-  level: string;
-  event: string;
-  user: string;
-  timestamp: string;
-};
-
-// Empty VM Type
+// VM Type
 type VirtualMachine = {
   id: string;
-  user: string;
-  os: string;
+  user_name: string;
+  instance_os: string;
   status: string;
-  uptime: string;
-  cpu: number;
-  memory: number;
+  user_email: string;
+};
+
+// Project Type
+type Project = {
+  id: string;
+  name: string;
+  status: string;
+  manager: string;
+  teamSize: number;
 };
 
 const AdminDashboard = () => {
@@ -57,21 +54,13 @@ const AdminDashboard = () => {
     inactive: []
   });
   
-  const [systemMetrics, setSystemMetrics] = useState({
-    cpu: 0,
-    memory: 0,
-    storage: 0,
-    network: 0
-  });
-  
-  const [recentLogs, setRecentLogs] = useState<LogEntry[]>([]);
-  const [vmStatuses, setVmStatuses] = useState<VirtualMachine[]>([]);
+  const [vms, setVms] = useState<VirtualMachine[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   
   // Loading states
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
-  const [isLoadingMetrics, setIsLoadingMetrics] = useState(true);
-  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
   const [isLoadingVMs, setIsLoadingVMs] = useState(true);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   
   // API fetch functions
   const fetchUsers = async () => {
@@ -79,9 +68,48 @@ const AdminDashboard = () => {
     try {
       // In a real app, this would call an API endpoint
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+      
+      const sampleActiveUsers: User[] = [
+        {
+          id: 'U001',
+          name: 'John Smith',
+          role: 'Employee',
+          status: 'Online',
+          email: 'john.smith@company.com',
+          lastLogin: '2024-05-16T14:30:00Z',
+        },
+        {
+          id: 'U002',
+          name: 'Emily Chen',
+          role: 'Manager',
+          status: 'Away',
+          email: 'emily.chen@company.com',
+          lastLogin: '2024-05-16T10:15:00Z',
+        },
+        {
+          id: 'U003',
+          name: 'Michael Johnson',
+          role: 'Tester',
+          status: 'Online',
+          email: 'michael.j@company.com',
+          lastLogin: '2024-05-16T09:45:00Z',
+        }
+      ];
+      
+      const sampleInactiveUsers: User[] = [
+        {
+          id: 'U004',
+          name: 'Sarah Williams',
+          role: 'Employee',
+          status: 'Disabled',
+          email: 'sarah.w@company.com',
+          lastLogin: '2024-05-10T11:20:00Z',
+        }
+      ];
+      
       setUsers({
-        active: [],
-        inactive: []
+        active: sampleActiveUsers,
+        inactive: sampleInactiveUsers
       });
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -94,54 +122,38 @@ const AdminDashboard = () => {
       setIsLoadingUsers(false);
     }
   };
-  
-  const fetchSystemMetrics = async () => {
-    setIsLoadingMetrics(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      setSystemMetrics({
-        cpu: 0,
-        memory: 0,
-        storage: 0,
-        network: 0
-      });
-    } catch (error) {
-      console.error('Error fetching system metrics:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load system metrics",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingMetrics(false);
-    }
-  };
-  
-  const fetchRecentLogs = async () => {
-    setIsLoadingLogs(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      setRecentLogs([]);
-    } catch (error) {
-      console.error('Error fetching logs:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load activity logs",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingLogs(false);
-    }
-  };
-  
+
   const fetchVirtualMachines = async () => {
     setIsLoadingVMs(true);
     try {
       // In a real app, this would call an API endpoint
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      setVmStatuses([]);
+      
+      const sampleVMs: VirtualMachine[] = [
+        {
+          id: 'VM001',
+          user_name: 'John Smith',
+          instance_os: 'Windows',
+          status: 'Running',
+          user_email: 'john.smith@company.com',
+        },
+        {
+          id: 'VM002',
+          user_name: 'Emily Chen',
+          instance_os: 'Linux',
+          status: 'Stopped',
+          user_email: 'emily.chen@company.com',
+        },
+        {
+          id: 'VM003',
+          user_name: 'Michael Johnson',
+          instance_os: 'Windows',
+          status: 'Running',
+          user_email: 'michael.j@company.com',
+        }
+      ];
+      
+      setVms(sampleVMs);
     } catch (error) {
       console.error('Error fetching VM statuses:', error);
       toast({
@@ -154,36 +166,55 @@ const AdminDashboard = () => {
     }
   };
   
-  // Load data on component mount
-  useEffect(() => {
-    fetchUsers();
-    fetchSystemMetrics();
-    fetchRecentLogs();
-    fetchVirtualMachines();
-  }, []);
-  
-  // VM action handler with data refresh
-  const handleVmAction = async (vmId: string, action: string) => {
+  const fetchProjects = async () => {
+    setIsLoadingProjects(true);
     try {
       // In a real app, this would call an API endpoint
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
       
-      toast({
-        title: `VM ${action} Initiated`,
-        description: `Virtual desktop ${vmId} ${action.toLowerCase()} command sent.`,
-      });
+      const sampleProjects: Project[] = [
+        {
+          id: 'PRJ001',
+          name: 'Cloud Migration',
+          status: 'Active',
+          manager: 'Emily Chen',
+          teamSize: 6,
+        },
+        {
+          id: 'PRJ002',
+          name: 'Security Audit',
+          status: 'Completed',
+          manager: 'David Wilson',
+          teamSize: 3,
+        },
+        {
+          id: 'PRJ003',
+          name: 'New CRM Implementation',
+          status: 'On Hold',
+          manager: 'Sarah Williams',
+          teamSize: 8,
+        }
+      ];
       
-      // Refresh VM data after action
-      fetchVirtualMachines();
+      setProjects(sampleProjects);
     } catch (error) {
-      console.error(`Error performing VM ${action}:`, error);
+      console.error('Error fetching projects:', error);
       toast({
         title: "Error",
-        description: `Failed to ${action.toLowerCase()} the virtual machine`,
+        description: "Failed to load project data",
         variant: "destructive",
       });
+    } finally {
+      setIsLoadingProjects(false);
     }
   };
+  
+  // Load data on component mount
+  useEffect(() => {
+    fetchUsers();
+    fetchVirtualMachines();
+    fetchProjects();
+  }, []);
   
   const handleAddUser = () => {
     toast({
@@ -195,553 +226,404 @@ const AdminDashboard = () => {
   return (
     <DashboardLayout>
       {/* Welcome Card */}
-      <Card className="glass-panel border-cyber-teal/30 mb-6">
+      <Card className="glass-panel border-[#D6D2C9] mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl text-cyber-teal">Admin Dashboard - Full System Access</CardTitle>
-          <CardDescription className="text-cyber-gray">
-            Complete control over users, virtual desktops, and system settings
+          <CardTitle className="text-2xl text-[#3E3D3A]">Admin Dashboard</CardTitle>
+          <CardDescription className="text-[#8E8B85]">
+            Manage users, virtual desktops, and projects
           </CardDescription>
         </CardHeader>
       </Card>
       
-      {/* System Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        {/* CPU */}
-        <Card className="glass-panel border-cyber-teal/30 hover:border-cyber-blue/50 transition-colors">
+      {/* Overview Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {/* Users Card */}
+        <Card className="glass-panel border-[#D6D2C9] hover:border-[#8A9B6E]/50 transition-colors">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-cyber-gray text-sm">CPU Usage</p>
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-9 w-16 bg-cyber-blue/10" />
+                <p className="text-[#8E8B85] text-sm">Total Users</p>
+                {isLoadingUsers ? (
+                  <Skeleton className="h-9 w-16 bg-[#8A9B6E]/10" />
                 ) : (
-                  <h3 className="text-3xl font-bold text-cyber-blue mt-1">{systemMetrics.cpu}%</h3>
+                  <h3 className="text-3xl font-bold text-[#8A9B6E] mt-1">
+                    {users.active.length + users.inactive.length}
+                  </h3>
                 )}
               </div>
-              <div className="bg-cyber-blue/10 p-3 rounded-full">
-                <Cpu className="h-6 w-6 text-cyber-blue" />
+              <div className="bg-[#8A9B6E]/10 p-3 rounded-full">
+                <Users className="h-6 w-6 text-[#8A9B6E]" />
               </div>
             </div>
-            <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              {isLoadingMetrics ? (
-                <Skeleton className="h-full w-full" />
-              ) : (
-                <div className="h-full bg-cyber-blue" style={{ width: `${systemMetrics.cpu}%` }}></div>
-              )}
+            <div className="mt-4">
+              <Button
+                variant="outline" 
+                size="sm"
+                className="w-full border-[#D6D2C9] hover:bg-[#F7F5F2]"
+                onClick={() => navigate('/dashboard/admin/users')}
+              >
+                View All Users
+              </Button>
             </div>
           </CardContent>
         </Card>
         
-        {/* Memory */}
-        <Card className="glass-panel border-cyber-teal/30 hover:border-cyber-green/50 transition-colors">
+        {/* Projects Card */}
+        <Card className="glass-panel border-[#D6D2C9] hover:border-[#C47D5F]/50 transition-colors">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-cyber-gray text-sm">Memory Usage</p>
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-9 w-16 bg-cyber-green/10" />
+                <p className="text-[#8E8B85] text-sm">Active Projects</p>
+                {isLoadingProjects ? (
+                  <Skeleton className="h-9 w-16 bg-[#C47D5F]/10" />
                 ) : (
-                  <h3 className="text-3xl font-bold text-cyber-green mt-1">{systemMetrics.memory}%</h3>
+                  <h3 className="text-3xl font-bold text-[#C47D5F] mt-1">
+                    {projects.filter(p => p.status === 'Active').length}
+                  </h3>
                 )}
               </div>
-              <div className="bg-cyber-green/10 p-3 rounded-full">
-                <HardDrive className="h-6 w-6 text-cyber-green" />
+              <div className="bg-[#C47D5F]/10 p-3 rounded-full">
+                <FolderOpen className="h-6 w-6 text-[#C47D5F]" />
               </div>
             </div>
-            <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              {isLoadingMetrics ? (
-                <Skeleton className="h-full w-full" />
-              ) : (
-                <div className="h-full bg-cyber-green" style={{ width: `${systemMetrics.memory}%` }}></div>
-              )}
+            <div className="mt-4">
+              <Button
+                variant="outline" 
+                size="sm"
+                className="w-full border-[#D6D2C9] hover:bg-[#F7F5F2]"
+                onClick={() => navigate('/dashboard/admin/projects')}
+              >
+                View All Projects
+              </Button>
             </div>
           </CardContent>
         </Card>
         
-        {/* Storage */}
-        <Card className="glass-panel border-cyber-teal/30 hover:border-cyber-teal/50 transition-colors">
+        {/* Virtual Desktops Card */}
+        <Card className="glass-panel border-[#D6D2C9] hover:border-[#6D98BA]/50 transition-colors">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-cyber-gray text-sm">Storage Usage</p>
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-9 w-16 bg-cyber-teal/10" />
+                <p className="text-[#8E8B85] text-sm">Running VMs</p>
+                {isLoadingVMs ? (
+                  <Skeleton className="h-9 w-16 bg-[#6D98BA]/10" />
                 ) : (
-                  <h3 className="text-3xl font-bold text-cyber-teal mt-1">{systemMetrics.storage}%</h3>
+                  <h3 className="text-3xl font-bold text-[#6D98BA] mt-1">
+                    {vms.filter(vm => vm.status.toLowerCase() === 'running').length}
+                  </h3>
                 )}
               </div>
-              <div className="bg-cyber-teal/10 p-3 rounded-full">
-                <Database className="h-6 w-6 text-cyber-teal" />
+              <div className="bg-[#6D98BA]/10 p-3 rounded-full">
+                <Monitor className="h-6 w-6 text-[#6D98BA]" />
               </div>
             </div>
-            <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              {isLoadingMetrics ? (
-                <Skeleton className="h-full w-full" />
-              ) : (
-                <div className="h-full bg-cyber-teal" style={{ width: `${systemMetrics.storage}%` }}></div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        
-        {/* Network */}
-        <Card className="glass-panel border-cyber-teal/30 hover:border-purple-400/50 transition-colors">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-cyber-gray text-sm">Network Load</p>
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-9 w-16 bg-purple-400/10" />
-                ) : (
-                  <h3 className="text-3xl font-bold text-purple-400 mt-1">{systemMetrics.network}%</h3>
-                )}
-              </div>
-              <div className="bg-purple-400/10 p-3 rounded-full">
-                <Network className="h-6 w-6 text-purple-400" />
-              </div>
-            </div>
-            <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-              {isLoadingMetrics ? (
-                <Skeleton className="h-full w-full" />
-              ) : (
-                <div className="h-full bg-purple-400" style={{ width: `${systemMetrics.network}%` }}></div>
-              )}
+            <div className="mt-4">
+              <Button
+                variant="outline" 
+                size="sm"
+                className="w-full border-[#D6D2C9] hover:bg-[#F7F5F2]"
+                onClick={() => navigate('/dashboard/admin/virtual-desktops')}
+              >
+                View All VMs
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
       
-      {/* User Management and Logs Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* User Management */}
-        <div className="lg:col-span-2">
-          <Card className="glass-panel border-cyber-teal/30 h-full">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-xl text-cyber-teal flex items-center">
-                  <Users className="mr-2 text-cyber-blue" size={20} />
-                  User Management
-                </CardTitle>
-                <CardDescription className="text-cyber-gray">
-                  Manage system users and their roles
-                </CardDescription>
-              </div>
+      {/* User Management Section */}
+      <Card className="glass-panel border-[#D6D2C9] mb-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-xl text-[#3E3D3A] flex items-center">
+              <Users className="mr-2 text-[#8A9B6E]" size={20} />
+              User Management
+            </CardTitle>
+            <CardDescription className="text-[#8E8B85]">
+              Manage system users and their roles
+            </CardDescription>
+          </div>
+          
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              className="border-[#D6D2C9] hover:bg-[#F7F5F2]"
+              onClick={() => fetchUsers()}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+            <Button 
+              className="bg-[#8A9B6E] hover:bg-[#798C5D] text-white"
+              onClick={handleAddUser}
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add User
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoadingUsers ? (
+            <div className="space-y-4">
+              <Skeleton className="h-12 w-full bg-[#F7F5F2]" />
+              <Skeleton className="h-16 w-full bg-[#F7F5F2]" />
+              <Skeleton className="h-16 w-full bg-[#F7F5F2]" />
+            </div>
+          ) : (
+            <Tabs defaultValue="active" onValueChange={(value) => setActiveUserTab(value)}>
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#F7F5F2]">
+                <TabsTrigger value="active" className="data-[state=active]:bg-[#8A9B6E]/20 data-[state=active]:text-[#8A9B6E]">
+                  Active Users ({users.active.length})
+                </TabsTrigger>
+                <TabsTrigger value="inactive" className="data-[state=active]:bg-[#8A9B6E]/20 data-[state=active]:text-[#8A9B6E]">
+                  Inactive Users ({users.inactive.length})
+                </TabsTrigger>
+              </TabsList>
               
-              <Button className="cyber-button" onClick={handleAddUser}>
-                <UserPlus className="mr-2 h-4 w-4" /> Add User
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {isLoadingUsers ? (
-                <div className="space-y-4">
-                  <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
-                  <Skeleton className="h-16 w-full bg-cyber-dark-blue/20" />
-                  <Skeleton className="h-16 w-full bg-cyber-dark-blue/20" />
-                </div>
-              ) : (
-                <Tabs defaultValue="active" onValueChange={(value) => setActiveUserTab(value)}>
-                  <TabsList className="grid w-full grid-cols-2 mb-4 bg-cyber-dark-blue/50">
-                    <TabsTrigger value="active" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
-                      Active Users
-                    </TabsTrigger>
-                    <TabsTrigger value="inactive" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
-                      Inactive Users
-                    </TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="active" className="space-y-4">
-                    {users.active.length > 0 ? (
-                      users.active.map((user) => (
-                        <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                          <div className="flex items-center space-x-3">
-                            <div className="flex-shrink-0">
-                              <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
-                                {user.name.split(' ').map(n => n[0]).join('')}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-cyber-teal">{user.name}</p>
-                              <div className="flex space-x-4 mt-1">
-                                <span className="text-xs text-cyber-gray">ID: {user.id}</span>
-                                <span className={`text-xs ${
-                                  user.role === 'Admin' 
-                                    ? 'text-cyber-red' 
-                                    : user.role === 'Manager' 
-                                      ? 'text-cyber-green' 
-                                      : 'text-cyber-blue'
-                                }`}>
-                                  {user.role}
-                                </span>
-                              </div>
-                            </div>
+              <TabsContent value="active" className="space-y-4">
+                {users.active.length > 0 ? (
+                  users.active.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between border border-[#D6D2C9] rounded-md p-3 bg-white">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-[#F7F5F2] flex items-center justify-center text-[#3E3D3A] border border-[#D6D2C9]">
+                            {user.name.split(' ').map(n => n[0]).join('')}
                           </div>
-                          
-                          <div className="flex items-center space-x-4">
-                            <div className={`text-xs px-2 py-1 rounded-full ${
-                              user.status === 'Online' 
-                                ? 'bg-green-400/20 text-green-400' 
-                                : user.status === 'Away' 
-                                  ? 'bg-yellow-400/20 text-yellow-400' 
-                                  : 'bg-cyber-gray/20 text-cyber-gray'
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-[#3E3D3A]">{user.name}</p>
+                          <div className="flex space-x-4 mt-1">
+                            <span className="text-xs text-[#8E8B85]">ID: {user.id}</span>
+                            <span className={`text-xs ${
+                              user.role === 'Admin' 
+                                ? 'text-[#A84332]' 
+                                : user.role === 'Manager' 
+                                  ? 'text-[#8A9B6E]' 
+                                  : user.role === 'Tester'
+                                    ? 'text-[#C47D5F]'
+                                    : 'text-[#6D98BA]'
                             }`}>
-                              {user.status}
-                            </div>
-                            
-                            <div className="flex space-x-1">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                              >
-                                <Settings size={14} />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </Button>
-                            </div>
+                              {user.role}
+                            </span>
                           </div>
                         </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-cyber-gray">
-                        No active users found
                       </div>
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="inactive" className="space-y-4">
-                    {users.inactive.length > 0 ? (
-                      users.inactive.map((user) => (
-                        <div key={user.id} className="flex items-center justify-between border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                          <div className="flex items-center space-x-3">
-                            <div className="flex-shrink-0">
-                              <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-gray border border-cyber-teal/30 opacity-70">
-                                {user.name.split(' ').map(n => n[0]).join('')}
-                              </div>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-cyber-gray">{user.name}</p>
-                              <div className="flex space-x-4 mt-1">
-                                <span className="text-xs text-cyber-gray">ID: {user.id}</span>
-                                <span className="text-xs text-cyber-gray">{user.role}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-4">
-                            <div className="text-xs px-2 py-1 rounded-full bg-cyber-red/20 text-cyber-red">
-                              {user.status}
-                            </div>
-                            
-                            <div className="flex space-x-1">
-                              <Button
-                                variant="outline"
-                                size="icon"
-                                className="w-8 h-8 rounded-full border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
-                              >
-                                <Check size={14} />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-cyber-gray">
-                        No inactive users found
-                      </div>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Activity Logs */}
-        <div>
-          <Card className="glass-panel border-cyber-teal/30 h-full">
-            <CardHeader>
-              <CardTitle className="text-xl text-cyber-teal flex items-center">
-                <Activity className="mr-2 text-cyber-blue" size={20} />
-                Recent Activity
-              </CardTitle>
-              <CardDescription className="text-cyber-gray">
-                System and user activity logs
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {isLoadingLogs ? (
-                  <>
-                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
-                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
-                    <Skeleton className="h-12 w-full bg-cyber-dark-blue/20" />
-                  </>
-                ) : recentLogs.length > 0 ? (
-                  recentLogs.map((log) => (
-                    <div key={log.id} className="border border-cyber-teal/20 rounded-md p-2 bg-cyber-dark-blue/20">
-                      <div className="flex items-start space-x-2">
-                        <div className="mt-0.5">
-                          {log.level === 'Warning' ? (
-                            <AlertTriangle size={16} className="text-yellow-400" />
-                          ) : log.level === 'Error' ? (
-                            <AlertTriangle size={16} className="text-cyber-red" />
-                          ) : (
-                            <Info size={16} className="text-cyber-blue" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-cyber-teal font-medium">{log.event}</p>
-                          <div className="flex justify-between mt-1">
-                            <span className="text-xs text-cyber-gray">{log.user}</span>
-                            <span className="text-xs text-cyber-gray opacity-70">{log.timestamp}</span>
-                          </div>
+                      
+                      <div className="flex items-center space-x-4">
+                        <div className={`text-xs px-2 py-1 rounded-full ${
+                          user.status === 'Online' 
+                            ? 'bg-green-100 text-green-800' 
+                            : user.status === 'Away' 
+                              ? 'bg-amber-100 text-amber-800' 
+                              : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {user.status}
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8 text-cyber-gray">
-                    No recent activity
+                  <div className="text-center py-8 text-[#8E8B85]">
+                    No active users found
                   </div>
                 )}
-                
                 <Button 
                   variant="outline" 
-                  className="w-full border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue mt-2"
-                  onClick={() => navigate('/dashboard/admin/logs')}
+                  className="w-full border-[#D6D2C9] hover:bg-[#F7F5F2]"
+                  onClick={() => navigate('/dashboard/admin/users')}
                 >
-                  View All Logs
+                  View All Users
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-      
-      {/* Virtual Desktop Management */}
-      <Card className="glass-panel border-cyber-teal/30 mb-6">
-        <CardHeader>
-          <CardTitle className="text-xl text-cyber-teal flex items-center">
-            <Monitor className="mr-2 text-cyber-blue" size={20} />
-            Virtual Desktop Management
-          </CardTitle>
-          <CardDescription className="text-cyber-gray">
-            Monitor and control virtual desktop instances
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead className="bg-cyber-dark-blue/40">
-                <tr>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">VM ID</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">User</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">OS</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">Status</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">Uptime</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">CPU</th>
-                  <th className="text-left py-3 px-4 text-xs font-semibold text-cyber-teal">Memory</th>
-                  <th className="text-right py-3 px-4 text-xs font-semibold text-cyber-teal">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoadingVMs ? (
-                  <tr>
-                    <td colSpan={8} className="py-8">
-                      <div className="flex justify-center">
-                        <div className="animate-spin h-8 w-8 border-2 border-cyber-teal border-t-transparent rounded-full"></div>
+              </TabsContent>
+              
+              <TabsContent value="inactive" className="space-y-4">
+                {users.inactive.length > 0 ? (
+                  users.inactive.map((user) => (
+                    <div key={user.id} className="flex items-center justify-between border border-[#D6D2C9] rounded-md p-3 bg-white">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-[#F7F5F2] flex items-center justify-center text-[#8E8B85] border border-[#D6D2C9] opacity-70">
+                            {user.name.split(' ').map(n => n[0]).join('')}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-[#8E8B85]">{user.name}</p>
+                          <div className="flex space-x-4 mt-1">
+                            <span className="text-xs text-[#8E8B85]">ID: {user.id}</span>
+                            <span className="text-xs text-[#8E8B85]">{user.role}</span>
+                          </div>
+                        </div>
                       </div>
-                    </td>
-                  </tr>
-                ) : vmStatuses.length > 0 ? (
-                  vmStatuses.map((vm) => (
-                    <tr key={vm.id} className="hover:bg-cyber-dark-blue/20">
-                      <td className="py-3 px-4 text-sm text-cyber-teal">{vm.id}</td>
-                      <td className="py-3 px-4 text-sm text-cyber-gray">{vm.user}</td>
-                      <td className="py-3 px-4 text-sm text-cyber-gray">
-                        {vm.os === 'Windows' ? (
-                          <span className="text-blue-400">{vm.os}</span>
-                        ) : (
-                          <span className="text-yellow-400">{vm.os}</span>
-                        )}
-                      </td>
-                      <td className="py-3 px-4">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          vm.status === 'Running' 
-                            ? 'bg-green-400/20 text-green-400' 
-                            : 'bg-cyber-gray/20 text-cyber-gray'
-                        }`}>
-                          {vm.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-cyber-gray">
-                        <Clock size={14} className="inline mr-1" />
-                        {vm.uptime}
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-16 bg-cyber-dark-blue rounded-full h-2">
-                            <div 
-                              className="bg-cyber-blue rounded-full h-2" 
-                              style={{ width: `${vm.cpu}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-cyber-blue">{vm.cpu}%</span>
+                      
+                      <div className="flex items-center space-x-4">
+                        <div className="text-xs px-2 py-1 rounded-full bg-red-100 text-red-800">
+                          {user.status}
                         </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-16 bg-cyber-dark-blue rounded-full h-2">
-                            <div 
-                              className="bg-cyber-green rounded-full h-2" 
-                              style={{ width: `${vm.memory}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-cyber-green">{vm.memory}%</span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex justify-end space-x-1">
-                          {vm.status === 'Running' ? (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 text-xs border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
-                                onClick={() => handleVmAction(vm.id, 'Stop')}
-                              >
-                                Stop
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 text-xs border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
-                              >
-                                Connect
-                              </Button>
-                            </>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 text-xs border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
-                              onClick={() => handleVmAction(vm.id, 'Start')}
-                            >
-                              Start
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   ))
                 ) : (
-                  <tr>
-                    <td colSpan={8} className="py-8 text-center text-cyber-gray">
-                      No virtual machines found
-                    </td>
-                  </tr>
+                  <div className="text-center py-8 text-[#8E8B85]">
+                    No inactive users found
+                  </div>
                 )}
-              </tbody>
-            </table>
-          </div>
+              </TabsContent>
+            </Tabs>
+          )}
         </CardContent>
       </Card>
       
-      {/* System Health */}
-      <Card className="glass-panel border-cyber-teal/30">
-        <CardHeader>
-          <CardTitle className="text-xl text-cyber-teal flex items-center">
-            <Shield className="mr-2 text-cyber-blue" size={20} />
-            System Security Health
-          </CardTitle>
-          <CardDescription className="text-cyber-gray">
-            Current security status and recent scans
-          </CardDescription>
+      {/* Virtual Desktop Management */}
+      <Card className="glass-panel border-[#D6D2C9] mb-6">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-xl text-[#3E3D3A] flex items-center">
+              <Monitor className="mr-2 text-[#6D98BA]" size={20} />
+              Virtual Desktop Overview
+            </CardTitle>
+            <CardDescription className="text-[#8E8B85]">
+              Monitor virtual desktop instances
+            </CardDescription>
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              className="border-[#D6D2C9] hover:bg-[#F7F5F2]"
+              onClick={() => fetchVirtualMachines()}
+            >
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+            <Button 
+              className="bg-[#6D98BA] hover:bg-[#5D88AA] text-white"
+              onClick={() => navigate('/dashboard/admin/virtual-desktops')}
+            >
+              View Details
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Security Score */}
-            <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
-              <h4 className="text-sm text-cyber-gray">Security Score</h4>
-              <div className="flex items-end justify-between mt-2">
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-8 w-16 bg-cyber-blue/10" />
-                ) : (
-                  <div className="text-3xl font-semibold text-cyber-blue">0<span className="text-xl">/100</span></div>
-                )}
-                <div className="text-xs text-cyber-gray">Not Available</div>
-              </div>
-              <div className="mt-4 h-2 bg-cyber-dark-blue rounded overflow-hidden">
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-full w-full" />
-                ) : (
-                  <div className="h-full bg-cyber-blue" style={{ width: '0%' }}></div>
-                )}
-              </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last scan: Not available</p>
+          {isLoadingVMs ? (
+            <div className="space-y-4">
+              <Skeleton className="h-24 w-full bg-[#F7F5F2]" />
             </div>
-            
-            {/* Vulnerabilities */}
-            <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
-              <h4 className="text-sm text-cyber-gray">Active Vulnerabilities</h4>
-              <div className="flex items-end justify-between mt-2">
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-8 w-8 bg-cyber-blue/10" />
-                ) : (
-                  <div className="text-3xl font-semibold text-cyber-green">0</div>
-                )}
-                <div className="text-xs text-cyber-gray">Not Available</div>
-              </div>
-              <div className="mt-4 space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-cyber-gray">Critical</span>
-                  <span className="text-cyber-red">0</span>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Running VMs counter */}
+              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[#8E8B85] text-sm">Running VMs</div>
+                    <div className="text-3xl font-bold text-[#6D98BA] mt-1">
+                      {vms.filter(vm => vm.status.toLowerCase() === 'running').length}
+                    </div>
+                  </div>
+                  <div className="text-sm text-[#8E8B85]">
+                    of {vms.length} total
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-cyber-gray">High</span>
-                  <span className="text-yellow-400">0</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-cyber-gray">Medium</span>
-                  <span className="text-cyber-green">0</span>
+                <div className="mt-3 h-2 bg-[#F7F5F2] rounded-full overflow-hidden">
+                  <div 
+                    className="h-2 bg-[#6D98BA] rounded-full" 
+                    style={{ 
+                      width: `${vms.length > 0 ? (vms.filter(vm => vm.status.toLowerCase() === 'running').length / vms.length) * 100 : 0}%` 
+                    }}
+                  ></div>
                 </div>
               </div>
-            </div>
-            
-            {/* Backup Status */}
-            <div className="border border-cyber-teal/20 rounded-md p-4 bg-cyber-dark-blue/20">
-              <h4 className="text-sm text-cyber-gray">Backup Status</h4>
-              <div className="flex items-end justify-between mt-2">
-                {isLoadingMetrics ? (
-                  <Skeleton className="h-6 w-24 bg-cyber-blue/10" />
-                ) : (
-                  <div className="text-xl font-semibold text-cyber-teal">Not Available</div>
-                )}
-                <div className="text-xs text-yellow-400">
-                  No Data
+
+              {/* OS Distribution */}
+              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                <div className="text-[#8E8B85] text-sm">OS Distribution</div>
+                <div className="flex justify-between items-center mt-2">
+                  <div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                      <span className="text-sm text-[#3E3D3A]">Windows</span>
+                    </div>
+                    <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
+                      {vms.filter(vm => vm.instance_os.toLowerCase() === 'windows').length}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                      <span className="text-sm text-[#3E3D3A]">Linux</span>
+                    </div>
+                    <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
+                      {vms.filter(vm => vm.instance_os.toLowerCase() === 'linux').length}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
+                      <span className="text-sm text-[#3E3D3A]">Other</span>
+                    </div>
+                    <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
+                      {vms.filter(vm => 
+                        vm.instance_os.toLowerCase() !== 'windows' && 
+                        vm.instance_os.toLowerCase() !== 'linux'
+                      ).length}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <p className="mt-2 text-xs text-cyber-gray">Last backup: Not available</p>
-              <p className="text-xs text-cyber-gray">Next backup: Not configured</p>
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs w-full border-cyber-teal/30 hover:bg-cyber-teal/20 hover:text-cyber-teal"
-                  onClick={() => navigate('/dashboard/admin/system')}
-                >
-                  Configure Backup
-                </Button>
               </div>
             </div>
+          )}
+        </CardContent>
+      </Card>
+      
+      {/* Projects Overview */}
+      <Card className="glass-panel border-[#D6D2C9]">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-xl text-[#3E3D3A] flex items-center">
+              <Activity className="mr-2 text-[#C47D5F]" size={20} />
+              Projects Overview
+            </CardTitle>
+            <CardDescription className="text-[#8E8B85]">
+              Project status summary
+            </CardDescription>
           </div>
+          <div>
+            <Button 
+              className="bg-[#C47D5F] hover:bg-[#B36F51] text-white"
+              onClick={() => navigate('/dashboard/admin/projects')}
+            >
+              Manage Projects
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoadingProjects ? (
+            <Skeleton className="h-24 w-full bg-[#F7F5F2]" />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                <div className="text-[#8E8B85] text-sm mb-2">Active</div>
+                <div className="text-2xl font-bold text-[#8A9B6E]">
+                  {projects.filter(p => p.status === 'Active').length}
+                </div>
+                <div className="text-xs text-[#8E8B85] mt-1">Projects in progress</div>
+              </div>
+              
+              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                <div className="text-[#8E8B85] text-sm mb-2">Completed</div>
+                <div className="text-2xl font-bold text-[#6D98BA]">
+                  {projects.filter(p => p.status === 'Completed').length}
+                </div>
+                <div className="text-xs text-[#8E8B85] mt-1">Successfully delivered projects</div>
+              </div>
+              
+              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                <div className="text-[#8E8B85] text-sm mb-2">On Hold/Issues</div>
+                <div className="text-2xl font-bold text-[#C47D5F]">
+                  {projects.filter(p => p.status === 'On Hold' || p.status === 'Cancelled').length}
+                </div>
+                <div className="text-xs text-[#8E8B85] mt-1">Projects requiring attention</div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </DashboardLayout>
