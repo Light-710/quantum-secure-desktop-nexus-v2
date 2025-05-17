@@ -48,11 +48,14 @@ const UsersPage = () => {
 
   const loadUsers = async () => {
     try {
+      setIsLoading(true);
       const response = await userService.getAllUsers();
       
       // Check if response is an array (which is now the expected format)
       if (Array.isArray(response)) {
+        console.log('User data received:', response);
         const mappedUsers = response.map(mapApiUserToUser);
+        console.log('Mapped users:', mappedUsers);
         setUsers(mappedUsers);
       } else {
         console.error('Unexpected API response format:', response);

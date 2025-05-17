@@ -1,6 +1,6 @@
 
 export type UserRole = 'Employee' | 'Manager' | 'Admin' | 'Tester';
-export type UserStatus = 'Active' | 'Suspended' | 'Deactivated';
+export type UserStatus = 'Active' | 'Inactive' | 'Suspended' | 'Deactivated';
 
 export type User = {
   id: string;
@@ -39,7 +39,7 @@ export interface ApiUser {
   status: string;
 }
 
-// Add a type for the API user response wrapper
+// Add a type for the API user response wrapper (if needed)
 export interface ApiUserResponse {
-  users: ApiUser[];
+  users?: ApiUser[];
 }
