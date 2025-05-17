@@ -1,10 +1,8 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { userSchema } from "@/utils/schemas/userSchema";
 import type { User, UserFormValues } from "@/types/user";
 
@@ -23,7 +21,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
       email: initialData?.email ?? "",
       employee_id: initialData?.employee_id ?? "",
       password: "",
-      role: initialData?.role ?? "Employee",
+      role: initialData?.role ?? "Tester",
     },
   });
 
@@ -116,7 +114,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
                   className="w-full h-10 px-3 py-2 rounded-md border border-cyber-teal/30 bg-cyber-dark-blue/20 text-cyber-gray focus:border-cyber-blue"
                   {...field}
                 >
-                  <option value="Employee">Employee</option>
+                  <option value="Tester">Tester</option>
                   <option value="Manager">Manager</option>
                   <option value="Admin">Admin</option>
                 </select>

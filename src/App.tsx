@@ -48,27 +48,27 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             
-            {/* Employee Routes */}
+            {/* Tester Routes (previously Employee Routes) */}
             <Route 
-              path="/dashboard/employee" 
+              path="/dashboard/tester" 
               element={
-                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
+                <ProtectedRoute allowedRoles={['Tester']}>
                   <EmployeeDashboard />
                 </ProtectedRoute>
               } 
             />
             <Route 
-              path="/dashboard/employee/chat" 
+              path="/dashboard/tester/chat" 
               element={
-                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
+                <ProtectedRoute allowedRoles={['Tester']}>
                   <EmployeeChat />
                 </ProtectedRoute>
               } 
             />
             <Route 
-              path="/dashboard/employee/desktop" 
+              path="/dashboard/tester/desktop" 
               element={
-                <ProtectedRoute allowedRoles={['Employee', 'Tester']}>
+                <ProtectedRoute allowedRoles={['Tester']}>
                   <EmployeeVirtualDesktop />
                 </ProtectedRoute>
               } 

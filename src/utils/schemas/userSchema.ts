@@ -15,7 +15,7 @@ export const userSchema = z.object({
     .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." })
     .optional()
     .or(z.literal('')), // Allow empty password for existing users
-  role: z.enum(["Employee", "Manager", "Admin"]) as z.ZodType<UserRole>,
+  role: z.enum(["Tester", "Manager", "Admin"]) as z.ZodType<UserRole>,
 });
 
 export type UserFormSchema = z.infer<typeof userSchema>;
