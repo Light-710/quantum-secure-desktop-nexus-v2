@@ -17,7 +17,7 @@ export const projectService = {
   // Get project by ID
   getProjectById: async (projectId: string | number) => {
     try {
-      const response = await api.get(`/admin/project/${projectId}`);
+      const response = await api.get(`/project/${projectId}`);
       return response.data;
     } catch (error) {
       console.error(`Error fetching project ${projectId}:`, error);
@@ -34,10 +34,10 @@ export const projectService = {
         start_date: projectData.start_date,
         end_date: projectData.end_date,
         scope: projectData.scope,
-        manager: projectData.managerId, // Changed from manager to managerId
+        manager: projectData.managerId, // Sending managerId as manager to backend
       };
       
-      const response = await api.post('/admin/project/create-project', payload);
+      const response = await api.post('/project/create-project', payload);
       return response.data;
     } catch (error) {
       console.error('Error creating project:', error);
@@ -56,9 +56,9 @@ export const projectService = {
       if (projectData.start_date) payload.start_date = projectData.start_date;
       if (projectData.end_date) payload.end_date = projectData.end_date;
       if (projectData.scope) payload.scope = projectData.scope;
-      if (projectData.manager) payload.manager = projectData.manager;
+      if (projectData.managerId) payload.manager = projectData.managerId;
       
-      const response = await api.put(`/admin/project/update-roject/${projectId}`, payload);
+      const response = await api.put(`/project/update-project/${projectId}`, payload);
       return response.data;
     } catch (error) {
       console.error(`Error updating project ${projectId}:`, error);
@@ -69,7 +69,7 @@ export const projectService = {
   // Archive project
   archiveProject: async (projectId: string | number) => {
     try {
-      const response = await api.post(`/admin/project/archive-project/${projectId}`);
+      const response = await api.post(`/project/archive-project/${projectId}`);
       return response.data;
     } catch (error) {
       console.error(`Error archiving project ${projectId}:`, error);
@@ -85,7 +85,7 @@ export const projectService = {
         employee_id: employeeId
       };
       
-      const response = await api.post('/admin/project/assign-project', payload);
+      const response = await api.post('/project/assign-project', payload);
       return response.data;
     } catch (error) {
       console.error(`Error assigning user to project:`, error);
@@ -101,10 +101,21 @@ export const projectService = {
         employee_id: employeeId
       };
       
-      const response = await api.post('/admin/project/remove-assignment', payload);
+      const response = await api.post('/project/remove-assignment', payload);
       return response.data;
     } catch (error) {
       console.error(`Error removing user from project:`, error);
+      throw error;
+    }
+  },
+  
+  // Get all projects for manager
+  getManagerProjects: async () => {
+    try {
+      const response = await api.get('/project/get-projects');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching manager projects:', error);
       throw error;
     }
   }
