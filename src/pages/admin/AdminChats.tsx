@@ -48,7 +48,7 @@ const AdminChats = () => {
           id: 'CHA001',
           participants: ['Sarah Johnson', 'Michael Chen', 'Technical Support'],
           participantCount: 3,
-          lastMessage: 'I'll check with the team and get back to you tomorrow.',
+          lastMessage: "I'll check with the team and get back to you tomorrow.",
           lastActive: '2024-05-16T14:30:00Z',
           messageCount: 24,
           status: 'Active',
@@ -105,19 +105,19 @@ const AdminChats = () => {
         {
           id: '1',
           sender: 'Sarah Johnson',
-          content: 'Hi, I'm having trouble accessing the company VPN. Can someone help?',
+          content: "Hi, I'm having trouble accessing the company VPN. Can someone help?",
           timestamp: '2024-05-16T14:10:00Z'
         },
         {
           id: '2',
           sender: 'Technical Support',
-          content: 'Hi Sarah, I'd be happy to help. Can you tell me what error message you're seeing?',
+          content: "Hi Sarah, I'd be happy to help. Can you tell me what error message you're seeing?",
           timestamp: '2024-05-16T14:12:00Z'
         },
         {
           id: '3',
           sender: 'Sarah Johnson',
-          content: 'It says "Authentication Failed" even though I'm sure my password is correct.',
+          content: 'It says "Authentication Failed" even though I\'m sure my password is correct.',
           timestamp: '2024-05-16T14:15:00Z'
         },
         {
@@ -129,7 +129,7 @@ const AdminChats = () => {
         {
           id: '5',
           sender: 'Technical Support',
-          content: 'Yes, that's likely the cause. We'll need to reset your security token.',
+          content: "Yes, that's likely the cause. We'll need to reset your security token.",
           timestamp: '2024-05-16T14:23:00Z'
         },
         {
@@ -141,7 +141,7 @@ const AdminChats = () => {
         {
           id: '7',
           sender: 'Michael Chen',
-          content: 'I'll check with the team and get back to you tomorrow.',
+          content: "I'll check with the team and get back to you tomorrow.",
           timestamp: '2024-05-16T14:30:00Z'
         }
       ];
