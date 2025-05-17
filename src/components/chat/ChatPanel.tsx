@@ -23,7 +23,7 @@ const ChatPanel = () => {
     queryKey: ['projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/projects/${user?.employee_id}`);
+        const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
         console.error('Error fetching projects:', error);
