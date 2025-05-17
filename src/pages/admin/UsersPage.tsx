@@ -164,7 +164,7 @@ const UsersPage = () => {
       setUserToDelete(null);
       
       toast.success("User Deleted", {
-        description: "The user has been removed from the system."
+        description: "The user has been deactivated from the system."
       });
     } catch (error: any) {
       console.error('Delete user error:', error);
