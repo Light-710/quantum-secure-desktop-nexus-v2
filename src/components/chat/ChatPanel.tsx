@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ProjectSelect from './ProjectSelect';
-import { Message } from './types';
+import { Message, ApiMessage } from './types';
 import { Project } from '@/types/project';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,6 +17,7 @@ const ChatPanel = () => {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Fetch projects
   const { data: projects = [] } = useQuery({
@@ -38,7 +39,8 @@ const ChatPanel = () => {
   // Fetch messages for selected project
   const { 
     data: messagesData, 
-    refetch: refetchMessages 
+    refetch: refetchMessages,
+    isLoading: isLoadingMessages
   } = useQuery({
     queryKey: ['messages', selectedProject],
     queryFn: async () => {
@@ -47,7 +49,6 @@ const ChatPanel = () => {
       try {
         const response = await api.get(`/chat/messages/${selectedProject}`);
         console.log('Messages response:', response.data);
-        // Ensure we're returning the proper structure with messages array
         return response.data || { messages: [] };
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -62,26 +63,35 @@ const ChatPanel = () => {
 
   // Prepare messages array from the response data
   const messages: Message[] = React.useMemo(() => {
-    if (!messagesData || !messagesData.messages) return [];
+    if (!messagesData) return [];
     
-    // Ensure we're working with an array
-    const messageArray = Array.isArray(messagesData.messages) 
-      ? messagesData.messages 
-      : [];
+    // Handle both array format and object with messages property
+    const messageArray = Array.isArray(messagesData) 
+      ? messagesData 
+      : messagesData.messages || [];
     
-    return messageArray.map((msg: any) => ({
-      id: msg.message_id,
-      sender: msg.sender_name,
-      content: msg.content,
-      timestamp: new Date(msg.timestamp),
-      senderRole: msg.sender_role
+    if (!Array.isArray(messageArray)) {
+      console.error('Expected messages to be an array but got:', messageArray);
+      return [];
+    }
+    
+    return messageArray.map((msg: ApiMessage) => ({
+      id: msg.id || msg.message_id || Date.now() + Math.random(),
+      sender: msg.sender_name || 'Unknown',
+      content: msg.content || '',
+      timestamp: new Date(msg.timestamp || Date.now()),
+      senderRole: (msg.sender_role as UserRole) || 'Employee',
+      is_file: msg.is_file || false,
+      file_path: msg.file_path || ''
     }));
   }, [messagesData]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
-    mutationFn: async (message: {projectId: string, content: string}) => {
-      return api.post('/chat/message', message);
+    mutationFn: async (messageData: { projectId: string, content: string }) => {
+      return api.post(`/chat/messages/${messageData.projectId}`, {
+        content: messageData.content
+      });
     },
     onSuccess: () => {
       setNewMessage('');
@@ -98,7 +108,7 @@ const ChatPanel = () => {
   // Upload file mutation
   const uploadFileMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      return api.post('/chat/upload', formData, {
+      return api.post(`/chat/upload/${formData.get('projectId')}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -117,6 +127,16 @@ const ChatPanel = () => {
       });
     }
   });
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedProject) {
@@ -156,8 +176,14 @@ const ChatPanel = () => {
       <CardContent className="flex flex-col h-[calc(100%-6rem)]">
         {selectedProject ? (
           <>
-            <ScrollArea className="flex-1 mb-4 pr-2">
-              <MessageList messages={messages} />
+            <ScrollArea className="flex-1 mb-4 pr-2" ref={scrollAreaRef}>
+              {isLoadingMessages ? (
+                <div className="flex justify-center items-center h-40">
+                  <div className="animate-spin h-8 w-8 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                </div>
+              ) : (
+                <MessageList messages={messages} />
+              )}
             </ScrollArea>
             <MessageInput
               newMessage={newMessage}

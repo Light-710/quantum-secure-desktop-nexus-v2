@@ -3,6 +3,7 @@ import React from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Message } from './types';
 import { format } from 'date-fns';
+import { FileText } from 'lucide-react';
 
 interface MessageListProps {
   messages: Message[];
@@ -49,7 +50,19 @@ const MessageList = ({ messages }: MessageListProps) => {
                   </span>
                 )}
               </div>
-              <p className="text-cyber-gray mt-1">{message.content}</p>
+              {message.is_file ? (
+                <a 
+                  href={message.file_path} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-cyber-blue hover:text-cyber-blue/80 mt-1"
+                >
+                  <FileText size={16} />
+                  <span>{message.content}</span>
+                </a>
+              ) : (
+                <p className="text-cyber-gray mt-1">{message.content}</p>
+              )}
             </div>
           </div>
         ))
