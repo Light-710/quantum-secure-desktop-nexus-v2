@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,7 +61,7 @@ const projectSchema = z.object({
   end_date: z.string().min(1, "End date is required"),
   status: z.string().optional(),
   scope: z.string().optional(),
-  manager: z.union([z.string(), z.number()]).optional(),
+  managerId: z.union([z.string(), z.number()]).optional(),
 });
 
 const AdminProjects = () => {
@@ -191,15 +192,15 @@ const AdminProjects = () => {
 
   // Project stats
   const activeProjects = projects.filter((p: Project) => 
-    p.status.toLowerCase() === 'active' || p.status.toLowerCase() === 'in progress'
+    p.status.toLowerCase() === 'in progress'
   ).length;
   
   const completedProjects = projects.filter((p: Project) => 
-    p.status.toLowerCase() === 'completed' || p.status.toLowerCase() === 'complete' || p.status.toLowerCase() === 'done'
+    p.status.toLowerCase() === 'complete'
   ).length;
   
-  const onHoldCancelledProjects = projects.filter((p: Project) => 
-    ['on hold', 'cancelled', 'not started'].includes(p.status.toLowerCase())
+  const notStartedProjects = projects.filter((p: Project) => 
+    p.status.toLowerCase() === 'not started'
   ).length;
 
   const handleRefresh = () => {
@@ -235,7 +236,7 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      manager: project.manager,
+      managerId: project.managerId,
     });
     
     setIsEditDialogOpen(true);
@@ -251,14 +252,12 @@ const AdminProjects = () => {
   const getStatusColor = (status: string) => {
     const statusLower = status.toLowerCase();
     switch (true) {
-      case statusLower === 'active' || statusLower === 'in progress':
+      case statusLower === 'in progress':
         return 'bg-green-100 text-green-800 border-green-300';
-      case statusLower === 'completed' || statusLower === 'complete' || statusLower === 'done':
+      case statusLower === 'complete':
         return 'bg-blue-100 text-blue-800 border-blue-300';
-      case statusLower === 'on hold':
+      case statusLower === 'not started':
         return 'bg-amber-100 text-amber-800 border-amber-300';
-      case statusLower === 'cancelled':
-        return 'bg-red-100 text-red-800 border-red-300';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
@@ -299,11 +298,11 @@ const AdminProjects = () => {
 
         <Card className="glass-panel border-[#D6D2C9]">
           <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">On Hold/Cancelled</CardTitle>
+            <CardTitle className="text-lg text-[#3E3D3A]">Not Started</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#C47D5F]">
-              {onHoldCancelledProjects}
+              {notStartedProjects}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Projects requiring attention</p>
           </CardContent>
@@ -428,7 +427,7 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="manager"
+                      name="managerId"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Manager ID</FormLabel>
@@ -524,7 +523,6 @@ const AdminProjects = () => {
                       </TableCell>
                       <TableCell className="text-sm text-[#3E3D3A]">
                         <p> {project.manager_name || 'Not specified'}</p>
-                        {project.manager || 'Not specified'}
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-1">
@@ -705,7 +703,7 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="manager"
+                name="managerId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Manager ID</FormLabel>
@@ -753,8 +751,6 @@ const AdminProjects = () => {
           </Form>
         </DialogContent>
       </Dialog>
-
-      
     </DashboardLayout>
   );
 };

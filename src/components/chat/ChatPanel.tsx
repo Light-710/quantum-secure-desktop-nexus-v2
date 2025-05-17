@@ -120,12 +120,12 @@ const ChatPanel = () => {
 
   return (
     <Card className="h-full glass-panel border-warm-100/30">
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle className="text-xl text-warm-300 flex items-center gap-2">
           <MessageCircle className="text-warm-200" size={20} />
           Project Chat
         </CardTitle>
-        <div className="mt-4">
+        <div className="mt-2">
           <ProjectSelect
             projects={projects}
             selectedProject={selectedProject}
@@ -133,10 +133,10 @@ const ChatPanel = () => {
           />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col h-[calc(100vh-16rem)]">
+      <CardContent className="flex flex-col h-[calc(100%-6rem)]">
         {selectedProject ? (
           <>
-            <ScrollArea className="flex-1 mb-4">
+            <ScrollArea className="flex-1 mb-4 pr-2">
               <MessageList messages={messages} />
             </ScrollArea>
             <MessageInput

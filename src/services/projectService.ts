@@ -75,7 +75,7 @@ export const projectService = {
       if (projectData.start_date) payload.start_date = projectData.start_date;
       if (projectData.end_date) payload.end_date = projectData.end_date;
       if (projectData.scope) payload.scope = projectData.scope;
-      if (projectData.manager) payload.manager = projectData.manager;
+      if (projectData.managerId) payload.manager = projectData.managerId;
       
       const response = await api.put(`/admin/project/update-project/${projectId}`, payload);
       return response.data;
