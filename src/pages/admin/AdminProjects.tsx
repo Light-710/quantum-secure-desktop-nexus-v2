@@ -152,7 +152,7 @@ const AdminProjects = () => {
   // Mutation for updating a project
   const updateProjectMutation = useMutation({
     mutationFn: ({ id, data }: { id: string | number, data: ProjectFormValues }) => 
-      projectService.updateProject(id, data),
+      projectService.adminupdateProject(id, data),
     onSuccess: () => {
       toast.success('Project updated', {
         description: 'Project has been updated successfully.'
@@ -233,7 +233,7 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      managerId: project.managerId,
+      manager: project.manager,
     });
     
     setIsEditDialogOpen(true);
@@ -426,7 +426,7 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="managerId"
+                      name="manager"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Manager ID</FormLabel>
@@ -697,7 +697,7 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="managerId"
+                name="manager"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Manager ID</FormLabel>
