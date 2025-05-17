@@ -5,8 +5,7 @@ import { MessageCircle } from "lucide-react";
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ProjectSelect from './ProjectSelect';
-import { Message, ApiMessage, TypingIndicator } from './types';
-import { Project } from '@/types/project';
+import { Message, ApiMessage, TypingIndicator, StatusMessage } from './types';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -148,6 +147,20 @@ const ChatPanel = () => {
           setMessages(prevMessages => [...prevMessages, newMsg]);
         }
       },
+      onStatus: (data: StatusMessage) => {
+        // Add status message to the chat
+        console.log('Status message received:', data);
+        const statusMsg: Message = {
+          id: `status-${Date.now()}`,
+          sender: data.user || 'System',
+          content: data.message,
+          timestamp: new Date(data.timestamp || Date.now()),
+          senderRole: 'Tester', // Use a neutral role for status messages
+          isStatusMessage: true
+        };
+        
+        setMessages(prevMessages => [...prevMessages, statusMsg]);
+      },
       onTyping: (data) => {
         // Add user to typing indicators or reset their timeout
         setTypingUsers(prev => {
@@ -179,6 +192,12 @@ const ChatPanel = () => {
           clearTimeout(typingTimeoutRef.current[data.user]);
           delete typingTimeoutRef.current[data.user];
         }
+      },
+      onError: (error) => {
+        console.error('Socket error:', error);
+        toast.error('Chat Error', {
+          description: error.message || 'An error occurred with the chat connection'
+        });
       }
     });
     

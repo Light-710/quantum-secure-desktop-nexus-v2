@@ -11,6 +11,7 @@ export interface Message {
   file_path?: string;
   isLocal?: boolean; // Flag for messages sent but not yet confirmed by server
   status?: 'sending' | 'sent' | 'error';
+  isStatusMessage?: boolean; // Flag for system/status messages
 }
 
 export interface ApiMessage {
@@ -27,6 +28,12 @@ export interface ApiMessage {
 
 export interface ApiMessageResponse {
   messages: ApiMessage[];
+}
+
+export interface StatusMessage {
+  user: string;
+  message: string;
+  timestamp: string;
 }
 
 export interface TypingIndicator {

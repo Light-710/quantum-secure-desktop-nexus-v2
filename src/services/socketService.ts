@@ -9,6 +9,7 @@ interface SocketServiceOptions {
   onError?: (error: any) => void;
   onTyping?: (data: { user: string }) => void;
   onStopTyping?: (data: { user: string }) => void;
+  onStatus?: (data: any) => void;
 }
 
 class SocketService {
@@ -29,14 +30,14 @@ class SocketService {
     
     const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+    // Pass token as a query parameter as required by your backend
     this.socket = io(baseURL, {
-      auth: {
-        token
-      },
-      transports: ['websocket'],
+      query: { token },
+      transports: ['websocket', 'polling'],  // Allow both transports for better reliability
       reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 3000
+      reconnectionDelay: 3000,
+      timeout: 10000
     });
 
     this.registerEvents();
@@ -48,7 +49,7 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Socket connected');
+      console.log('Socket connected successfully');
       if (this.options.onConnect) {
         this.options.onConnect();
       }
@@ -62,7 +63,7 @@ class SocketService {
     });
 
     this.socket.on('message', (data) => {
-      console.log('Message received', data);
+      console.log('Message received via socket:', data);
       if (this.options.onMessage) {
         this.options.onMessage(data);
       }
@@ -80,13 +81,31 @@ class SocketService {
       }
     });
 
+    this.socket.on('status', (data) => {
+      console.log('Status message received:', data);
+      if (this.options.onStatus) {
+        this.options.onStatus(data);
+      }
+    });
+
     this.socket.on('error', (error) => {
-      console.error('Socket error', error);
+      console.error('Socket error:', error);
       if (this.options.onError) {
         this.options.onError(error);
       } else {
         toast.error('Connection Error', {
-          description: 'Failed to connect to chat server'
+          description: error.message || 'Failed to connect to chat server'
+        });
+      }
+    });
+
+    this.socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+      if (this.options.onError) {
+        this.options.onError({ message: 'Connection failed. Please try again.' });
+      } else {
+        toast.error('Connection Error', {
+          description: 'Failed to connect to chat server. Please try again.'
         });
       }
     });
@@ -99,14 +118,14 @@ class SocketService {
     }
 
     console.log(`Joining room for project ${projectId}`);
-    this.socket.emit('join', { projectId });
+    this.socket.emit('join', { project_id: projectId });
   }
 
   leaveRoom(projectId: string) {
     if (!this.socket) return;
     
     console.log(`Leaving room for project ${projectId}`);
-    this.socket.emit('leave', { projectId });
+    this.socket.emit('leave', { project_id: projectId });
   }
 
   sendMessage(projectId: string, content: string) {
@@ -115,21 +134,21 @@ class SocketService {
       return false;
     }
 
-    console.log(`Sending message to project ${projectId}`);
-    this.socket.emit('message', { projectId, content });
+    console.log(`Sending message to project ${projectId}`, content);
+    this.socket.emit('message', { project_id: projectId, content });
     return true;
   }
 
   sendTypingStart(projectId: string) {
     if (!this.socket) return;
     
-    this.socket.emit('typing', { projectId });
+    this.socket.emit('typing', { project_id: projectId });
   }
   
   sendTypingStop(projectId: string) {
     if (!this.socket) return;
     
-    this.socket.emit('stop_typing', { projectId });
+    this.socket.emit('stop_typing', { project_id: projectId });
   }
 
   isConnected(): boolean {
