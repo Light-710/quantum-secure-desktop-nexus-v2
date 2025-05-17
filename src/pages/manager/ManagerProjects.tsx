@@ -48,7 +48,7 @@ const ManagerProjects = () => {
     queryKey: ['manager-projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/manager/projects/${user?.employee_id}`);
+        const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
         console.error('Failed to fetch projects:', error);

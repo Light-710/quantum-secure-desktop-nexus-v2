@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,7 +61,7 @@ const projectSchema = z.object({
   end_date: z.string().min(1, "End date is required"),
   status: z.string().optional(),
   scope: z.string().optional(),
-  managerId: z.union([z.string(), z.number()]).optional(),
+  manager: z.union([z.string(), z.number()]).optional(),
 });
 
 const AdminProjects = () => {
@@ -82,6 +83,7 @@ const AdminProjects = () => {
       end_date: apiProject.end_date || '',
       scope: apiProject.scope || '',
       manager: apiProject.manager || 'Not Assigned',
+      manager_name: apiProject.manager_name || 'Not Assigned',
     };
   };
 
@@ -95,7 +97,6 @@ const AdminProjects = () => {
       end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       scope: '',
       status: 'not started',
-      managerId: '', // Changed from manager to managerId
     }
   });
 
@@ -233,7 +234,8 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      managerId: project.managerId, // Changed from manager to managerId
+      manager: project.manager,
+      manager_name: project.manager_name,
     });
     
     setIsEditDialogOpen(true);
@@ -270,6 +272,44 @@ const AdminProjects = () => {
 
   return (
     <DashboardLayout>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="glass-panel border-[#D6D2C9]">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#3E3D3A]">Active Projects</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-[#8A9B6E]">
+              {activeProjects}
+            </div>
+            <p className="text-sm text-[#8E8B85] mt-1">Current ongoing projects</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-panel border-[#D6D2C9]">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#3E3D3A]">Completed Projects</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-[#6D98BA]">
+              {completedProjects}
+            </div>
+            <p className="text-sm text-[#8E8B85] mt-1">Successfully delivered</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-panel border-[#D6D2C9]">
+          <CardHeader>
+            <CardTitle className="text-lg text-[#3E3D3A]">On Hold/Cancelled</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-[#C47D5F]">
+              {onHoldCancelledProjects}
+            </div>
+            <p className="text-sm text-[#8E8B85] mt-1">Projects requiring attention</p>
+          </CardContent>
+        </Card>
+      </div>
+      <br />
       <Card className="glass-panel border-[#D6D2C9] mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -388,10 +428,10 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="managerId"
+                      name="manager"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Manager ID</FormLabel>
+                          <FormLabel>manager ID</FormLabel>
                           <FormControl>
                             <Input 
                               type="text"
@@ -440,7 +480,7 @@ const AdminProjects = () => {
                   <TableHead className="text-[#8E8B85]">Name</TableHead>
                   <TableHead className="text-[#8E8B85]">Status</TableHead>
                   <TableHead className="text-[#8E8B85]">Timeline</TableHead>
-                  <TableHead className="text-[#8E8B85]">Scope</TableHead>
+                  <TableHead className="text-[#8E8B85]">Manager</TableHead>
                   <TableHead className="text-[#8E8B85]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -477,7 +517,8 @@ const AdminProjects = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-[#3E3D3A]">
-                        {project.scope || 'Not specified'}
+                        <p> {project.manager_name || 'Not specified'}</p>
+                        {project.manager || 'Not specified'}
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-1">
@@ -658,10 +699,10 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="managerId"
+                name="manager"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Manager ID</FormLabel>
+                    <FormLabel>manager ID</FormLabel>
                     <FormControl>
                       <Input 
                         type="text"
@@ -707,43 +748,7 @@ const AdminProjects = () => {
         </DialogContent>
       </Dialog>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="glass-panel border-[#D6D2C9]">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">Active Projects</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#8A9B6E]">
-              {activeProjects}
-            </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Current ongoing projects</p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-panel border-[#D6D2C9]">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">Completed Projects</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#6D98BA]">
-              {completedProjects}
-            </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Successfully delivered</p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-panel border-[#D6D2C9]">
-          <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">On Hold/Cancelled</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#C47D5F]">
-              {onHoldCancelledProjects}
-            </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Projects requiring attention</p>
-          </CardContent>
-        </Card>
-      </div>
+      
     </DashboardLayout>
   );
 };
