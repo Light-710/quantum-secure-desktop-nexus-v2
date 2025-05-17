@@ -44,9 +44,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import {
   Filter,
-  FileText,
-  Download,
-  FileUp,
   PlusCircle,
   Edit,
   Archive,
@@ -55,14 +52,12 @@ import {
   UserMinus,
   Users,
   RefreshCcw,
-  Info
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectService } from '@/services/projectService';
-import { reportService } from '@/services/reportService';
 import { Project, ProjectFormValues, ProjectMember } from '@/types/project';
 import { SimpleUser, userManagementService } from '@/services/userManagementService';
 import {
@@ -100,7 +95,6 @@ const assignmentSchema = z.object({
 
 const ManagerProjects = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -120,7 +114,7 @@ const ManagerProjects = () => {
       start_date: new Date().toISOString().split('T')[0],
       end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       scope: '',
-      status: 'In Progress',
+      status: 'in progress',
     }
   });
 
@@ -303,49 +297,6 @@ const ManagerProjects = () => {
     statusFilter === 'all' ? true : project.status === statusFilter
   );
 
-  const handleGenerateReport = async (projectId: string) => {
-    setLoadingProjectId(projectId);
-    try {
-      const response = await reportService.generateReport(projectId);
-      toast("Report Generation Started", {
-        description: response.message || "Your report is being generated and will be available soon."
-      });
-    } catch (error: any) {
-      toast.error("Report Generation Failed", {
-        description: error.response?.data?.message || "Failed to start report generation."
-      });
-    } finally {
-      setLoadingProjectId(null);
-    }
-  };
-
-  const handleDownloadReport = async (projectId: string) => {
-    setLoadingProjectId(projectId);
-    try {
-      const blob = await reportService.downloadReport(projectId);
-      
-      // Create a link to download the blob
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = `project-report-${projectId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
-      toast("Report Downloaded", {
-        description: "The project report has been downloaded successfully."
-      });
-    } catch (error: any) {
-      toast.error("Download Failed", {
-        description: error.response?.data?.message || "Failed to download report."
-      });
-    } finally {
-      setLoadingProjectId(null);
-    }
-  };
-
   const handleCreateSubmit = (values: ProjectFormValues) => {
     createProjectMutation.mutate(values);
   };
@@ -411,9 +362,9 @@ const ManagerProjects = () => {
 
   const getStatusBadgeColor = (status: string) => {
     const statusLower = status.toLowerCase();
-    if (statusLower.includes('progress')) return 'bg-blue-100 text-blue-800';
-    if (statusLower.includes('complet')) return 'bg-green-100 text-green-800';
-    if (statusLower.includes('pend')) return 'bg-yellow-100 text-yellow-800';
+    if (statusLower === 'in progress') return 'bg-blue-100 text-blue-800';
+    if (statusLower === 'complete') return 'bg-green-100 text-green-800';
+    if (statusLower === 'not started') return 'bg-yellow-100 text-yellow-800';
     return 'bg-gray-100 text-gray-800';
   };
 
@@ -454,9 +405,9 @@ const ManagerProjects = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Projects</SelectItem>
-                      <SelectItem value="In Progress">In Progress</SelectItem>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="in progress">In Progress</SelectItem>
+                      <SelectItem value="not started">Not Started</SelectItem>
+                      <SelectItem value="complete">Complete</SelectItem>
                     </SelectContent>
                   </Select>
                   <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
@@ -658,59 +609,6 @@ const ManagerProjects = () => {
                                 </TooltipContent>
                               </Tooltip>
 
-                              <Dialog>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <DialogTrigger asChild>
-                                      <Button variant="ghost" size="sm">
-                                        <FileText className="w-4 h-4" />
-                                      </Button>
-                                    </DialogTrigger>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Project reports</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Project Reports</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="mt-4 space-y-4">
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-sm">Generate New Report</span>
-                                      <Button 
-                                        size="sm" 
-                                        onClick={() => handleGenerateReport(project.id.toString())}
-                                        disabled={loadingProjectId === project.id.toString()}
-                                      >
-                                        {loadingProjectId === project.id.toString() ? (
-                                          <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full" />
-                                        ) : (
-                                          <FileUp className="h-4 w-4 mr-2" />
-                                        )}
-                                        Generate
-                                      </Button>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                      <span className="text-sm">Download Latest Report</span>
-                                      <Button 
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => handleDownloadReport(project.id.toString())}
-                                        disabled={loadingProjectId === project.id.toString()}
-                                      >
-                                        {loadingProjectId === project.id.toString() ? (
-                                          <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full" />
-                                        ) : (
-                                          <Download className="h-4 w-4 mr-2" />
-                                        )}
-                                        Download
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-
                               <AlertDialog>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -895,9 +793,9 @@ const ManagerProjects = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="In Progress">In Progress</SelectItem>
-                          <SelectItem value="Pending">Pending</SelectItem>
-                          <SelectItem value="Completed">Completed</SelectItem>
+                          <SelectItem value="not started">Not Started</SelectItem>
+                          <SelectItem value="in progress">In Progress</SelectItem>
+                          <SelectItem value="complete">Complete</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
