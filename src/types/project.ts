@@ -10,6 +10,12 @@ export interface Project {
   manager?: string; // Manager name
   managerId?: string | number; // Manager ID
   manager_name?: string; // Adding manager_name field
+  members?: ProjectMember[]; // Adding members field
+}
+
+export interface ProjectMember {
+  employee_id: number;
+  name: string;
 }
 
 export interface ApiProject {
@@ -22,6 +28,7 @@ export interface ApiProject {
   scope: string;
   manager?: string;
   manager_name?: string; // Adding manager_name field
+  members?: ProjectMember[]; // Adding members field
 }
 
 export interface ProjectFormValues {
