@@ -97,7 +97,7 @@ export function UserList({
                     size="sm" 
                     className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
                     onClick={() => onDeleteUser(user.employee_id)}
-                    disabled={user.status.toLowerCase() !== 'active'}
+                    disabled={user.role.toLowerCase() === 'admin' || user.status.toLowerCase() === 'inactive' }
                     title="Deactivate User"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function UserList({
                         : 'hover:bg-green-400/20 hover:text-green-400'
                     }`}
                     onClick={() => onToggleStatus(user.employee_id)}
-                    disabled={user.role.toLowerCase() === 'admin'}
+                    disabled={user.status.toLowerCase() === 'active'}
                     title={user.status.toLowerCase() === 'active' ? "Deactivate User" : "Activate User"}
                   >
                     <Key className="h-4 w-4" />

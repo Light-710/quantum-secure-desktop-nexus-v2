@@ -41,7 +41,7 @@ const AdminProjects = () => {
     queryKey: ['admin-projects'],
     queryFn: async () => {
       try {
-        const response = await api.get('/admin/projects');
+        const response = await api.get('/admin/project/get-all-projects');
         
         if (response.data && Array.isArray(response.data)) {
           // Map API projects to our internal format
