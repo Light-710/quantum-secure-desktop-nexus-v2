@@ -39,7 +39,7 @@ export interface ApiUser {
   status: string;
 }
 
-// Add a type for the API user response wrapper (if needed)
+// Updated to match the actual API response format
 export interface ApiUserResponse {
-  users?: ApiUser[];
+  users: ApiUser[];
 }

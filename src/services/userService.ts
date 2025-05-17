@@ -1,14 +1,24 @@
+
 import api from './api';
 import type { User, UserFormValues, UserProfile, ApiUser } from '@/types/user';
 
 export const userService = {
-  // This matches the actual API response format (direct array of users)
+  // Updated to handle the wrapped users array format
   getAllUsers: async () => {
     try {
       const response = await api.get('/admin/user/get-users');
       console.log('API response for getAllUsers:', response.data);
-      // Return the data directly as it's already an array of users
-      return response.data;
+      
+      // Check if the response is wrapped in a users object
+      if (response.data && response.data.users && Array.isArray(response.data.users)) {
+        return response.data.users; // Return the users array
+      } else if (Array.isArray(response.data)) {
+        // Fallback for direct array response
+        return response.data;
+      } else {
+        console.error('Unexpected API response format:', response.data);
+        throw new Error('Invalid response format from server');
+      }
     } catch (error) {
       console.error('Error in getAllUsers:', error);
       throw error;
