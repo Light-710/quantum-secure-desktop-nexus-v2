@@ -16,7 +16,7 @@ const ProjectSelect = ({ projects, selectedProject, onProjectSelect }: ProjectSe
       </SelectTrigger>
       <SelectContent>
         {projects.map((project) => (
-          <SelectItem key={project.id} value={project.id}>
+          <SelectItem key={project.id} value={String(project.id)}>
             {project.name}
           </SelectItem>
         ))}

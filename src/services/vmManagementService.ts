@@ -128,7 +128,7 @@ export const handleCreateSnapshot = (vmId: string) => {
   });
 };
 
-// Function to convert API VM data to our app's format
+// Update the convertApiVMToAppFormat function to use the normalizeVMStatus function
 const convertApiVMToAppFormat = (apiVM: any): VirtualMachine => {
   // Calculate uptime based on updated_at timestamp (simple implementation, can be improved)
   const updatedAt = new Date(apiVM.updated_at);
@@ -143,10 +143,13 @@ const convertApiVMToAppFormat = (apiVM: any): VirtualMachine => {
   // Default resource usage based on status
   const isRunning = apiVM.status.toLowerCase() === 'running';
   
+  // Normalize the status string to a valid VMStatus
+  const normalizedStatus = normalizeVMStatus(apiVM.status);
+  
   return {
     id: apiVM.instance_id || `vm-${apiVM.id}`,
     name: `${apiVM.instance_os} VM`,
-    status: apiVM.status as VMStatus,
+    status: normalizedStatus,
     os: apiVM.instance_os,
     assigned_user: apiVM.employee_id,
     uptime: uptime,
@@ -158,12 +161,26 @@ const convertApiVMToAppFormat = (apiVM: any): VirtualMachine => {
     instance_id: apiVM.instance_id,
     created_at: apiVM.created_at,
     resources: {
-      cpu: isRunning ? Math.floor(Math.random() * 60) + 20 : 0, // Random CPU usage between 20-80% if running
-      memory: isRunning ? Math.floor(Math.random() * 50) + 30 : 0, // Random memory usage between 30-80% if running
-      disk: Math.floor(Math.random() * 40) + 10, // Random disk usage between 10-50%
-      network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0, // Random network usage between 5-45% if running
+      cpu: isRunning ? Math.floor(Math.random() * 60) + 20 : 0,
+      memory: isRunning ? Math.floor(Math.random() * 50) + 30 : 0,
+      disk: Math.floor(Math.random() * 40) + 10,
+      network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0,
     }
   };
+};
+
+// Helper function to normalize VM status strings to VMStatus type
+const normalizeVMStatus = (status: string): VMStatus => {
+  const lowercaseStatus = status.toLowerCase();
+  
+  if (lowercaseStatus === 'running') return 'Running';
+  if (lowercaseStatus === 'stopped') return 'Stopped';
+  if (lowercaseStatus === 'starting') return 'Starting';
+  if (lowercaseStatus === 'stopping') return 'Stopping';
+  if (lowercaseStatus === 'paused') return 'Paused';
+  
+  // Default to Error for unrecognized statuses
+  return 'Error';
 };
 
 // Load VMs for a specific user or all VMs for admin

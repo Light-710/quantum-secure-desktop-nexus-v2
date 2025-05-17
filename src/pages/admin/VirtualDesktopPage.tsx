@@ -60,10 +60,13 @@ const VirtualDesktopPage = () => {
     // Resource usage from API or estimated based on status
     const isRunning = apiVM.status.toLowerCase() === 'running';
     
+    // Convert string status to proper VMStatus type
+    const normalizedStatus = normalizeVMStatus(apiVM.status);
+    
     return {
       id: apiVM.id.toString(),
       name: `${apiVM.instance_os} VM`,
-      status: apiVM.status,
+      status: normalizedStatus,
       os: apiVM.instance_os,
       assigned_user: apiVM.employee_id,
       uptime: uptime,
@@ -81,6 +84,20 @@ const VirtualDesktopPage = () => {
         network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0,
       }
     };
+  };
+
+  // Function to normalize VM status strings to VMStatus type
+  const normalizeVMStatus = (status: string): VMStatus => {
+    const lowercaseStatus = status.toLowerCase();
+    
+    if (lowercaseStatus === 'running') return 'Running';
+    if (lowercaseStatus === 'stopped') return 'Stopped';
+    if (lowercaseStatus === 'starting') return 'Starting';
+    if (lowercaseStatus === 'stopping') return 'Stopping';
+    if (lowercaseStatus === 'paused') return 'Paused';
+    
+    // Default to Error for unrecognized statuses
+    return 'Error';
   };
 
   const handleViewDetails = (vm: VirtualMachine) => {
