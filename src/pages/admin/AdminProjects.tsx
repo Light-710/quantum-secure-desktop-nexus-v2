@@ -83,6 +83,7 @@ const AdminProjects = () => {
       scope: apiProject.scope || '',
       manager: apiProject.manager || 'Not Assigned',
       manager_name: apiProject.manager_name || 'Not Assigned',
+      archived: apiProject.archived || false,
     };
   };
 
@@ -96,6 +97,7 @@ const AdminProjects = () => {
       end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       scope: '',
       status: 'not started',
+      manager: '',
     }
   });
 
@@ -477,6 +479,7 @@ const AdminProjects = () => {
                   <TableHead className="text-[#8E8B85]">Project ID</TableHead>
                   <TableHead className="text-[#8E8B85]">Name</TableHead>
                   <TableHead className="text-[#8E8B85]">Status</TableHead>
+                  <TableHead className="text-[#8E8B85]">Archived</TableHead>
                   <TableHead className="text-[#8E8B85]">Timeline</TableHead>
                   <TableHead className="text-[#8E8B85]">Manager</TableHead>
                   <TableHead className="text-[#8E8B85]">Actions</TableHead>
@@ -503,6 +506,11 @@ const AdminProjects = () => {
                       <TableCell>
                         <Badge className={`${getStatusColor(project.status)} border text-xs font-normal`}>
                           {project.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`border text-xs font-normal ${project.archived ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {project.archived ? 'True' : 'False'}
                         </Badge>
                       </TableCell>
                       <TableCell>
