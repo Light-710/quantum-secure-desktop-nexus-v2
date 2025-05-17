@@ -11,6 +11,7 @@ export interface Project {
   managerId?: string | number; // Manager ID
   manager_name?: string; // Adding manager_name field
   members?: ProjectMember[]; // Adding members field
+  archived?: boolean; // Adding archived field
 }
 
 export interface ProjectMember {
@@ -29,6 +30,7 @@ export interface ApiProject {
   manager?: string;
   manager_name?: string; // Adding manager_name field
   members?: ProjectMember[]; // Adding members field
+  archived?: boolean; // Adding archived field
 }
 
 export interface ProjectFormValues {
