@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
@@ -12,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
+import { UserRole } from '@/types/user';
 
 const ChatPanel = () => {
   const { user } = useAuth();
