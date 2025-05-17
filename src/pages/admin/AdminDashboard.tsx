@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { Skeleton } from "@/components/ui/skeleton";
+import { useQuery } from '@tanstack/react-query';
+import api from '@/services/api';
+import { toast } from '@/components/ui/sonner';
 import { 
   Users, Monitor, Activity, MessageCircle,
   UserPlus, FolderOpen, RefreshCw
@@ -20,6 +23,7 @@ type User = {
   status: string;
   email: string;
   lastLogin: string;
+  employee_id?: string;
 };
 
 // VM Type
@@ -45,181 +49,127 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeUserTab, setActiveUserTab] = useState('active');
   
-  // State variables with empty defaults
-  const [users, setUsers] = useState<{
-    active: User[];
-    inactive: User[];
-  }>({
-    active: [],
-    inactive: []
+  // Use React Query for data fetching
+  const { 
+    data: usersData = { active: [], inactive: [] }, 
+    isLoading: isLoadingUsers,
+    refetch: refetchUsers
+  } = useQuery({
+    queryKey: ['dashboard-users'],
+    queryFn: async () => {
+      try {
+        const response = await api.get('/admin/users/get-all');
+        
+        // Transform API data to required format
+        const activeUsers = response.data.filter((user: any) => 
+          user.status.toLowerCase() === 'active'
+        ).map((user: any) => ({
+          id: user.id || user.employee_id,
+          name: user.name,
+          role: user.role,
+          status: user.status,
+          email: user.email,
+          lastLogin: user.last_login || 'Never',
+          employee_id: user.employee_id
+        }));
+        
+        const inactiveUsers = response.data.filter((user: any) => 
+          user.status.toLowerCase() !== 'active'
+        ).map((user: any) => ({
+          id: user.id || user.employee_id,
+          name: user.name,
+          role: user.role,
+          status: user.status,
+          email: user.email,
+          lastLogin: user.last_login || 'Never',
+          employee_id: user.employee_id
+        }));
+        
+        return { active: activeUsers, inactive: inactiveUsers };
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load users data",
+          variant: "destructive",
+        });
+        return { active: [], inactive: [] };
+      }
+    },
   });
   
-  const [vms, setVms] = useState<VirtualMachine[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const { 
+    data: vmsData = [],
+    isLoading: isLoadingVMs,
+    refetch: refetchVMs
+  } = useQuery({
+    queryKey: ['dashboard-vms'],
+    queryFn: async () => {
+      try {
+        const response = await api.get('/admin/vm/get-all-vms');
+        
+        // Transform API data to required format
+        return response.data.vms.map((vm: any) => ({
+          id: vm.instance_id || vm.id,
+          user_name: vm.user_name,
+          instance_os: vm.instance_os,
+          status: vm.status,
+          user_email: vm.user_email
+        }));
+      } catch (error) {
+        console.error('Error fetching VMs:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load virtual machine data",
+          variant: "destructive",
+        });
+        return [];
+      }
+    },
+  });
   
-  // Loading states
-  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
-  const [isLoadingVMs, setIsLoadingVMs] = useState(true);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-  
-  // API fetch functions
-  const fetchUsers = async () => {
-    setIsLoadingUsers(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      const sampleActiveUsers: User[] = [
-        {
-          id: 'U001',
-          name: 'John Smith',
-          role: 'Employee',
-          status: 'Online',
-          email: 'john.smith@company.com',
-          lastLogin: '2024-05-16T14:30:00Z',
-        },
-        {
-          id: 'U002',
-          name: 'Emily Chen',
-          role: 'Manager',
-          status: 'Away',
-          email: 'emily.chen@company.com',
-          lastLogin: '2024-05-16T10:15:00Z',
-        },
-        {
-          id: 'U003',
-          name: 'Michael Johnson',
-          role: 'Tester',
-          status: 'Online',
-          email: 'michael.j@company.com',
-          lastLogin: '2024-05-16T09:45:00Z',
-        }
-      ];
-      
-      const sampleInactiveUsers: User[] = [
-        {
-          id: 'U004',
-          name: 'Sarah Williams',
-          role: 'Employee',
-          status: 'Disabled',
-          email: 'sarah.w@company.com',
-          lastLogin: '2024-05-10T11:20:00Z',
-        }
-      ];
-      
-      setUsers({
-        active: sampleActiveUsers,
-        inactive: sampleInactiveUsers
-      });
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load users data",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingUsers(false);
-    }
-  };
+  const { 
+    data: projectsData = [],
+    isLoading: isLoadingProjects,
+    refetch: refetchProjects
+  } = useQuery({
+    queryKey: ['dashboard-projects'],
+    queryFn: async () => {
+      try {
+        const response = await api.get('/admin/projects/get-all');
+        
+        // Transform API data to required format
+        return response.data.map((project: any) => ({
+          id: project.id,
+          name: project.name,
+          status: project.status,
+          manager: project.manager_name,
+          teamSize: project.team_size || project.team_members?.length || 0
+        }));
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load project data",
+          variant: "destructive",
+        });
+        return [];
+      }
+    },
+  });
 
-  const fetchVirtualMachines = async () => {
-    setIsLoadingVMs(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      const sampleVMs: VirtualMachine[] = [
-        {
-          id: 'VM001',
-          user_name: 'John Smith',
-          instance_os: 'Windows',
-          status: 'Running',
-          user_email: 'john.smith@company.com',
-        },
-        {
-          id: 'VM002',
-          user_name: 'Emily Chen',
-          instance_os: 'Linux',
-          status: 'Stopped',
-          user_email: 'emily.chen@company.com',
-        },
-        {
-          id: 'VM003',
-          user_name: 'Michael Johnson',
-          instance_os: 'Windows',
-          status: 'Running',
-          user_email: 'michael.j@company.com',
-        }
-      ];
-      
-      setVms(sampleVMs);
-    } catch (error) {
-      console.error('Error fetching VM statuses:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load virtual machine data",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingVMs(false);
-    }
-  };
-  
-  const fetchProjects = async () => {
-    setIsLoadingProjects(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      const sampleProjects: Project[] = [
-        {
-          id: 'PRJ001',
-          name: 'Cloud Migration',
-          status: 'Active',
-          manager: 'Emily Chen',
-          teamSize: 6,
-        },
-        {
-          id: 'PRJ002',
-          name: 'Security Audit',
-          status: 'Completed',
-          manager: 'David Wilson',
-          teamSize: 3,
-        },
-        {
-          id: 'PRJ003',
-          name: 'New CRM Implementation',
-          status: 'On Hold',
-          manager: 'Sarah Williams',
-          teamSize: 8,
-        }
-      ];
-      
-      setProjects(sampleProjects);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load project data",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoadingProjects(false);
-    }
-  };
-  
-  // Load data on component mount
-  useEffect(() => {
-    fetchUsers();
-    fetchVirtualMachines();
-    fetchProjects();
-  }, []);
-  
   const handleAddUser = () => {
+    navigate('/dashboard/admin/users/new');
+  };
+  
+  // Refresh all data
+  const refreshAllData = () => {
+    refetchUsers();
+    refetchVMs();
+    refetchProjects();
     toast({
-      title: "Add User",
-      description: "The user creation form would open here.",
+      title: "Refreshed",
+      description: "Dashboard data has been updated",
     });
   };
   
@@ -247,7 +197,7 @@ const AdminDashboard = () => {
                   <Skeleton className="h-9 w-16 bg-[#8A9B6E]/10" />
                 ) : (
                   <h3 className="text-3xl font-bold text-[#8A9B6E] mt-1">
-                    {users.active.length + users.inactive.length}
+                    {usersData.active.length + usersData.inactive.length}
                   </h3>
                 )}
               </div>
@@ -278,7 +228,7 @@ const AdminDashboard = () => {
                   <Skeleton className="h-9 w-16 bg-[#C47D5F]/10" />
                 ) : (
                   <h3 className="text-3xl font-bold text-[#C47D5F] mt-1">
-                    {projects.filter(p => p.status === 'Active').length}
+                    {projectsData.filter(p => p.status.toLowerCase() === 'active').length}
                   </h3>
                 )}
               </div>
@@ -309,7 +259,7 @@ const AdminDashboard = () => {
                   <Skeleton className="h-9 w-16 bg-[#6D98BA]/10" />
                 ) : (
                   <h3 className="text-3xl font-bold text-[#6D98BA] mt-1">
-                    {vms.filter(vm => vm.status.toLowerCase() === 'running').length}
+                    {vmsData.filter(vm => vm.status.toLowerCase() === 'running').length}
                   </h3>
                 )}
               </div>
@@ -348,7 +298,7 @@ const AdminDashboard = () => {
             <Button
               variant="outline"
               className="border-[#D6D2C9] hover:bg-[#F7F5F2]"
-              onClick={() => fetchUsers()}
+              onClick={refreshAllData}
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
@@ -373,16 +323,16 @@ const AdminDashboard = () => {
             <Tabs defaultValue="active" onValueChange={(value) => setActiveUserTab(value)}>
               <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#F7F5F2]">
                 <TabsTrigger value="active" className="data-[state=active]:bg-[#8A9B6E]/20 data-[state=active]:text-[#8A9B6E]">
-                  Active Users ({users.active.length})
+                  Active Users ({usersData.active.length})
                 </TabsTrigger>
                 <TabsTrigger value="inactive" className="data-[state=active]:bg-[#8A9B6E]/20 data-[state=active]:text-[#8A9B6E]">
-                  Inactive Users ({users.inactive.length})
+                  Inactive Users ({usersData.inactive.length})
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="active" className="space-y-4">
-                {users.active.length > 0 ? (
-                  users.active.map((user) => (
+                {usersData.active.length > 0 ? (
+                  usersData.active.map((user) => (
                     <div key={user.id} className="flex items-center justify-between border border-[#D6D2C9] rounded-md p-3 bg-white">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
@@ -393,7 +343,7 @@ const AdminDashboard = () => {
                         <div>
                           <p className="text-sm font-medium text-[#3E3D3A]">{user.name}</p>
                           <div className="flex space-x-4 mt-1">
-                            <span className="text-xs text-[#8E8B85]">ID: {user.id}</span>
+                            <span className="text-xs text-[#8E8B85]">ID: {user.employee_id || user.id}</span>
                             <span className={`text-xs ${
                               user.role === 'Admin' 
                                 ? 'text-[#A84332]' 
@@ -411,7 +361,7 @@ const AdminDashboard = () => {
                       
                       <div className="flex items-center space-x-4">
                         <div className={`text-xs px-2 py-1 rounded-full ${
-                          user.status === 'Online' 
+                          user.status === 'Active' || user.status === 'Online' 
                             ? 'bg-green-100 text-green-800' 
                             : user.status === 'Away' 
                               ? 'bg-amber-100 text-amber-800' 
@@ -437,8 +387,8 @@ const AdminDashboard = () => {
               </TabsContent>
               
               <TabsContent value="inactive" className="space-y-4">
-                {users.inactive.length > 0 ? (
-                  users.inactive.map((user) => (
+                {usersData.inactive.length > 0 ? (
+                  usersData.inactive.map((user) => (
                     <div key={user.id} className="flex items-center justify-between border border-[#D6D2C9] rounded-md p-3 bg-white">
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
@@ -449,7 +399,7 @@ const AdminDashboard = () => {
                         <div>
                           <p className="text-sm font-medium text-[#8E8B85]">{user.name}</p>
                           <div className="flex space-x-4 mt-1">
-                            <span className="text-xs text-[#8E8B85]">ID: {user.id}</span>
+                            <span className="text-xs text-[#8E8B85]">ID: {user.employee_id || user.id}</span>
                             <span className="text-xs text-[#8E8B85]">{user.role}</span>
                           </div>
                         </div>
@@ -489,7 +439,7 @@ const AdminDashboard = () => {
             <Button
               variant="outline"
               className="border-[#D6D2C9] hover:bg-[#F7F5F2]"
-              onClick={() => fetchVirtualMachines()}
+              onClick={() => refetchVMs()}
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
@@ -515,18 +465,18 @@ const AdminDashboard = () => {
                   <div>
                     <div className="text-[#8E8B85] text-sm">Running VMs</div>
                     <div className="text-3xl font-bold text-[#6D98BA] mt-1">
-                      {vms.filter(vm => vm.status.toLowerCase() === 'running').length}
+                      {vmsData.filter(vm => vm.status.toLowerCase() === 'running').length}
                     </div>
                   </div>
                   <div className="text-sm text-[#8E8B85]">
-                    of {vms.length} total
+                    of {vmsData.length} total
                   </div>
                 </div>
                 <div className="mt-3 h-2 bg-[#F7F5F2] rounded-full overflow-hidden">
                   <div 
                     className="h-2 bg-[#6D98BA] rounded-full" 
                     style={{ 
-                      width: `${vms.length > 0 ? (vms.filter(vm => vm.status.toLowerCase() === 'running').length / vms.length) * 100 : 0}%` 
+                      width: `${vmsData.length > 0 ? (vmsData.filter(vm => vm.status.toLowerCase() === 'running').length / vmsData.length) * 100 : 0}%` 
                     }}
                   ></div>
                 </div>
@@ -542,7 +492,7 @@ const AdminDashboard = () => {
                       <span className="text-sm text-[#3E3D3A]">Windows</span>
                     </div>
                     <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
-                      {vms.filter(vm => vm.instance_os.toLowerCase() === 'windows').length}
+                      {vmsData.filter(vm => vm.instance_os.toLowerCase() === 'windows').length}
                     </div>
                   </div>
                   <div>
@@ -551,7 +501,7 @@ const AdminDashboard = () => {
                       <span className="text-sm text-[#3E3D3A]">Linux</span>
                     </div>
                     <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
-                      {vms.filter(vm => vm.instance_os.toLowerCase() === 'linux').length}
+                      {vmsData.filter(vm => vm.instance_os.toLowerCase() === 'linux').length}
                     </div>
                   </div>
                   <div>
@@ -560,7 +510,7 @@ const AdminDashboard = () => {
                       <span className="text-sm text-[#3E3D3A]">Other</span>
                     </div>
                     <div className="text-xl font-semibold text-[#3E3D3A] mt-1">
-                      {vms.filter(vm => 
+                      {vmsData.filter(vm => 
                         vm.instance_os.toLowerCase() !== 'windows' && 
                         vm.instance_os.toLowerCase() !== 'linux'
                       ).length}
@@ -602,7 +552,7 @@ const AdminDashboard = () => {
               <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
                 <div className="text-[#8E8B85] text-sm mb-2">Active</div>
                 <div className="text-2xl font-bold text-[#8A9B6E]">
-                  {projects.filter(p => p.status === 'Active').length}
+                  {projectsData.filter(p => p.status.toLowerCase() === 'active').length}
                 </div>
                 <div className="text-xs text-[#8E8B85] mt-1">Projects in progress</div>
               </div>
@@ -610,7 +560,7 @@ const AdminDashboard = () => {
               <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
                 <div className="text-[#8E8B85] text-sm mb-2">Completed</div>
                 <div className="text-2xl font-bold text-[#6D98BA]">
-                  {projects.filter(p => p.status === 'Completed').length}
+                  {projectsData.filter(p => p.status.toLowerCase() === 'completed').length}
                 </div>
                 <div className="text-xs text-[#8E8B85] mt-1">Successfully delivered projects</div>
               </div>
@@ -618,7 +568,11 @@ const AdminDashboard = () => {
               <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
                 <div className="text-[#8E8B85] text-sm mb-2">On Hold/Issues</div>
                 <div className="text-2xl font-bold text-[#C47D5F]">
-                  {projects.filter(p => p.status === 'On Hold' || p.status === 'Cancelled').length}
+                  {projectsData.filter(p => 
+                    p.status.toLowerCase() === 'on hold' || 
+                    p.status.toLowerCase() === 'cancelled' ||
+                    p.status.toLowerCase() === 'issues'
+                  ).length}
                 </div>
                 <div className="text-xs text-[#8E8B85] mt-1">Projects requiring attention</div>
               </div>
