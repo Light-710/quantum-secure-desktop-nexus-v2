@@ -60,6 +60,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectService } from '@/services/projectService';
+import { reportService } from '@/services/reportService';
 import { Project, ProjectFormValues } from '@/types/project';
 import {
   AlertDialog,

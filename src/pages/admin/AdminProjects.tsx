@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -234,8 +233,7 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      manager: project.manager,
-      manager_name: project.manager_name,
+      managerId: project.managerId,
     });
     
     setIsEditDialogOpen(true);
@@ -428,10 +426,10 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="manager"
+                      name="managerId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>manager ID</FormLabel>
+                          <FormLabel>Manager ID</FormLabel>
                           <FormControl>
                             <Input 
                               type="text"
@@ -699,10 +697,10 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="manager"
+                name="managerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>manager ID</FormLabel>
+                    <FormLabel>Manager ID</FormLabel>
                     <FormControl>
                       <Input 
                         type="text"

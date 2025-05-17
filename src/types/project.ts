@@ -9,6 +9,7 @@ export interface Project {
   scope?: string;
   manager?: string; // Manager name
   managerId?: string | number; // Manager ID
+  manager_name?: string; // Adding manager_name field
 }
 
 export interface ApiProject {
@@ -20,6 +21,7 @@ export interface ApiProject {
   end_date: string | null;
   scope: string;
   manager?: string;
+  manager_name?: string; // Adding manager_name field
 }
 
 export interface ProjectFormValues {
