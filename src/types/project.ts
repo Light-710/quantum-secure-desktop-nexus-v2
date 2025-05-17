@@ -7,10 +7,8 @@ export interface Project {
   start_date?: string;
   end_date?: string;
   scope?: string;
-  dueDate?: string; // For backward compatibility
-  teamSize?: number; // For backward compatibility
-  manager?: string; // For backward compatibility
-  managerId?: string | number; // For backward compatibility
+  manager?: string; // Manager name
+  managerId?: string | number; // Manager ID
 }
 
 export interface ApiProject {
@@ -31,7 +29,7 @@ export interface ProjectFormValues {
   start_date: string;
   end_date: string;
   scope?: string;
-  managerId?: string | number;
+  managerId?: string | number; // Use managerId consistently
 }
 
 export interface ProjectAssignment {

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -61,7 +60,7 @@ const projectSchema = z.object({
   end_date: z.string().min(1, "End date is required"),
   status: z.string().optional(),
   scope: z.string().optional(),
-  manager: z.union([z.string(), z.number()]).optional(),
+  managerId: z.union([z.string(), z.number()]).optional(),
 });
 
 const AdminProjects = () => {
@@ -96,6 +95,7 @@ const AdminProjects = () => {
       end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       scope: '',
       status: 'not started',
+      managerId: '', // Changed from manager to managerId
     }
   });
 
@@ -233,7 +233,7 @@ const AdminProjects = () => {
       start_date: project.start_date || '',
       end_date: project.end_date || '',
       scope: project.scope || '',
-      manager: project.manager,
+      managerId: project.managerId, // Changed from manager to managerId
     });
     
     setIsEditDialogOpen(true);
@@ -388,7 +388,7 @@ const AdminProjects = () => {
                     
                     <FormField
                       control={form.control}
-                      name="manager"
+                      name="managerId"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Manager ID</FormLabel>
@@ -658,7 +658,7 @@ const AdminProjects = () => {
               
               <FormField
                 control={form.control}
-                name="manager"
+                name="managerId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Manager ID</FormLabel>
