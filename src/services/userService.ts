@@ -1,12 +1,12 @@
-
 import api from './api';
-import type { User, UserFormValues, UserProfile } from '@/types/user';
+import type { User, UserFormValues, UserProfile, ApiUser } from '@/types/user';
 
 export const userService = {
-  // This matches the API spec GET /admin/user/get-users
+  // This matches the actual API response format (direct array of users)
   getAllUsers: async () => {
     const response = await api.get('/admin/user/get-users');
-    return response.data.users;
+    // Return the data directly as it's already an array of users
+    return response.data;
   },
 
   // This matches the API spec POST /admin/user/create-user

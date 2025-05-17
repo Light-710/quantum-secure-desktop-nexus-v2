@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +9,7 @@ import { UserPlus } from 'lucide-react';
 import { UserForm } from '@/components/admin/users/UserForm';
 import { UserList } from '@/components/admin/users/UserList';
 import { UserPermissions } from '@/components/admin/users/UserPermissions';
-import type { User, UserFormValues, ApiUser, ApiUserResponse } from '@/types/user';
+import type { User, UserFormValues, ApiUser } from '@/types/user';
 import { userService } from '@/services/userService';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -51,9 +50,9 @@ const UsersPage = () => {
     try {
       const response = await userService.getAllUsers();
       
-      // Check if response has the expected structure
-      if (response && response.users && Array.isArray(response.users)) {
-        const mappedUsers = response.users.map(mapApiUserToUser);
+      // Check if response is an array (which is now the expected format)
+      if (Array.isArray(response)) {
+        const mappedUsers = response.map(mapApiUserToUser);
         setUsers(mappedUsers);
       } else {
         console.error('Unexpected API response format:', response);
