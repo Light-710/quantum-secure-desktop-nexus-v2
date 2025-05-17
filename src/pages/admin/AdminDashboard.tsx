@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     queryKey: ['dashboard-users'],
     queryFn: async () => {
       try {
-        const response = await api.get('/admin/users/get-all');
+        const response = await api.get('/admin/user/get-all-users');
         
         // Transform API data to required format
         const activeUsers = response.data.filter((user: any) => 
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
     queryKey: ['dashboard-projects'],
     queryFn: async () => {
       try {
-        const response = await api.get('/admin/projects/get-all');
+        const response = await api.get('/admin/project/get-all-projects');
         
         // Transform API data to required format
         return response.data.map((project: any) => ({
