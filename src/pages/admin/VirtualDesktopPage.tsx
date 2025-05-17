@@ -9,7 +9,7 @@ import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
 import { vmService, VMInfo } from '@/services/vmService';
-import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
+import { VirtualMachine, handleVMAction, VMStatus } from '@/services/vmManagementService';
 import { useQuery } from '@tanstack/react-query';
 
 const VirtualDesktopPage = () => {
