@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +8,8 @@ import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
-import { vmService } from '@/services/vmService';
-import { 
-  VirtualMachine,
-  handleVMAction
-} from '@/services/vmManagementService';
+import { vmService, VMInfo } from '@/services/vmService';
+import { VirtualMachine, handleVMAction } from '@/services/vmManagementService';
 import { useQuery } from '@tanstack/react-query';
 
 const VirtualDesktopPage = () => {
@@ -50,7 +46,7 @@ const VirtualDesktopPage = () => {
   });
   
   // Convert API VM data to our app's format
-  const convertApiVMToAppFormat = (apiVM: any): VirtualMachine => {
+  const convertApiVMToAppFormat = (apiVM: VMInfo): VirtualMachine => {
     // Calculate uptime based on updated_at timestamp
     const updatedAt = new Date(apiVM.updated_at);
     const now = new Date();
@@ -65,24 +61,24 @@ const VirtualDesktopPage = () => {
     const isRunning = apiVM.status.toLowerCase() === 'running';
     
     return {
-      id: apiVM.instance_id || `vm-${apiVM.id}`,
+      id: apiVM.id.toString(),
       name: `${apiVM.instance_os} VM`,
       status: apiVM.status,
       os: apiVM.instance_os,
       assigned_user: apiVM.employee_id,
       uptime: uptime,
       health: 'Good', // Default health status
-      ip_address: apiVM.ip_address || '10.0.0.15', // Use API IP if available
+      ip_address: 'N/A', // No IP address in API data
       user_name: apiVM.user_name,
       user_email: apiVM.user_email,
       guacamole_url: apiVM.guacamole_url,
       instance_id: apiVM.instance_id,
       created_at: apiVM.created_at,
       resources: {
-        cpu: isRunning ? apiVM.cpu_usage || Math.floor(Math.random() * 60) + 20 : 0,
-        memory: isRunning ? apiVM.memory_usage || Math.floor(Math.random() * 50) + 30 : 0,
-        disk: apiVM.disk_usage || Math.floor(Math.random() * 40) + 10,
-        network: isRunning ? apiVM.network_usage || Math.floor(Math.random() * 40) + 5 : 0,
+        cpu: isRunning ? Math.floor(Math.random() * 60) + 20 : 0,
+        memory: isRunning ? Math.floor(Math.random() * 50) + 30 : 0,
+        disk: Math.floor(Math.random() * 40) + 10,
+        network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0,
       }
     };
   };

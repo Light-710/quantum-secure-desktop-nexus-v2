@@ -33,7 +33,7 @@ export function UserList({
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id} className="hover:bg-cyber-dark-blue/20">
+            <TableRow key={user.id || user.employee_id} className="hover:bg-cyber-dark-blue/20">
               <TableCell>
                 <div className="flex items-center space-x-3">
                   <div className="flex-shrink-0">
@@ -50,9 +50,9 @@ export function UserList({
               </TableCell>
               <TableCell>
                 <span className={`text-xs px-2 py-1 rounded-full ${
-                  user.role === 'Admin' 
+                  user.role.toLowerCase() === 'admin' 
                     ? 'bg-cyber-red/20 text-cyber-red' 
-                    : user.role === 'Manager' 
+                    : user.role.toLowerCase() === 'manager' 
                       ? 'bg-cyber-green/20 text-cyber-green' 
                       : 'bg-cyber-blue/20 text-cyber-blue'
                 }`}>
@@ -61,9 +61,9 @@ export function UserList({
               </TableCell>
               <TableCell>
                 <span className={`text-xs px-2 py-1 rounded-full ${
-                  user.status === 'Active' 
+                  user.status.toLowerCase() === 'active' 
                     ? 'bg-green-400/20 text-green-400' 
-                    : user.status === 'Suspended' 
+                    : user.status.toLowerCase() === 'suspended' 
                       ? 'bg-yellow-400/20 text-yellow-400' 
                       : 'bg-cyber-red/20 text-cyber-red'
                 }`}>
@@ -71,7 +71,7 @@ export function UserList({
                 </span>
               </TableCell>
               <TableCell className="text-sm text-cyber-gray">
-                {user.lastLogin}
+                {user.lastLogin || 'Never'}
               </TableCell>
               <TableCell>
                 <div className="flex space-x-2">
@@ -106,13 +106,13 @@ export function UserList({
                     variant="outline" 
                     size="sm"
                     className={`h-8 w-8 p-0 border-cyber-teal/30 ${
-                      user.status === 'Active'
+                      user.status.toLowerCase() === 'active'
                         ? 'hover:bg-yellow-400/20 hover:text-yellow-400'
                         : 'hover:bg-green-400/20 hover:text-green-400'
                     }`}
                     onClick={() => onToggleStatus(user.employee_id)}
-                    disabled={user.status.toLowerCase() === 'active'}
-                    title="Activate User"
+                    disabled={user.role.toLowerCase() === 'admin'}
+                    title={user.status.toLowerCase() === 'active' ? "Deactivate User" : "Activate User"}
                   >
                     <Key className="h-4 w-4" />
                   </Button>

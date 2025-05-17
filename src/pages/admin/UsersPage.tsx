@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,7 @@ import { UserPlus } from 'lucide-react';
 import { UserForm } from '@/components/admin/users/UserForm';
 import { UserList } from '@/components/admin/users/UserList';
 import { UserPermissions } from '@/components/admin/users/UserPermissions';
-import type { User, UserFormValues } from '@/types/user';
+import type { User, UserFormValues, ApiUser, ApiUserResponse } from '@/types/user';
 import { userService } from '@/services/userService';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
@@ -28,11 +29,40 @@ const UsersPage = () => {
     loadUsers();
   }, []);
 
+  // Map API user to our internal User format
+  const mapApiUserToUser = (apiUser: ApiUser): User => {
+    // Handle case sensitivity in role and status
+    const role = apiUser.role.charAt(0).toUpperCase() + apiUser.role.slice(1).toLowerCase() as User['role'];
+    const status = apiUser.status.charAt(0).toUpperCase() + apiUser.status.slice(1).toLowerCase() as User['status'];
+    
+    return {
+      id: apiUser.employee_id, // Using employee_id as id
+      name: apiUser.name,
+      email: apiUser.email,
+      employee_id: apiUser.employee_id,
+      role: role,
+      status: status,
+      lastLogin: 'N/A', // This isn't provided by the API
+      permissions: [], // Default empty permissions
+    };
+  };
+
   const loadUsers = async () => {
     try {
-      const fetchedUsers = await userService.getAllUsers();
-      setUsers(fetchedUsers);
+      const response = await userService.getAllUsers();
+      
+      // Check if response has the expected structure
+      if (response && response.users && Array.isArray(response.users)) {
+        const mappedUsers = response.users.map(mapApiUserToUser);
+        setUsers(mappedUsers);
+      } else {
+        console.error('Unexpected API response format:', response);
+        toast.error("Invalid Response Format", {
+          description: "The server returned data in an unexpected format."
+        });
+      }
     } catch (error) {
+      console.error('Error loading users:', error);
       toast.error("Error Loading Users", {
         description: "Failed to load users. Please try again."
       });

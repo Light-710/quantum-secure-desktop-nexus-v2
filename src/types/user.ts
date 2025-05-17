@@ -16,7 +16,7 @@ export type User = {
 export type UserFormValues = {
   name: string;
   email: string;
-  employee_id: string; // Using employee_id instead of username
+  employee_id: string;
   password: string;
   role: UserRole;
 };
@@ -28,4 +28,18 @@ export interface UserProfile {
   role: string;
   status: string;
   profile_picture?: string;
+}
+
+// Add a type for the API user response
+export interface ApiUser {
+  email: string;
+  employee_id: string;
+  name: string;
+  role: string;
+  status: string;
+}
+
+// Add a type for the API user response wrapper
+export interface ApiUserResponse {
+  users: ApiUser[];
 }

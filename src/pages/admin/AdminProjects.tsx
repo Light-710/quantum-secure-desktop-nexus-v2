@@ -10,21 +10,27 @@ import { FolderOpen, Plus, RefreshCw, Calendar, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '@/services/api';
-
-type Project = {
-  id: string;
-  name: string;
-  description: string;
-  status: 'Active' | 'Completed' | 'On Hold' | 'Cancelled';
-  startDate: string;
-  endDate: string;
-  teamSize: number;
-  manager: string;
-  managerId: string;
-};
+import { ApiProject, Project } from '@/types/project';
 
 const AdminProjects = () => {
   const { toast: uiToast } = useToast();
+
+  // Map API project to internal Project format
+  const mapApiProjectToProject = (apiProject: ApiProject): Project => {
+    return {
+      id: apiProject.id,
+      name: apiProject.name,
+      description: apiProject.description,
+      status: apiProject.status,
+      start_date: apiProject.start_date,
+      end_date: apiProject.end_date,
+      scope: apiProject.scope,
+      // Add default values for backward compatibility
+      teamSize: 0, // Default team size
+      manager: 'Not Assigned', // Default manager
+      managerId: '', // Default managerId
+    };
+  };
 
   // Fetch projects with React Query
   const { 
@@ -36,7 +42,17 @@ const AdminProjects = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/admin/projects');
-        return response.data || [];
+        
+        if (response.data && Array.isArray(response.data)) {
+          // Map API projects to our internal format
+          return response.data.map(mapApiProjectToProject);
+        } else {
+          console.error('Unexpected projects API response format:', response.data);
+          toast.error('Invalid projects data format', {
+            description: 'The server returned projects in an unexpected format.'
+          });
+          return [];
+        }
       } catch (error) {
         console.error('Error fetching projects:', error);
         toast.error('Failed to load projects', {
@@ -48,10 +64,16 @@ const AdminProjects = () => {
   });
 
   // Project stats
-  const activeProjects = projects.filter((p: Project) => p.status === 'Active').length;
-  const completedProjects = projects.filter((p: Project) => p.status === 'Completed').length;
-  const onHoldCancelledProjects = projects.filter(
-    (p: Project) => p.status === 'On Hold' || p.status === 'Cancelled'
+  const activeProjects = projects.filter((p: Project) => 
+    p.status.toLowerCase() === 'active' || p.status.toLowerCase() === 'in progress'
+  ).length;
+  
+  const completedProjects = projects.filter((p: Project) => 
+    p.status.toLowerCase() === 'completed' || p.status.toLowerCase() === 'done'
+  ).length;
+  
+  const onHoldCancelledProjects = projects.filter((p: Project) => 
+    ['on hold', 'cancelled', 'not started'].includes(p.status.toLowerCase())
   ).length;
 
   const handleRefresh = () => {
@@ -95,7 +117,7 @@ const AdminProjects = () => {
             <Button
               variant="outline"
               className="border-[#D6D2C9] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
-              onClick={handleRefresh}
+              onClick={() => refetch()}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -122,15 +144,14 @@ const AdminProjects = () => {
                   <TableHead className="text-[#8E8B85]">Name</TableHead>
                   <TableHead className="text-[#8E8B85]">Status</TableHead>
                   <TableHead className="text-[#8E8B85]">Timeline</TableHead>
-                  <TableHead className="text-[#8E8B85]">Team</TableHead>
-                  <TableHead className="text-[#8E8B85]">Manager</TableHead>
+                  <TableHead className="text-[#8E8B85]">Scope</TableHead>
                   <TableHead className="text-[#8E8B85]">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center">
+                    <TableCell colSpan={6} className="h-24 text-center">
                       <div className="flex justify-center items-center h-full">
                         <div className="animate-spin h-6 w-6 border-2 border-[#C47D5F] border-t-transparent rounded-full mr-2"></div>
                         <span className="text-[#8E8B85]">Loading projects...</span>
@@ -153,16 +174,15 @@ const AdminProjects = () => {
                       <TableCell>
                         <div className="flex items-center text-[#8E8B85]">
                           <Calendar className="h-3 w-3 mr-1" />
-                          <span className="text-xs">{formatDate(project.startDate)} - {formatDate(project.endDate)}</span>
+                          <span className="text-xs">
+                            {project.start_date && formatDate(project.start_date)} - 
+                            {project.end_date && formatDate(project.end_date)}
+                          </span>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex items-center text-[#8E8B85]">
-                          <Users className="h-3 w-3 mr-1" />
-                          <span className="text-xs">{project.teamSize} members</span>
-                        </div>
+                      <TableCell className="text-sm text-[#3E3D3A]">
+                        {project.scope || 'Not specified'}
                       </TableCell>
-                      <TableCell className="text-sm text-[#3E3D3A]">{project.manager}</TableCell>
                       <TableCell>
                         <div className="flex space-x-1">
                           <Button
@@ -185,7 +205,7 @@ const AdminProjects = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="h-24 text-center text-[#8E8B85]">
+                    <TableCell colSpan={6} className="h-24 text-center text-[#8E8B85]">
                       No projects found
                     </TableCell>
                   </TableRow>
