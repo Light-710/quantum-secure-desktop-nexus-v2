@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PaperclipIcon, SendHorizontalIcon, FileText, Trash2 } from "lucide-react";
@@ -10,6 +10,8 @@ type MessageInputProps = {
   handleSendMessage: () => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isLoading?: boolean;
+  onTypingStart?: () => void;
+  onTypingStop?: () => void;
 };
 
 const MessageInput = ({
@@ -17,15 +19,38 @@ const MessageInput = ({
   setNewMessage,
   handleSendMessage,
   handleFileUpload,
-  isLoading = false
+  isLoading = false,
+  onTypingStart,
+  onTypingStop
 }: MessageInputProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setNewMessage(newValue);
+    
+    // Handle typing indicators
+    if (newValue && onTypingStart) {
+      onTypingStart();
+      
+      // Clear any existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set a new timeout to stop typing indicator after 3 seconds of inactivity
+      typingTimeoutRef.current = setTimeout(() => {
+        if (onTypingStop) onTypingStop();
+      }, 3000);
     }
   };
 
@@ -52,6 +77,15 @@ const MessageInput = ({
       fileInputRef.current.value = '';
     }
   };
+
+  // Clean up the timeout when component unmounts
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="space-y-2">
@@ -102,7 +136,7 @@ const MessageInput = ({
         </Button>
         <Input
           value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
           className="flex-1 focus:ring-warm-200 focus:border-warm-200"

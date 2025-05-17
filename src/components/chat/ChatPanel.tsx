@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 import ProjectSelect from './ProjectSelect';
-import { Message, ApiMessage } from './types';
+import { Message, ApiMessage, TypingIndicator } from './types';
 import { Project } from '@/types/project';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,12 +13,26 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
 import { UserRole } from '@/types/user';
+import socketService from '@/services/socketService';
+import ConnectionStatus from './ConnectionStatus';
+import TypingIndicatorComponent from './TypingIndicator';
 
 const ChatPanel = () => {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [typingUsers, setTypingUsers] = useState<TypingIndicator[]>([]);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const messageListRef = useRef<Message[]>([]);
+  const typingTimeoutRef = useRef<{[key: string]: NodeJS.Timeout}>({});
+
+  // Update ref when messages change
+  useEffect(() => {
+    messageListRef.current = messages;
+  }, [messages]);
 
   // Fetch projects
   const { data: projects = [] } = useQuery({
@@ -48,7 +63,6 @@ const ChatPanel = () => {
       
       try {
         const response = await api.get(`/chat/messages/${selectedProject}`);
-        console.log('Messages response:', response.data);
         return response.data || { messages: [] };
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -61,9 +75,9 @@ const ChatPanel = () => {
     enabled: !!selectedProject
   });
 
-  // Prepare messages array from the response data
-  const messages: Message[] = React.useMemo(() => {
-    if (!messagesData) return [];
+  // Process API messages and update state
+  useEffect(() => {
+    if (!messagesData) return;
     
     // Handle both array format and object with messages property
     const messageArray = Array.isArray(messagesData) 
@@ -72,10 +86,10 @@ const ChatPanel = () => {
     
     if (!Array.isArray(messageArray)) {
       console.error('Expected messages to be an array but got:', messageArray);
-      return [];
+      return;
     }
     
-    return messageArray.map((msg: ApiMessage) => ({
+    const formattedMessages = messageArray.map((msg: ApiMessage) => ({
       id: msg.id || msg.message_id || Date.now() + Math.random(),
       sender: msg.sender_name || 'Unknown',
       content: msg.content || '',
@@ -84,7 +98,103 @@ const ChatPanel = () => {
       is_file: msg.is_file || false,
       file_path: msg.file_path || ''
     }));
+
+    setMessages(formattedMessages);
   }, [messagesData]);
+
+  // Connect to WebSocket when project is selected
+  useEffect(() => {
+    if (!selectedProject || !user) return;
+    
+    const token = localStorage.getItem('ptng_token');
+    if (!token) {
+      console.error('No authentication token found');
+      return;
+    }
+    
+    setIsConnecting(true);
+    
+    // Connect to WebSocket
+    socketService.connect(token, {
+      onConnect: () => {
+        console.log('Socket connected');
+        setIsSocketConnected(true);
+        setIsConnecting(false);
+        socketService.joinRoom(selectedProject);
+      },
+      onDisconnect: () => {
+        console.log('Socket disconnected');
+        setIsSocketConnected(false);
+      },
+      onMessage: (data) => {
+        console.log('New message received', data);
+        
+        // Check if we already have this message (avoid duplicates)
+        const isDuplicate = messageListRef.current.some(msg => 
+          (msg.id === data.id || msg.id === data.message_id)
+        );
+        
+        if (!isDuplicate) {
+          const newMsg: Message = {
+            id: data.id || data.message_id || Date.now() + Math.random(),
+            sender: data.sender_name || 'Unknown',
+            content: data.content || '',
+            timestamp: new Date(data.timestamp || Date.now()),
+            senderRole: (data.sender_role as UserRole) || 'Employee',
+            is_file: data.is_file || false,
+            file_path: data.file_path || ''
+          };
+          
+          setMessages(prevMessages => [...prevMessages, newMsg]);
+        }
+      },
+      onTyping: (data) => {
+        // Add user to typing indicators or reset their timeout
+        setTypingUsers(prev => {
+          const exists = prev.some(u => u.user === data.user);
+          
+          // Clear existing timeout if there is one
+          if (typingTimeoutRef.current[data.user]) {
+            clearTimeout(typingTimeoutRef.current[data.user]);
+          }
+          
+          // Set a new timeout to remove this user after 3 seconds
+          typingTimeoutRef.current[data.user] = setTimeout(() => {
+            setTypingUsers(prev => prev.filter(u => u.user !== data.user));
+          }, 3000);
+          
+          if (exists) {
+            return prev.map(u => u.user === data.user ? {...u, timestamp: Date.now()} : u);
+          } else {
+            return [...prev, { user: data.user, timestamp: Date.now() }];
+          }
+        });
+      },
+      onStopTyping: (data) => {
+        // Remove user from typing indicators
+        setTypingUsers(prev => prev.filter(u => u.user !== data.user));
+        
+        // Clear timeout if it exists
+        if (typingTimeoutRef.current[data.user]) {
+          clearTimeout(typingTimeoutRef.current[data.user]);
+          delete typingTimeoutRef.current[data.user];
+        }
+      }
+    });
+    
+    // Cleanup function - disconnect from socket when component unmounts
+    return () => {
+      console.log('Leaving room', selectedProject);
+      socketService.leaveRoom(selectedProject);
+      
+      // Clear all typing timeouts
+      Object.values(typingTimeoutRef.current).forEach(timeout => {
+        clearTimeout(timeout);
+      });
+      typingTimeoutRef.current = {};
+      setTypingUsers([]);
+    };
+  }, [selectedProject, user]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -140,10 +250,35 @@ const ChatPanel = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedProject) {
-      sendMessageMutation.mutate({
-        projectId: selectedProject,
-        content: newMessage
-      });
+      // Add optimistic message
+      const optimisticMessage: Message = {
+        id: `local-${Date.now()}`,
+        sender: user?.name || 'You',
+        content: newMessage,
+        timestamp: new Date(),
+        senderRole: user?.role as UserRole || 'Employee',
+        isLocal: true,
+        status: 'sending'
+      };
+      
+      setMessages(prev => [...prev, optimisticMessage]);
+      
+      // Try to send through WebSocket first
+      const socketSent = socketService.isConnected() && 
+                        socketService.sendMessage(selectedProject, newMessage);
+      
+      // If socket fails or isn't connected, fall back to REST API
+      if (!socketSent) {
+        sendMessageMutation.mutate({
+          projectId: selectedProject,
+          content: newMessage
+        });
+      } else {
+        setNewMessage(''); // Clear input right away if sent via socket
+      }
+      
+      // Stop typing indicator
+      handleTypingStop();
     }
   };
 
@@ -157,6 +292,27 @@ const ChatPanel = () => {
       uploadFileMutation.mutate(formData);
     }
   };
+  
+  const handleProjectSelect = (projectId: string) => {
+    setSelectedProject(projectId);
+    setMessages([]);
+    setTypingUsers([]);
+  };
+  
+  const handleTypingStart = () => {
+    if (selectedProject && socketService.isConnected()) {
+      socketService.sendTypingStart(selectedProject);
+    }
+  };
+  
+  const handleTypingStop = () => {
+    if (selectedProject && socketService.isConnected()) {
+      socketService.sendTypingStop(selectedProject);
+    }
+  };
+
+  // Get typing users array for display
+  const typingUserNames = typingUsers.map(t => t.user);
 
   return (
     <Card className="h-full glass-panel border-warm-100/30">
@@ -165,18 +321,28 @@ const ChatPanel = () => {
           <MessageCircle className="text-warm-200" size={20} />
           Project Chat
         </CardTitle>
-        <div className="mt-2">
-          <ProjectSelect
-            projects={projects}
-            selectedProject={selectedProject}
-            onProjectSelect={setSelectedProject}
-          />
+        <div className="flex items-center justify-between mt-2">
+          <div className="flex-1">
+            <ProjectSelect
+              projects={projects}
+              selectedProject={selectedProject}
+              onProjectSelect={handleProjectSelect}
+            />
+          </div>
+          {selectedProject && (
+            <div className="ml-4">
+              <ConnectionStatus 
+                isConnected={isSocketConnected} 
+                isConnecting={isConnecting} 
+              />
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex flex-col h-[calc(100%-6rem)]">
         {selectedProject ? (
           <>
-            <ScrollArea className="flex-1 mb-4 pr-2" ref={scrollAreaRef}>
+            <ScrollArea className="flex-1 mb-2 pr-2" ref={scrollAreaRef}>
               {isLoadingMessages ? (
                 <div className="flex justify-center items-center h-40">
                   <div className="animate-spin h-8 w-8 border-2 border-warm-300 border-t-transparent rounded-full"></div>
@@ -185,12 +351,17 @@ const ChatPanel = () => {
                 <MessageList messages={messages} />
               )}
             </ScrollArea>
+            {typingUsers.length > 0 && (
+              <TypingIndicatorComponent typingUsers={typingUserNames} />
+            )}
             <MessageInput
               newMessage={newMessage}
               setNewMessage={setNewMessage}
               handleSendMessage={handleSendMessage}
               handleFileUpload={handleFileUpload}
               isLoading={sendMessageMutation.isPending || uploadFileMutation.isPending}
+              onTypingStart={handleTypingStart}
+              onTypingStop={handleTypingStop}
             />
           </>
         ) : (

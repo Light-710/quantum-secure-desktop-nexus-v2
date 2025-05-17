@@ -9,6 +9,8 @@ export interface Message {
   senderRole: UserRole;
   is_file?: boolean;
   file_path?: string;
+  isLocal?: boolean; // Flag for messages sent but not yet confirmed by server
+  status?: 'sending' | 'sent' | 'error';
 }
 
 export interface ApiMessage {
@@ -25,4 +27,9 @@ export interface ApiMessage {
 
 export interface ApiMessageResponse {
   messages: ApiMessage[];
+}
+
+export interface TypingIndicator {
+  user: string;
+  timestamp: number;
 }
