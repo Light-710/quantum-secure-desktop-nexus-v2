@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,27 +13,31 @@ import {
 } from '@/components/ui/table';
 import { User } from 'lucide-react';
 import type { Employee } from '@/types/employee';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from '@/components/ui/sonner';
+import api from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ManagerTeam = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchEmployees = async () => {
+  const { user } = useAuth();
+  
+  // Use React Query for data fetching
+  const { data: employees = [], isLoading } = useQuery({
+    queryKey: ['team-members', user?.employee_id],
+    queryFn: async () => {
       try {
-        setIsLoading(true);
-        // In a real app, this would call an API endpoint
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-        setEmployees([]);
+        // Get team members for the current manager
+        const response = await api.get(`/manager/team/${user?.employee_id}`);
+        return response.data || [];
       } catch (error) {
         console.error('Failed to fetch team data:', error);
-      } finally {
-        setIsLoading(false);
+        toast.error('Failed to load team data', {
+          description: 'There was an error loading your team members. Please try again later.'
+        });
+        return [];
       }
-    };
-
-    fetchEmployees();
-  }, []);
+    },
+  });
 
   return (
     <DashboardLayout>

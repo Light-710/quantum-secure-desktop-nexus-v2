@@ -1,12 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { FolderOpen, Plus, RefreshCw, Calendar, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import api from '@/services/api';
 
 type Project = {
   id: string;
@@ -21,75 +24,40 @@ type Project = {
 };
 
 const AdminProjects = () => {
-  const { toast } = useToast();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { toast: uiToast } = useToast();
 
-  const fetchProjects = async () => {
-    setIsLoading(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      // For now, use sample data
-      const sampleProjects: Project[] = [
-        {
-          id: 'PRJ001',
-          name: 'Cloud Migration',
-          description: 'Migration of on-premise infrastructure to cloud',
-          status: 'Active',
-          startDate: '2023-09-01',
-          endDate: '2024-06-30',
-          teamSize: 8,
-          manager: 'Sarah Johnson',
-          managerId: 'M001',
-        },
-        {
-          id: 'PRJ002',
-          name: 'Security Audit',
-          description: 'Complete security audit of all systems',
-          status: 'Completed',
-          startDate: '2023-11-15',
-          endDate: '2024-02-28',
-          teamSize: 3,
-          manager: 'Michael Chen',
-          managerId: 'M002',
-        },
-        {
-          id: 'PRJ003',
-          name: 'New CRM Implementation',
-          description: 'Implementation of new customer relationship management system',
-          status: 'On Hold',
-          startDate: '2024-01-10',
-          endDate: '2024-08-31',
-          teamSize: 6,
-          manager: 'Emily Rodriguez',
-          managerId: 'M003',
-        }
-      ];
-      
-      setProjects(sampleProjects);
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load projects. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  // Fetch projects with React Query
+  const { 
+    data: projects = [], 
+    isLoading, 
+    refetch 
+  } = useQuery({
+    queryKey: ['admin-projects'],
+    queryFn: async () => {
+      try {
+        const response = await api.get('/admin/projects');
+        return response.data || [];
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        toast.error('Failed to load projects', {
+          description: 'There was an error loading projects. Please try again later.'
+        });
+        return [];
+      }
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  // Project stats
+  const activeProjects = projects.filter((p: Project) => p.status === 'Active').length;
+  const completedProjects = projects.filter((p: Project) => p.status === 'Completed').length;
+  const onHoldCancelledProjects = projects.filter(
+    (p: Project) => p.status === 'On Hold' || p.status === 'Cancelled'
+  ).length;
 
   const handleRefresh = () => {
-    fetchProjects();
-    toast({
-      title: "Refreshed",
-      description: "Project list has been updated.",
+    refetch();
+    toast.success('Projects refreshed', {
+      description: 'Project list has been updated.'
     });
   };
 
@@ -170,7 +138,7 @@ const AdminProjects = () => {
                     </TableCell>
                   </TableRow>
                 ) : projects.length > 0 ? (
-                  projects.map((project) => (
+                  projects.map((project: Project) => (
                     <TableRow key={project.id} className="hover:bg-[#F7F5F2]">
                       <TableCell className="font-mono text-sm text-[#8E8B85]">{project.id}</TableCell>
                       <TableCell>
@@ -235,7 +203,7 @@ const AdminProjects = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#8A9B6E]">
-              {projects.filter(p => p.status === 'Active').length}
+              {activeProjects}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Current ongoing projects</p>
           </CardContent>
@@ -247,7 +215,7 @@ const AdminProjects = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#6D98BA]">
-              {projects.filter(p => p.status === 'Completed').length}
+              {completedProjects}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Successfully delivered</p>
           </CardContent>
@@ -259,7 +227,7 @@ const AdminProjects = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#C47D5F]">
-              {projects.filter(p => p.status === 'On Hold' || p.status === 'Cancelled').length}
+              {onHoldCancelledProjects}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Projects requiring attention</p>
           </CardContent>

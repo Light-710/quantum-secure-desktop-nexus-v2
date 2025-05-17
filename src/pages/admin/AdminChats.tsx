@@ -7,7 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { MessageCircle, Search, RefreshCw, Users, Calendar, Eye, Filter, Archive } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/services/api';
 
 type ChatSession = {
   id: string;
@@ -27,145 +30,50 @@ type ChatMessage = {
 };
 
 const AdminChats = () => {
-  const { toast } = useToast();
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const { toast: uiToast } = useToast();
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
 
-  const fetchChatSessions = async () => {
-    setIsLoading(true);
-    try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      // For now, use sample data
-      const sampleChats: ChatSession[] = [
-        {
-          id: 'CHA001',
-          participants: ['Sarah Johnson', 'Michael Chen', 'Technical Support'],
-          participantCount: 3,
-          lastMessage: "I'll check with the team and get back to you tomorrow.",
-          lastActive: '2024-05-16T14:30:00Z',
-          messageCount: 24,
-          status: 'Active',
-        },
-        {
-          id: 'CHA002',
-          participants: ['Emily Rodriguez', 'Technical Support'],
-          participantCount: 2,
-          lastMessage: 'Thank you for your help!',
-          lastActive: '2024-05-15T09:45:00Z',
-          messageCount: 18,
-          status: 'Closed',
-        },
-        {
-          id: 'CHA003',
-          participants: ['Alex Wu', 'David Kim', 'Network Team', 'Security Team'],
-          participantCount: 4,
-          lastMessage: 'We need to schedule a follow-up meeting to discuss this further.',
-          lastActive: '2024-05-10T16:20:00Z',
-          messageCount: 56,
-          status: 'Archived',
-        },
-        {
-          id: 'CHA004',
-          participants: ['Olivia Smith', 'Desktop Support'],
-          participantCount: 2,
-          lastMessage: 'Your VPN access has been restored.',
-          lastActive: '2024-05-17T10:15:00Z',
-          messageCount: 12,
-          status: 'Active',
-        },
-      ];
-      
-      setChatSessions(sampleChats);
-    } catch (error) {
-      console.error('Error fetching chat sessions:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load chat sessions. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+  // Fetch chat sessions using React Query
+  const { 
+    data: chatSessions = [], 
+    isLoading, 
+    refetch 
+  } = useQuery({
+    queryKey: ['chatSessions'],
+    queryFn: async () => {
+      try {
+        const response = await api.get('/admin/chat/sessions');
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching chat sessions:', error);
+        toast.error("Failed to load chat sessions", {
+          description: "There was an error loading chat sessions. Please try again."
+        });
+        return [];
+      }
     }
-  };
+  });
 
   const fetchChatMessages = async (chatId: string) => {
     try {
-      // In a real app, this would call an API endpoint
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate network delay
-      
-      // For now, use sample data
-      const sampleMessages: ChatMessage[] = [
-        {
-          id: '1',
-          sender: 'Sarah Johnson',
-          content: "Hi, I'm having trouble accessing the company VPN. Can someone help?",
-          timestamp: '2024-05-16T14:10:00Z'
-        },
-        {
-          id: '2',
-          sender: 'Technical Support',
-          content: "Hi Sarah, I'd be happy to help. Can you tell me what error message you're seeing?",
-          timestamp: '2024-05-16T14:12:00Z'
-        },
-        {
-          id: '3',
-          sender: 'Sarah Johnson',
-          content: 'It says "Authentication Failed" even though I\'m sure my password is correct.',
-          timestamp: '2024-05-16T14:15:00Z'
-        },
-        {
-          id: '4',
-          sender: 'Michael Chen',
-          content: 'This might be related to the security update we pushed yesterday. Let me check.',
-          timestamp: '2024-05-16T14:18:00Z'
-        },
-        {
-          id: '5',
-          sender: 'Technical Support',
-          content: "Yes, that's likely the cause. We'll need to reset your security token.",
-          timestamp: '2024-05-16T14:23:00Z'
-        },
-        {
-          id: '6',
-          sender: 'Sarah Johnson',
-          content: 'Great, how long will that take?',
-          timestamp: '2024-05-16T14:25:00Z'
-        },
-        {
-          id: '7',
-          sender: 'Michael Chen',
-          content: "I'll check with the team and get back to you tomorrow.",
-          timestamp: '2024-05-16T14:30:00Z'
-        }
-      ];
-      
-      setChatMessages(sampleMessages);
+      const response = await api.get(`/admin/chat/messages/${chatId}`);
+      setChatMessages(response.data);
     } catch (error) {
       console.error('Error fetching chat messages:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load chat messages. Please try again later.",
-        variant: "destructive",
+      toast.error("Failed to load chat messages", {
+        description: "There was an error loading chat messages. Please try again."
       });
     }
   };
 
-  useEffect(() => {
-    fetchChatSessions();
-  }, []);
-
   const handleRefresh = () => {
-    fetchChatSessions();
-    toast({
-      title: "Refreshed",
-      description: "Chat sessions have been updated.",
+    refetch();
+    toast.success("Chat sessions refreshed", {
+      description: "Chat sessions have been updated."
     });
   };
 
@@ -173,6 +81,21 @@ const AdminChats = () => {
     setSelectedChat(chatId);
     fetchChatMessages(chatId);
     setIsViewDialogOpen(true);
+  };
+
+  const handleArchiveChat = async (chatId: string) => {
+    try {
+      await api.put(`/admin/chat/archive/${chatId}`);
+      refetch();
+      toast.success("Chat archived", {
+        description: "The chat session has been archived successfully."
+      });
+    } catch (error) {
+      console.error('Error archiving chat:', error);
+      toast.error("Failed to archive chat", {
+        description: "There was an error archiving the chat session. Please try again."
+      });
+    }
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -194,7 +117,7 @@ const AdminChats = () => {
   };
 
   // Filter chats based on search term and status filter
-  const filteredChats = chatSessions.filter(chat => {
+  const filteredChats = chatSessions.filter((chat: ChatSession) => {
     const matchesSearch = searchTerm === '' || 
       chat.participants.some(p => p.toLowerCase().includes(searchTerm.toLowerCase())) ||
       chat.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,6 +127,11 @@ const AdminChats = () => {
     
     return matchesSearch && matchesStatus;
   });
+
+  // Calculate stats for the summary cards
+  const activeChats = chatSessions.filter((chat: ChatSession) => chat.status === 'Active').length;
+  const totalParticipants = chatSessions.reduce((total: number, chat: ChatSession) => total + chat.participantCount, 0);
+  const totalMessages = chatSessions.reduce((total: number, chat: ChatSession) => total + chat.messageCount, 0);
 
   return (
     <DashboardLayout>
@@ -288,7 +216,7 @@ const AdminChats = () => {
                     </TableCell>
                   </TableRow>
                 ) : filteredChats.length > 0 ? (
-                  filteredChats.map((chat) => (
+                  filteredChats.map((chat: ChatSession) => (
                     <TableRow key={chat.id} className="hover:bg-[#F7F5F2]">
                       <TableCell className="font-mono text-sm text-[#8E8B85]">{chat.id}</TableCell>
                       <TableCell>
@@ -330,6 +258,7 @@ const AdminChats = () => {
                               variant="outline"
                               size="sm"
                               className="h-8 border-[#D6D2C9] hover:bg-[#F7F5F2] hover:text-blue-600"
+                              onClick={() => handleArchiveChat(chat.id)}
                             >
                               <Archive className="h-4 w-4" />
                             </Button>
@@ -358,7 +287,7 @@ const AdminChats = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#8A9B6E]">
-              {chatSessions.filter(chat => chat.status === 'Active').length}
+              {activeChats}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Ongoing conversations</p>
           </CardContent>
@@ -370,7 +299,7 @@ const AdminChats = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#6D98BA]">
-              {chatSessions.reduce((total, chat) => total + chat.participantCount, 0)}
+              {totalParticipants}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Users engaged in chats</p>
           </CardContent>
@@ -382,7 +311,7 @@ const AdminChats = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-[#C47D5F]">
-              {chatSessions.reduce((total, chat) => total + chat.messageCount, 0)}
+              {totalMessages}
             </div>
             <p className="text-sm text-[#8E8B85] mt-1">Messages exchanged</p>
           </CardContent>

@@ -9,73 +9,112 @@ import { Message } from './types';
 import { Project } from '@/types/project';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { toast } from '@/components/ui/sonner';
+import api from '@/services/api';
 
 const ChatPanel = () => {
   const { user } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [projects, setProjects] = useState<Project[]>([]);
 
-  useEffect(() => {
-    // In a real app, this would fetch projects from an API
-    const fetchProjects = async () => {
+  // Fetch projects
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects', user?.employee_id],
+    queryFn: async () => {
       try {
-        // API call would go here
-        setProjects([]);
+        const response = await api.get(`/projects/${user?.employee_id}`);
+        return response.data || [];
       } catch (error) {
         console.error('Error fetching projects:', error);
+        toast.error('Failed to load projects', {
+          description: 'Unable to load project list. Please try again later.'
+        });
+        return [];
       }
-    };
-    
-    fetchProjects();
-  }, []);
-
-  useEffect(() => {
-    if (selectedProject) {
-      // In a real app, this would fetch messages for the selected project
-      const fetchMessages = async () => {
-        try {
-          // API call would go here
-          setMessages([]);
-        } catch (error) {
-          console.error('Error fetching messages:', error);
-        }
-      };
-      
-      fetchMessages();
     }
-  }, [selectedProject]);
+  });
+
+  // Fetch messages for selected project
+  const { 
+    data: messages = [], 
+    refetch: refetchMessages 
+  } = useQuery({
+    queryKey: ['messages', selectedProject],
+    queryFn: async () => {
+      if (!selectedProject) return [];
+      
+      try {
+        const response = await api.get(`/chat/messages/${selectedProject}`);
+        return response.data || [];
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        toast.error('Failed to load messages', {
+          description: 'Unable to load chat messages. Please try again later.'
+        });
+        return [];
+      }
+    },
+    enabled: !!selectedProject
+  });
+
+  // Send message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: async (message: {projectId: string, content: string}) => {
+      return api.post('/chat/message', message);
+    },
+    onSuccess: () => {
+      setNewMessage('');
+      refetchMessages();
+    },
+    onError: (error) => {
+      console.error('Error sending message:', error);
+      toast.error('Failed to send message', {
+        description: 'Your message could not be sent. Please try again.'
+      });
+    }
+  });
+
+  // Upload file mutation
+  const uploadFileMutation = useMutation({
+    mutationFn: async (formData: FormData) => {
+      return api.post('/chat/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    },
+    onSuccess: () => {
+      refetchMessages();
+      toast.success('File uploaded', {
+        description: 'Your file has been shared in the chat.'
+      });
+    },
+    onError: (error) => {
+      console.error('Error uploading file:', error);
+      toast.error('Failed to upload file', {
+        description: 'Your file could not be uploaded. Please try again.'
+      });
+    }
+  });
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedProject) {
-      const message: Message = {
-        id: Date.now().toString(),
-        sender: user?.name || 'Current User',
-        content: newMessage,
-        timestamp: new Date(),
-        senderRole: user?.role as 'Employee' | 'Manager' || 'Employee'
-      };
-      
-      // In a real app, this would send the message to an API
-      setMessages(prev => [...prev, message]);
-      setNewMessage('');
+      sendMessageMutation.mutate({
+        projectId: selectedProject,
+        content: newMessage
+      });
     }
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0 && selectedProject) {
       const file = event.target.files[0];
-      const fileMessage: Message = {
-        id: `file-${Date.now()}`,
-        sender: user?.name || 'Current User',
-        content: `📎 Shared a file: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`,
-        timestamp: new Date(),
-        senderRole: user?.role as 'Employee' | 'Manager' || 'Employee'
-      };
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('projectId', selectedProject);
       
-      // In a real app, this would upload the file to an API
-      setMessages(prev => [...prev, fileMessage]);
+      uploadFileMutation.mutate(formData);
     }
   };
 
@@ -105,6 +144,7 @@ const ChatPanel = () => {
               setNewMessage={setNewMessage}
               handleSendMessage={handleSendMessage}
               handleFileUpload={handleFileUpload}
+              isLoading={sendMessageMutation.isPending || uploadFileMutation.isPending}
             />
           </>
         ) : (

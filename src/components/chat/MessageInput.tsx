@@ -1,52 +1,70 @@
 
 import React from 'react';
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Paperclip, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { PaperclipIcon, SendHorizontalIcon } from "lucide-react";
 
-interface MessageInputProps {
+type MessageInputProps = {
   newMessage: string;
-  setNewMessage: (message: string) => void;
+  setNewMessage: React.Dispatch<React.SetStateAction<string>>;
   handleSendMessage: () => void;
   handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+  isLoading?: boolean;
+};
 
-const MessageInput = ({ 
-  newMessage, 
-  setNewMessage, 
+const MessageInput = ({
+  newMessage,
+  setNewMessage,
   handleSendMessage,
-  handleFileUpload 
+  handleFileUpload,
+  isLoading = false
 }: MessageInputProps) => {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   return (
-    <div className="flex gap-2 items-center bg-white/5 p-2 rounded-md border border-warm-100/30">
-      <input
-        type="file"
-        id="file-upload"
-        className="hidden"
-        onChange={handleFileUpload}
-      />
-      <label
-        htmlFor="file-upload"
-        className="cursor-pointer p-2 rounded-full hover:bg-warm-100/10 transition-colors"
-        title="Upload file"
+    <div className="flex space-x-2">
+      <Button
+        type="button"
+        size="icon"
+        variant="ghost"
+        className="rounded-full hover:bg-warm-700/10"
+        onClick={() => fileInputRef.current?.click()}
       >
-        <Paperclip className="h-5 w-5 text-warm-300" />
-      </label>
+        <PaperclipIcon className="h-5 w-5 text-warm-200" />
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileUpload}
+        />
+      </Button>
       <Input
         value={newMessage}
         onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Type your message..."
-        className="flex-1 bg-white/5 border-warm-100/30"
-        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+        onKeyDown={handleKeyDown}
+        placeholder="Type a message..."
+        className="flex-1 focus:ring-warm-200 focus:border-warm-200"
+        disabled={isLoading}
       />
       <Button
-        onClick={handleSendMessage}
-        className="bg-warm-300 hover:bg-warm-200 text-white"
+        type="button"
         size="icon"
-        disabled={!newMessage.trim()}
-        title="Send message"
+        className="rounded-full bg-warm-300 hover:bg-warm-300/90"
+        onClick={handleSendMessage}
+        disabled={!newMessage.trim() || isLoading}
       >
-        <Send className="h-4 w-4" />
+        {isLoading ? (
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-warm-100 border-t-transparent" />
+        ) : (
+          <SendHorizontalIcon className="h-5 w-5 text-dark" />
+        )}
       </Button>
     </div>
   );

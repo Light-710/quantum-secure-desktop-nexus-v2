@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,31 +30,37 @@ import { Filter, FileText, Download, FileUp } from 'lucide-react';
 import type { Project } from '@/types/project';
 import { reportService } from '@/services/reportService';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import api from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ManagerProjects = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchProjects = async () => {
+  // Fetch projects with React Query
+  const { 
+    data: projects = [], 
+    isLoading, 
+    refetch 
+  } = useQuery({
+    queryKey: ['manager-projects', user?.employee_id],
+    queryFn: async () => {
       try {
-        setIsLoading(true);
-        // In a real app, this would call an API endpoint
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-        setProjects([]);
+        const response = await api.get(`/manager/projects/${user?.employee_id}`);
+        return response.data || [];
       } catch (error) {
         console.error('Failed to fetch projects:', error);
-      } finally {
-        setIsLoading(false);
+        toast.error('Failed to load projects', {
+          description: 'There was an error loading your projects. Please try again later.'
+        });
+        return [];
       }
-    };
+    }
+  });
 
-    fetchProjects();
-  }, []);
-
-  const filteredProjects = projects.filter(project => 
+  const filteredProjects = projects.filter((project: Project) => 
     statusFilter === 'all' ? true : project.status === statusFilter
   );
 
