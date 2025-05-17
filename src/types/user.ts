@@ -1,5 +1,5 @@
 
-export type UserRole = 'Employee' | 'Manager' | 'Admin';
+export type UserRole = 'Employee' | 'Manager' | 'Admin' | 'Tester';
 export type UserStatus = 'Active' | 'Suspended' | 'Deactivated';
 
 export type User = {

@@ -109,7 +109,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   <p className="text-xs text-[#A8A39D]">
                     <span className={`
                       inline-block w-2 h-2 rounded-full mr-1 
-                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : user?.role === 'Manager' ? 'bg-[#8A9B6E]' : user?.role === 'Tester' ? 'bg-[#C47D5F]' : 'bg-[#C47D5F]'}
+                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : 
+                        user?.role === 'Manager' ? 'bg-[#8A9B6E]' : 
+                        user?.role === 'Tester' ? 'bg-[#C47D5F]' : 'bg-[#C47D5F]'}
                     `}></span>
                     {user?.role}
                   </p>
@@ -121,7 +123,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 variant="outline" 
                 size="icon"
                 className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
-                onClick={() => navigate(`/dashboard/${user?.role?.toLowerCase()}/settings`)}
+                onClick={() => navigate(`/dashboard/${user?.role?.toLowerCase()}`)}
               >
                 <Settings size={18} />
               </Button>

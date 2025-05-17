@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
 import { authService } from '@/services/authService';
 import api from '@/services/api';
+import { UserRole } from '@/types/user';
 
 // Define types for our auth context
 type User = {
   employee_id: string;
   name: string;
   email: string;
-  role: 'Employee' | 'Manager' | 'Admin';
+  role: UserRole;
   profile_picture?: string;
   status?: string;
 };

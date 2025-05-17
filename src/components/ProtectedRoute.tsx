@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader } from "lucide-react";
+import { UserRole } from '@/types/user';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
-  allowedRoles?: ('Employee' | 'Manager' | 'Admin')[];
+  allowedRoles?: UserRole[];
 };
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
