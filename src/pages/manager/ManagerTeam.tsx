@@ -44,7 +44,7 @@ const ManagerTeam = () => {
     queryFn: async () => {
       try {
         // Get team members for the current manager
-        const response = await api.get(`/manager/team/${user?.employee_id}`);
+        const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
         console.error('Failed to fetch team data:', error);
