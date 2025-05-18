@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from '@/components/ui/sonner';
 import { Monitor } from 'lucide-react';
@@ -95,7 +94,7 @@ const ManagerVirtualDesktop = () => {
     <DashboardLayout>
       <Card className="glass-panel border-warm-100/30 mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl text-warm-300">My Virtual Desktops</CardTitle>
+          <CardTitle className="text-2xl text-warm-300">My Virtual Desktop</CardTitle>
           <CardDescription className="text-warm-100/70">
             Manage your personal virtual machines
           </CardDescription>

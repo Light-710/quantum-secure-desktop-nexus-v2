@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Team', path: '/dashboard/manager/team', icon: <Users size={20} /> },
     { name: 'Chat', path: '/dashboard/manager/chat', icon: <MessageSquare size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/manager/desktop', icon: <Monitor size={20} /> },
-    { name: 'Team Desktops', path: '/dashboard/manager/team-desktops', icon: <Monitor size={20} /> },
   ];
 
   const testerLinks = [
