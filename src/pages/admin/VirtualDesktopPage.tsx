@@ -11,7 +11,7 @@ import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
 import { vmService } from '@/services/vmService';
 import { useQuery } from '@tanstack/react-query';
-import { handleVMAction, VirtualMachine } from '@/services/vmManagementService';
+import { handleVMAction, VirtualMachine, VMStatus } from '@/services/vmManagementService';
 
 const VirtualDesktopPage = () => {
   const [selectedVM, setSelectedVM] = useState<VirtualMachine | null>(null);
@@ -63,7 +63,7 @@ const VirtualDesktopPage = () => {
   });
   
   // Helper function to normalize VM status strings
-  const normalizeVMStatus = (status: string) => {
+  const normalizeVMStatus = (status: string): VMStatus => {
     const lowercaseStatus = status.toLowerCase();
     
     if (lowercaseStatus === 'running') return 'Running';
