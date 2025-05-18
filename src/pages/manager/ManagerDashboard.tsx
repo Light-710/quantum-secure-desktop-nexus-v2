@@ -8,8 +8,9 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { Monitor, Users, MessageCircle } from 'lucide-react';
+import { Monitor, Users } from 'lucide-react';
 import { userManagementService } from '@/services/userManagementService';
+import ChatPanel from '@/components/chat/ChatPanel';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
@@ -155,23 +156,30 @@ const ManagerDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* VM Status */}
+        {/* VM Status - Now showing only manager's own VMs */}
         <Card className="glass-panel border-warm-100/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-xl text-warm-300 flex items-center">
               <Monitor className="mr-2 text-warm-200" size={20} />
-              Virtual Desktops
+              My Virtual Desktops
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-warm-100 space-y-4">
-              <p>Manage your team's virtual desktop environments.</p>
+              <p>Access your personal virtual desktop environments.</p>
               <div className="grid gap-2">
                 <Button 
                   className="w-full" 
-                  onClick={() => navigate('/dashboard/manager/virtual-desktops')}
+                  onClick={() => navigate('/dashboard/manager/desktop')}
                 >
-                  View Desktops
+                  View My Desktops
+                </Button>
+                <Button 
+                  variant="outline"
+                  className="w-full border-warm-100/30" 
+                  onClick={() => navigate('/dashboard/manager/team-desktops')}
+                >
+                  Team Desktops
                 </Button>
               </div>
             </div>
@@ -179,33 +187,17 @@ const ManagerDashboard = () => {
         </Card>
       </div>
 
-      {/* Chat & Communications */}
-      <Card className="glass-panel border-warm-100/30">
+      {/* Chat Panel */}
+      <Card className="glass-panel border-warm-100/30 mb-6">
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl text-warm-300 flex items-center">
-            <MessageCircle className="mr-2 text-warm-200" size={20} />
-            Recent Communications
-          </CardTitle>
+          <CardTitle className="text-xl text-warm-300">Project Chat</CardTitle>
+          <CardDescription className="text-warm-100/70">
+            Communicate with your team members
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-warm-100 space-y-4">
-            <p>Access project chats and team communications.</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button 
-                variant="outline" 
-                className="border-warm-100/30"
-                onClick={() => navigate('/dashboard/manager/chat')}
-              >
-                Open Project Chats
-              </Button>
-              <Button 
-                variant="outline" 
-                className="border-warm-100/30"
-                onClick={() => navigate('/dashboard/manager/team')}
-              >
-                Contact Team Members
-              </Button>
-            </div>
+          <div className="h-[400px]">
+            <ChatPanel />
           </div>
         </CardContent>
       </Card>

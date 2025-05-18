@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -38,30 +38,35 @@ const ManagerTeam = () => {
     },
   });
 
-  // Use React Query for fetching tasks/projects for the team members
-  const { data: teamData = [], isLoading: isLoadingTeamData } = useQuery({
-    queryKey: ['team-tasks', user?.employee_id],
+  // Use React Query for fetching projects
+  const { data: projects = [], isLoading: isLoadingProjects } = useQuery({
+    queryKey: ['team-projects', user?.employee_id],
     queryFn: async () => {
       try {
-        // Get team members for the current manager
         const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
-        console.error('Failed to fetch team data:', error);
-        toast.error('Failed to load team task data', {
-          description: 'There was an error loading your team member tasks. Please try again later.'
+        console.error('Failed to fetch project data:', error);
+        toast.error('Failed to load project data', {
+          description: 'There was an error loading your projects. Please try again later.'
         });
         return [];
       }
     },
   });
 
-  // Combine testers with their task data if available
-  const teamMembers = testers.map(tester => {
-    const memberWithTasks = teamData.find(member => member.employee_id === tester.employee_id);
+  // Process the data to show testers with their assigned projects
+  const teamMembersWithProjects = testers.map(tester => {
+    // Find all projects this tester is assigned to
+    const assignedProjects = projects.filter(project => 
+      project.members && project.members.some(member => 
+        member.employee_id === tester.employee_id
+      )
+    );
+    
     return {
       ...tester,
-      tasks: memberWithTasks?.tasks || []
+      projects: assignedProjects
     };
   });
 
@@ -76,21 +81,21 @@ const ManagerTeam = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoadingTesters || isLoadingTeamData ? (
+            {isLoadingTesters || isLoadingProjects ? (
               <div className="flex justify-center p-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-300"></div>
               </div>
-            ) : teamMembers.length > 0 ? (
+            ) : teamMembersWithProjects.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Employee</TableHead>
                     <TableHead>Email</TableHead>
-                    <TableHead>Current Tasks</TableHead>
+                    <TableHead>Assigned Projects</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {teamMembers.map((tester) => (
+                  {teamMembersWithProjects.map((tester) => (
                     <TableRow key={tester.employee_id}>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -100,23 +105,25 @@ const ManagerTeam = () => {
                       </TableCell>
                       <TableCell>{tester.email}</TableCell>
                       <TableCell>
-                        {tester.tasks && tester.tasks.length > 0 ? (
+                        {tester.projects && tester.projects.length > 0 ? (
                           <ul className="list-disc list-inside">
-                            {tester.tasks.map(task => (
-                              <li key={task.id} className="text-sm">
-                                {task.title}
+                            {tester.projects.map(project => (
+                              <li key={project.id} className="text-sm mb-1">
+                                {project.name}
                                 <Badge 
                                   className={`ml-2 ${
-                                    task.status === 'In Progress' ? 'bg-blue-500' : 'bg-green-500'
+                                    project.status.toLowerCase() === 'in progress' ? 'bg-blue-500' : 
+                                    project.status.toLowerCase() === 'complete' ? 'bg-green-500' : 
+                                    'bg-yellow-500'
                                   }`}
                                 >
-                                  {task.status}
+                                  {project.status}
                                 </Badge>
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <span className="text-warm-100/50 text-sm">No tasks assigned</span>
+                          <span className="text-warm-100/50 text-sm">No projects assigned</span>
                         )}
                       </TableCell>
                     </TableRow>
