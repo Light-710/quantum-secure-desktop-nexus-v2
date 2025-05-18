@@ -446,7 +446,7 @@ const AdminDashboard = () => {
             </Button>
             <Button 
               className="bg-[#6D98BA] hover:bg-[#5D88AA] text-white"
-              onClick={() => navigate('/dashboard/admin/virtual-desktops')}
+              onClick={() => navigate('/dashboard/admin/vm')}
             >
               View Details
             </Button>

@@ -144,7 +144,7 @@ const App = () => (
               } 
             />
             <Route 
-              path="/dashboard/admin/virtual-desktops" 
+              path="/dashboard/admin/vm" 
               element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <VirtualDesktopPage />
