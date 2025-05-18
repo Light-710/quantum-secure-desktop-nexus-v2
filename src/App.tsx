@@ -118,7 +118,7 @@ const App = () => (
               } 
             />
             <Route 
-              path="/dashboard/manager/virtual-desktops" 
+              path="/dashboard/manager/desktop" 
               element={
                 <ProtectedRoute allowedRoles={['Manager']}>
                   <ManagerVirtualDesktop />

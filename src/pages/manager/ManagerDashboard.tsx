@@ -156,32 +156,23 @@ const ManagerDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* VM Status - Now showing only manager's own VMs */}
+        {/* VM Status - Only showing manager's own VMs */}
         <Card className="glass-panel border-warm-100/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-xl text-warm-300 flex items-center">
               <Monitor className="mr-2 text-warm-200" size={20} />
-              My Virtual Desktops
+              Virtual Desktop
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-warm-100 space-y-4">
               <p>Access your personal virtual desktop environments.</p>
-              <div className="grid gap-2">
-                <Button 
-                  className="w-full" 
-                  onClick={() => navigate('/dashboard/manager/desktop')}
-                >
-                  View My Desktops
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="w-full border-warm-100/30" 
-                  onClick={() => navigate('/dashboard/manager/team-desktops')}
-                >
-                  Team Desktops
-                </Button>
-              </div>
+              <Button 
+                className="w-full" 
+                onClick={() => navigate('/dashboard/manager/desktop')}
+              >
+                View My Desktop
+              </Button>
             </div>
           </CardContent>
         </Card>
