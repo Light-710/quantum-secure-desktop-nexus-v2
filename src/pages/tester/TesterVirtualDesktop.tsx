@@ -21,6 +21,7 @@ const TesterVirtualDesktop = () => {
     windows: false,
     linux: false
   });
+  const [vmStartTime, setVmStartTime] = useState<{windows?: Date, linux?: Date}>({});
 
   useEffect(() => {
     loadVMStatus();
@@ -73,6 +74,7 @@ const TesterVirtualDesktop = () => {
           
           // Set 1-minute timer before showing connect button
           setCanConnect(prev => ({ ...prev, [activeOs]: false }));
+          setVmStartTime(prev => ({ ...prev, [activeOs]: new Date() }));
           
           const timer = setTimeout(() => {
             setCanConnect(prev => ({ ...prev, [activeOs]: true }));
@@ -98,6 +100,7 @@ const TesterVirtualDesktop = () => {
           // Reset connection state
           setCanConnect(prev => ({ ...prev, [activeOs]: false }));
           setConnectionUrls(prev => ({ ...prev, [activeOs]: undefined }));
+          setVmStartTime(prev => ({ ...prev, [activeOs]: undefined }));
           
           // Clear any timer that might be running
           if (connectTimers[activeOs]) {
@@ -111,6 +114,7 @@ const TesterVirtualDesktop = () => {
           
           // Reset connection state temporarily
           setCanConnect(prev => ({ ...prev, [activeOs]: false }));
+          setVmStartTime(prev => ({ ...prev, [activeOs]: new Date() }));
           
           // Clear any existing timer
           if (connectTimers[activeOs]) {
@@ -171,11 +175,23 @@ const TesterVirtualDesktop = () => {
     }
   };
 
+  // Calculate remaining time for VM initialization
+  const getRemainingTime = (os: 'windows' | 'linux') => {
+    if (!vmStartTime[os]) return 0;
+    
+    const startTime = vmStartTime[os]!;
+    const now = new Date();
+    const elapsedSeconds = Math.floor((now.getTime() - startTime.getTime()) / 1000);
+    const remainingSeconds = Math.max(0, 60 - elapsedSeconds);
+    
+    return remainingSeconds;
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyber-teal"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-warm-200"></div>
         </div>
       </DashboardLayout>
     );
@@ -183,47 +199,47 @@ const TesterVirtualDesktop = () => {
 
   return (
     <DashboardLayout>
-      <Card className="glass-panel border-cyber-teal/30 mb-6">
+      <Card className="border-warm-100/30 mb-6 bg-gradient-to-b from-warm-50 to-white">
         <CardHeader>
-          <CardTitle className="text-2xl text-cyber-teal">Virtual Desktop Access</CardTitle>
-          <CardDescription className="text-cyber-gray">
+          <CardTitle className="text-2xl text-warm-300">Virtual Desktop Access</CardTitle>
+          <CardDescription className="text-warm-200">
             Connect to your secure testing environment
           </CardDescription>
         </CardHeader>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="glass-panel border-cyber-teal/30 h-full">
+        <Card className="border-warm-100/30 h-full bg-white">
           <CardHeader>
-            <CardTitle className="text-xl text-cyber-teal flex items-center">
-              <Monitor className="mr-2 text-cyber-blue" size={20} />
+            <CardTitle className="text-xl text-warm-300 flex items-center">
+              <Monitor className="mr-2 text-warm-100" size={20} />
               Virtual Desktop Console
             </CardTitle>
-            <CardDescription className="text-cyber-gray">
+            <CardDescription className="text-warm-200">
               Select your preferred operating system and connect to your virtual environment
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="windows" onValueChange={(value) => setActiveOs(value as 'windows' | 'linux')}>
-              <TabsList className="grid w-full grid-cols-2 mb-4 bg-cyber-dark-blue/50">
-                <TabsTrigger value="windows" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+              <TabsList className="grid w-full grid-cols-2 mb-4 bg-warm-50">
+                <TabsTrigger value="windows" className="data-[state=active]:bg-warm-100/20 data-[state=active]:text-warm-300">
                   Windows
                 </TabsTrigger>
-                <TabsTrigger value="linux" className="data-[state=active]:bg-cyber-blue/20 data-[state=active]:text-cyber-blue">
+                <TabsTrigger value="linux" className="data-[state=active]:bg-warm-100/20 data-[state=active]:text-warm-300">
                   Linux
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="windows" className="border rounded-md border-cyber-teal/20 p-4 bg-cyber-dark-blue/20">
+              <TabsContent value="windows" className="border rounded-md border-warm-100/20 p-4 bg-warm-50/20">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-cyber-teal font-medium">Windows VM</h4>
-                      <p className="text-sm text-cyber-gray">
+                      <h4 className="text-warm-300 font-medium">Windows VM</h4>
+                      <p className="text-sm text-warm-200">
                         Status: {' '}
                         <span className={
-                          vmStatus?.windows?.toLowerCase() === 'running' ? 'text-green-400' : 
-                          'text-yellow-400'
+                          vmStatus?.windows?.toLowerCase() === 'running' ? 'text-green-500' : 
+                          'text-yellow-500'
                         }>
                           {vmStatus?.windows || 'Not Available'}
                         </span>
@@ -233,7 +249,7 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                        className="border-warm-100/30 hover:bg-warm-100/20 hover:text-warm-300"
                         onClick={() => handleVmAction('Start')}
                         disabled={vmStatus?.windows?.toLowerCase() === 'running' || actionInProgress}
                       >
@@ -242,7 +258,7 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+                        className="border-warm-100/30 hover:bg-warm-300/20 hover:text-warm-300"
                         onClick={() => handleVmAction('Stop')}
                         disabled={vmStatus?.windows?.toLowerCase() !== 'running' || actionInProgress}
                       >
@@ -252,13 +268,24 @@ const TesterVirtualDesktop = () => {
                   </div>
                   
                   {vmStatus?.windows?.toLowerCase() === 'running' && !canConnect.windows && (
-                    <div className="text-sm mt-3 p-2 bg-yellow-500/20 text-yellow-500 rounded border border-yellow-500/30">
-                      <p>VM is starting. Connection will be available in 1 minute...</p>
+                    <div className="mt-3 p-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200">
+                      <div className="flex items-center">
+                        <div className="mr-3 relative">
+                          <div className="w-8 h-8 border-4 border-yellow-200 border-t-yellow-500 rounded-full animate-spin"></div>
+                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+                            {getRemainingTime('windows')}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="font-medium">VM is starting</p>
+                          <p className="text-xs">Connection will be available in {getRemainingTime('windows')} seconds</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   
                   <Button 
-                    className="w-full cyber-button mt-4"
+                    className="w-full bg-warm-200 hover:bg-warm-300 text-white mt-4"
                     disabled={!canConnect.windows || vmStatus?.windows?.toLowerCase() !== 'running' || !connectionUrls.windows}
                     onClick={handleConnect}
                   >
@@ -272,16 +299,16 @@ const TesterVirtualDesktop = () => {
                 </div>
               </TabsContent>
               
-              <TabsContent value="linux" className="border rounded-md border-cyber-teal/20 p-4 bg-cyber-dark-blue/20">
+              <TabsContent value="linux" className="border rounded-md border-warm-100/20 p-4 bg-warm-50/20">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-cyber-teal font-medium">Linux VM</h4>
-                      <p className="text-sm text-cyber-gray">
+                      <h4 className="text-warm-300 font-medium">Linux VM</h4>
+                      <p className="text-sm text-warm-200">
                         Status: {' '}
                         <span className={
-                          vmStatus?.linux?.toLowerCase() === 'running' ? 'text-green-400' : 
-                          'text-yellow-400'
+                          vmStatus?.linux?.toLowerCase() === 'running' ? 'text-green-500' : 
+                          'text-yellow-500'
                         }>
                           {vmStatus?.linux || 'Not Available'}
                         </span>
@@ -291,7 +318,7 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                        className="border-warm-100/30 hover:bg-warm-100/20 hover:text-warm-300"
                         onClick={() => handleVmAction('Start')}
                         disabled={vmStatus?.linux?.toLowerCase() === 'running' || actionInProgress}
                       >
@@ -300,7 +327,7 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+                        className="border-warm-100/30 hover:bg-warm-300/20 hover:text-warm-300"
                         onClick={() => handleVmAction('Stop')}
                         disabled={vmStatus?.linux?.toLowerCase() !== 'running' || actionInProgress}
                       >
@@ -310,13 +337,24 @@ const TesterVirtualDesktop = () => {
                   </div>
                   
                   {vmStatus?.linux?.toLowerCase() === 'running' && !canConnect.linux && (
-                    <div className="text-sm mt-3 p-2 bg-yellow-500/20 text-yellow-500 rounded border border-yellow-500/30">
-                      <p>VM is starting. Connection will be available in 1 minute...</p>
+                    <div className="mt-3 p-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200">
+                      <div className="flex items-center">
+                        <div className="mr-3 relative">
+                          <div className="w-8 h-8 border-4 border-yellow-200 border-t-yellow-500 rounded-full animate-spin"></div>
+                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
+                            {getRemainingTime('linux')}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="font-medium">VM is starting</p>
+                          <p className="text-xs">Connection will be available in {getRemainingTime('linux')} seconds</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   
                   <Button 
-                    className="w-full cyber-button mt-4"
+                    className="w-full bg-warm-200 hover:bg-warm-300 text-white mt-4"
                     disabled={!canConnect.linux || vmStatus?.linux?.toLowerCase() !== 'running' || !connectionUrls.linux}
                     onClick={handleConnect}
                   >
@@ -333,48 +371,42 @@ const TesterVirtualDesktop = () => {
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-cyber-teal/30 h-full">
+        <Card className="border-warm-100/30 h-full bg-white">
           <CardHeader>
-            <CardTitle className="text-xl text-cyber-teal flex items-center">
-              <Server className="mr-2 text-cyber-blue" size={20} />
-              Connection Status
+            <CardTitle className="text-xl text-warm-300 flex items-center">
+              <Server className="mr-2 text-warm-100" size={20} />
+              User Guide
             </CardTitle>
-            <CardDescription className="text-cyber-gray">
-              Real-time monitoring and connection history
+            <CardDescription className="text-warm-200">
+              How to use your virtual desktop environment
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                <h4 className="text-cyber-teal font-medium flex items-center">
-                  <span className={`w-2 h-2 rounded-full mr-2 ${
-                    vmStatus?.windows?.toLowerCase() === 'running' || vmStatus?.linux?.toLowerCase() === 'running'
-                    ? 'bg-green-400' : 'bg-yellow-400'
-                  }`}></span>
-                  Connection Status
-                </h4>
-                <p className="text-sm text-cyber-gray mt-1">
-                  {(vmStatus?.windows?.toLowerCase() === 'running' || vmStatus?.linux?.toLowerCase() === 'running')
-                    ? 'VPN tunnel active - secure connection available'
-                    : 'No active connections'
-                  }
-                </p>
-              </div>
-              
-              <div className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                <h4 className="text-cyber-teal font-medium">Connection Instructions</h4>
-                <ul className="text-sm text-cyber-gray mt-2 space-y-2 list-disc pl-4">
-                  <li>Start your desired VM using the controls above</li>
-                  <li>Wait for approximately 1 minute for the VM to fully initialize</li>
+              <div className="border border-warm-100/20 rounded-md p-3 bg-warm-50/20">
+                <h4 className="text-warm-300 font-medium">Getting Started</h4>
+                <ul className="text-sm text-warm-200 mt-2 space-y-2 list-disc pl-4">
+                  <li>Start your desired VM using the controls on the left</li>
+                  <li>Wait for the VM to initialize (approximately 1 minute)</li>
                   <li>Click 'Connect to Desktop' when available</li>
                   <li>Use your regular credentials to log in</li>
+                </ul>
+              </div>
+              
+              <div className="border border-warm-100/20 rounded-md p-3 bg-warm-50/20">
+                <h4 className="text-warm-300 font-medium">Best Practices</h4>
+                <ul className="text-sm text-warm-200 mt-2 space-y-2 list-disc pl-4">
+                  <li>Always shut down your VM when not in use</li>
+                  <li>Save your work frequently</li>
+                  <li>Report any connection or performance issues to your manager</li>
+                  <li>Disconnect from the VM when taking extended breaks</li>
                 </ul>
               </div>
 
               <div className="pt-2">
                 <Button 
                   variant="outline" 
-                  className="w-full border-cyber-teal/30"
+                  className="w-full border-warm-100/30 hover:bg-warm-50"
                   onClick={loadVMStatus}
                 >
                   Refresh Status

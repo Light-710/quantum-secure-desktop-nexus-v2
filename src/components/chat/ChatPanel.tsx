@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
@@ -13,7 +12,6 @@ import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
 import { UserRole } from '@/types/user';
 import socketService from '@/services/socketService';
-import ConnectionStatus from './ConnectionStatus';
 import TypingIndicatorComponent from './TypingIndicator';
 
 const ChatPanel = () => {
@@ -91,17 +89,18 @@ const ChatPanel = () => {
     
     const formattedMessages = messageArray.map((msg: ApiMessage) => {
       // Map API sender_role to a valid UserRole type
-      const senderRole: UserRole = 
-        (msg.sender_role === 'Manager' || msg.sender_role === 'Admin' || msg.sender_role === 'Tester') 
-        ? msg.sender_role as UserRole 
-        : 'Tester'; // Default to Tester if unknown
+      let senderRoleTyped: UserRole = 'Tester'; // Default to Tester
+      
+      if (msg.sender_role === 'Manager' || msg.sender_role === 'Admin') {
+        senderRoleTyped = msg.sender_role as UserRole;
+      }
       
       return {
         id: msg.id || msg.message_id || `${Date.now()}-${Math.random()}`,
         sender: msg.sender_name || 'Unknown',
         content: msg.content || '',
         timestamp: new Date(msg.timestamp || Date.now()),
-        senderRole: senderRole,
+        senderRole: senderRoleTyped,
         is_file: msg.is_file || false,
         file_path: msg.file_path || ''
       };
@@ -143,6 +142,7 @@ const ChatPanel = () => {
           // Replace the local optimistic message with the confirmed message
           localMessageIds.current.delete(`${localMsgPrefix}${data.id}`);
           
+          // Remove the optimistic message to avoid duplication
           setMessages(prevMessages => prevMessages.filter(msg => 
             msg.id !== `${localMsgPrefix}${data.id}`
           ));
@@ -155,17 +155,18 @@ const ChatPanel = () => {
         
         if (!isDuplicate) {
           // Map API sender_role to a valid UserRole type
-          const senderRole: UserRole = 
-            (data.sender_role === 'Manager' || data.sender_role === 'Admin' || data.sender_role === 'Tester') 
-            ? data.sender_role as UserRole 
-            : 'Tester'; // Default to Tester if unknown
+          let senderRoleTyped: UserRole = 'Tester'; // Default to Tester
+          
+          if (data.sender_role === 'Manager' || data.sender_role === 'Admin') {
+            senderRoleTyped = data.sender_role as UserRole;
+          }
           
           const newMsg: Message = {
             id: data.id || data.message_id || `${Date.now()}-${Math.random()}`,
             sender: data.sender_name || 'Unknown',
             content: data.content || '',
             timestamp: new Date(data.timestamp || Date.now()),
-            senderRole: senderRole,
+            senderRole: senderRoleTyped,
             is_file: data.is_file || false,
             file_path: data.file_path || ''
           };
@@ -303,30 +304,25 @@ const ChatPanel = () => {
       // Add local message ID to our tracking set
       localMessageIds.current.add(localMsgId);
       
-      // Add optimistic message
-      const optimisticMessage: Message = {
-        id: localMsgId,
-        sender: user?.name || 'You',
-        content: newMessage,
-        timestamp: new Date(),
-        senderRole: user?.role as UserRole || 'Tester', 
-        isLocal: true,
-        status: 'sending'
-      };
-      
-      // Only show optimistic message if using REST API
-      const usingSocketIo = socketService.isConnected();
-      
-      if (!usingSocketIo) {
-        setMessages(prev => [...prev, optimisticMessage]);
-      }
-      
       // Try to send through WebSocket first
-      const socketSent = usingSocketIo && 
+      const socketSent = socketService.isConnected() && 
                         socketService.sendMessage(selectedProject, newMessage);
       
-      // If socket fails or isn't connected, fall back to REST API
       if (!socketSent) {
+        // Only show optimistic message if using REST API
+        const optimisticMessage: Message = {
+          id: localMsgId,
+          sender: user?.name || 'You',
+          content: newMessage,
+          timestamp: new Date(),
+          senderRole: user?.role as UserRole || 'Tester', 
+          isLocal: true,
+          status: 'sending'
+        };
+        
+        setMessages(prev => [...prev, optimisticMessage]);
+        
+        // Fall back to REST API
         sendMessageMutation.mutate({
           projectId: selectedProject,
           content: newMessage
@@ -374,28 +370,18 @@ const ChatPanel = () => {
   const typingUserNames = typingUsers.map(t => t.user);
 
   return (
-    <Card className="h-full glass-panel border-warm-100/30">
+    <Card className="h-full border-warm-100/30 bg-white">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl text-warm-300 flex items-center gap-2">
           <MessageCircle className="text-warm-200" size={20} />
           Project Chat
         </CardTitle>
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex-1">
-            <ProjectSelect
-              projects={projects}
-              selectedProject={selectedProject}
-              onProjectSelect={handleProjectSelect}
-            />
-          </div>
-          {selectedProject && (
-            <div className="ml-4">
-              <ConnectionStatus 
-                isConnected={isSocketConnected} 
-                isConnecting={isConnecting} 
-              />
-            </div>
-          )}
+        <div className="mt-2">
+          <ProjectSelect
+            projects={projects}
+            selectedProject={selectedProject}
+            onProjectSelect={handleProjectSelect}
+          />
         </div>
       </CardHeader>
       <CardContent className="flex flex-col h-[calc(100%-6rem)]">
@@ -404,7 +390,7 @@ const ChatPanel = () => {
             <ScrollArea className="flex-1 mb-2 pr-2" ref={scrollAreaRef}>
               {isLoadingMessages ? (
                 <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin h-8 w-8 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                  <div className="animate-spin h-8 w-8 border-2 border-warm-200 border-t-warm-300 rounded-full"></div>
                 </div>
               ) : (
                 <MessageList messages={messages} />
@@ -424,7 +410,7 @@ const ChatPanel = () => {
             />
           </>
         ) : (
-          <div className="flex items-center justify-center h-full text-warm-100/70">
+          <div className="flex items-center justify-center h-full text-warm-200">
             Select a project to start chatting
           </div>
         )}
