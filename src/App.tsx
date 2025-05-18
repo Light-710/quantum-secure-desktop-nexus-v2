@@ -18,6 +18,7 @@ import AdminSetup from "@/pages/AdminSetup";
 import TesterDashboard from "@/pages/tester/TesterDashboard";
 import TesterChat from "@/pages/tester/TesterChat";
 import TesterVirtualDesktop from "@/pages/tester/TesterVirtualDesktop";
+import TesterProjects from "@/pages/tester/TesterProjects";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
 import ManagerProjects from "@/pages/manager/ManagerProjects";
 import ManagerTeam from "@/pages/manager/ManagerTeam";
@@ -63,6 +64,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Tester']}>
                   <TesterChat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/tester/projects" 
+              element={
+                <ProtectedRoute allowedRoles={['Tester']}>
+                  <TesterProjects />
                 </ProtectedRoute>
               } 
             />

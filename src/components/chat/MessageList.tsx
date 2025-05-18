@@ -21,14 +21,14 @@ const MessageList = ({ messages }: MessageListProps) => {
             key={message.id}
             className={`flex gap-3 ${
               message.isStatusMessage 
-                ? 'bg-cyber-dark-blue/10 justify-center' 
+                ? 'bg-warm-50 justify-center' 
                 : message.senderRole === 'Manager' 
-                  ? 'bg-cyber-dark-blue/20' 
+                  ? 'bg-warm-50/50' 
                   : ''
             } p-3 rounded-lg animate-in fade-in-50`}
           >
             {message.isStatusMessage ? (
-              <div className="flex items-center text-cyber-gray text-sm">
+              <div className="flex items-center text-warm-200 text-sm">
                 <Info size={14} className="mr-2" />
                 <span className="font-medium">{message.sender}</span>
                 <span className="mx-1">{message.content}</span>
@@ -39,12 +39,12 @@ const MessageList = ({ messages }: MessageListProps) => {
             ) : (
               <>
                 <Avatar className={`h-8 w-8 ${
-                  message.senderRole === 'Manager' ? 'border border-cyber-green/40' : ''
+                  message.senderRole === 'Manager' ? 'border border-secondary/40' : ''
                 }`}>
                   <AvatarFallback className={`${
                     message.senderRole === 'Manager' 
-                      ? 'bg-cyber-dark-blue text-cyber-green' 
-                      : 'bg-cyber-dark-blue text-cyber-blue'
+                      ? 'bg-secondary/20 text-secondary' 
+                      : 'bg-primary/20 text-primary'
                   }`}>
                     {message.sender[0]}
                   </AvatarFallback>
@@ -52,20 +52,25 @@ const MessageList = ({ messages }: MessageListProps) => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <span className={`text-sm font-medium ${
-                      message.senderRole === 'Manager' ? 'text-cyber-green' : 'text-cyber-blue'
+                      message.senderRole === 'Manager' ? 'text-secondary' : 'text-primary'
                     }`}>
                       {message.sender}
                     </span>
-                    <span className="text-xs text-cyber-gray">
+                    <span className="text-xs text-warm-200">
                       {format(message.timestamp, 'h:mm a')}
                     </span>
                     {message.senderRole === 'Manager' && (
-                      <span className="text-xs px-1.5 py-0.5 rounded-sm bg-cyber-green/20 text-cyber-green">
+                      <span className="text-xs px-1.5 py-0.5 rounded-sm bg-secondary/20 text-secondary">
                         Manager
                       </span>
                     )}
+                    {message.senderRole === 'Admin' && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-sm bg-destructive/20 text-destructive">
+                        Admin
+                      </span>
+                    )}
                     {message.status === 'sending' && (
-                      <span className="text-xs text-cyber-gray italic">
+                      <span className="text-xs text-warm-200 italic">
                         sending...
                       </span>
                     )}
@@ -75,13 +80,13 @@ const MessageList = ({ messages }: MessageListProps) => {
                       href={message.file_path} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-cyber-blue hover:text-cyber-blue/80 mt-1"
+                      className="flex items-center gap-2 text-primary hover:text-primary/80 mt-1"
                     >
                       <FileText size={16} />
                       <span>{message.content}</span>
                     </a>
                   ) : (
-                    <p className="text-cyber-gray mt-1">{message.content}</p>
+                    <p className="text-foreground mt-1">{message.content}</p>
                   )}
                 </div>
               </>
@@ -89,7 +94,7 @@ const MessageList = ({ messages }: MessageListProps) => {
           </div>
         ))
       ) : (
-        <div className="text-center p-6 text-cyber-gray">
+        <div className="text-center p-6 text-warm-200">
           No messages yet. Start the conversation!
         </div>
       )}
