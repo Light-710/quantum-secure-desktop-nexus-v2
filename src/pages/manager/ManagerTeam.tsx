@@ -110,7 +110,7 @@ const ManagerTeam = () => {
                             {tester.projects.map(project => (
                               <li key={project.id} className="text-sm mb-1">
                                 {project.name}
-                                <Badge 
+                                {/* <Badge 
                                   className={`ml-2 ${
                                     project.status.toLowerCase() === 'in progress' ? 'bg-blue-500' : 
                                     project.status.toLowerCase() === 'complete' ? 'bg-green-500' : 
@@ -118,7 +118,7 @@ const ManagerTeam = () => {
                                   }`}
                                 >
                                   {project.status}
-                                </Badge>
+                                </Badge> */}
                               </li>
                             ))}
                           </ul>
