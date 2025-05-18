@@ -40,9 +40,10 @@ const ManagerVirtualDesktop = () => {
 
   // Handle VM action (start, stop, restart)
   const handleAction = async (vmId: string, action: string, instanceOs: string) => {
+    const employeeId = user?.employee_id || '';
     setActionLoading(vmId);
     try {
-      await handleVMAction(vmId, action, instanceOs);
+      await handleVMAction(vmId, action, instanceOs, employeeId);
       
       // Clear any existing timer for this VM
       if (connectTimers[vmId]) {
@@ -127,8 +128,9 @@ const ManagerVirtualDesktop = () => {
                         vmId={vm.id}
                         status={vm.status}
                         instanceOs={vm.os}
+                        employeeId={user?.employee_id || ''}
                         actionLoading={actionLoading === vm.id ? vm.id : null}
-                        onAction={(vmId, action, os) => handleAction(vmId, action, os)}
+                        onAction={(vmId, action, os, employeeId) => handleAction(vmId, action, os)}
                         onViewDetails={() => handleViewDetails(vm)}
                         guacamoleUrl={
                           vm.status.toLowerCase() === 'running' && 
