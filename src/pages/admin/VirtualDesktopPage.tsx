@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,9 +9,9 @@ import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
 import { VMDetailsDialog } from '@/components/vm/VMDetailsDialog';
 import { VMTableActions } from '@/components/vm/VMTableActions';
 import { toast } from '@/components/ui/sonner';
-import { vmService, VMInfo } from '@/services/vmService';
-import { VirtualMachine, handleVMAction, VMStatus } from '@/services/vmManagementService';
+import { vmService } from '@/services/vmService';
 import { useQuery } from '@tanstack/react-query';
+import { handleVMAction, VirtualMachine } from '@/services/vmManagementService';
 
 const VirtualDesktopPage = () => {
   const [selectedVM, setSelectedVM] = useState<VirtualMachine | null>(null);
@@ -31,7 +32,23 @@ const VirtualDesktopPage = () => {
         console.log('All VMs API response:', response);
         
         if (response && response.vms && Array.isArray(response.vms)) {
-          return response.vms.map(vm => convertApiVMToAppFormat(vm));
+          // Convert API response to VirtualMachine format
+          return response.vms.map(vm => ({
+            id: vm.id.toString(),
+            name: `${vm.instance_os} VM`,
+            status: normalizeVMStatus(vm.status),
+            os: vm.instance_os,
+            assigned_user: vm.employee_id,
+            uptime: calculateUptime(vm.status, vm.updated_at),
+            health: 'Good',
+            ip_address: 'N/A',
+            user_name: vm.user_name,
+            user_email: vm.user_email,
+            guacamole_url: vm.guacamole_url,
+            instance_id: vm.instance_id,
+            created_at: vm.created_at,
+            resources: generateResourceMetrics(vm.status)
+          }));
         } else {
           console.error('Unexpected API response format:', response);
           toast.error('Unexpected API response format');
@@ -45,49 +62,8 @@ const VirtualDesktopPage = () => {
     }
   });
   
-  // Convert API VM data to our app's format
-  const convertApiVMToAppFormat = (apiVM: VMInfo): VirtualMachine => {
-    // Calculate uptime based on updated_at timestamp
-    const updatedAt = new Date(apiVM.updated_at);
-    const now = new Date();
-    const uptimeMs = apiVM.status.toLowerCase() === 'running' ? 
-      now.getTime() - updatedAt.getTime() : 0;
-    
-    const hours = Math.floor(uptimeMs / (1000 * 60 * 60));
-    const minutes = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
-    const uptime = `${hours}h ${minutes}m`;
-    
-    // Resource usage from API or estimated based on status
-    const isRunning = apiVM.status.toLowerCase() === 'running';
-    
-    // Convert string status to proper VMStatus type
-    const normalizedStatus = normalizeVMStatus(apiVM.status);
-    
-    return {
-      id: apiVM.id.toString(),
-      name: `${apiVM.instance_os} VM`,
-      status: normalizedStatus,
-      os: apiVM.instance_os,
-      assigned_user: apiVM.employee_id,
-      uptime: uptime,
-      health: 'Good', // Default health status
-      ip_address: 'N/A', // No IP address in API data
-      user_name: apiVM.user_name,
-      user_email: apiVM.user_email,
-      guacamole_url: apiVM.guacamole_url,
-      instance_id: apiVM.instance_id,
-      created_at: apiVM.created_at,
-      resources: {
-        cpu: isRunning ? Math.floor(Math.random() * 60) + 20 : 0,
-        memory: isRunning ? Math.floor(Math.random() * 50) + 30 : 0,
-        disk: Math.floor(Math.random() * 40) + 10,
-        network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0,
-      }
-    };
-  };
-
-  // Function to normalize VM status strings to VMStatus type
-  const normalizeVMStatus = (status: string): VMStatus => {
+  // Helper function to normalize VM status strings
+  const normalizeVMStatus = (status: string) => {
     const lowercaseStatus = status.toLowerCase();
     
     if (lowercaseStatus === 'running') return 'Running';
@@ -96,8 +72,34 @@ const VirtualDesktopPage = () => {
     if (lowercaseStatus === 'stopping') return 'Stopping';
     if (lowercaseStatus === 'paused') return 'Paused';
     
-    // Default to Error for unrecognized statuses
     return 'Error';
+  };
+
+  // Helper function to calculate uptime based on status and last update
+  const calculateUptime = (status: string, updatedAt: string) => {
+    const isRunning = status.toLowerCase() === 'running';
+    if (!isRunning) return '0h 0m';
+    
+    const updatedDate = new Date(updatedAt);
+    const now = new Date();
+    const uptimeMs = now.getTime() - updatedDate.getTime();
+    
+    const hours = Math.floor(uptimeMs / (1000 * 60 * 60));
+    const minutes = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${minutes}m`;
+  };
+
+  // Helper function to generate resource metrics based on status
+  const generateResourceMetrics = (status: string) => {
+    const isRunning = status.toLowerCase() === 'running';
+    
+    return {
+      cpu: isRunning ? Math.floor(Math.random() * 60) + 20 : 0,
+      memory: isRunning ? Math.floor(Math.random() * 50) + 30 : 0,
+      disk: Math.floor(Math.random() * 40) + 10,
+      network: isRunning ? Math.floor(Math.random() * 40) + 5 : 0,
+    };
   };
 
   const handleViewDetails = (vm: VirtualMachine) => {
@@ -280,7 +282,7 @@ const VirtualDesktopPage = () => {
                         <VMTableActions
                           vmId={vm.id}
                           status={vm.status}
-                          instanceOs={vm.os.toLowerCase()}
+                          instanceOs={vm.os}
                           employeeId={vm.assigned_user}
                           actionLoading={actionLoading}
                           onAction={handleAction}
