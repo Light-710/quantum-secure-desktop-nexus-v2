@@ -6,12 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
 import { Monitor, Server } from 'lucide-react';
-import { vmService } from '@/services/vmService';
-import type { VMStatus } from '@/services/vmService';
+import { vmService, UserVM } from '@/services/vmService';
 
 const TesterVirtualDesktop = () => {
   const [activeOs, setActiveOs] = React.useState<'windows' | 'linux'>('windows');
-  const [vmStatus, setVmStatus] = useState<VMStatus | null>(null);
+  const [userVMs, setUserVMs] = useState<UserVM[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
   const [connectionUrls, setConnectionUrls] = useState<{windows?: string, linux?: string}>({});
@@ -23,7 +22,7 @@ const TesterVirtualDesktop = () => {
   const [vmStartTime, setVmStartTime] = useState<{windows?: Date, linux?: Date}>({});
 
   useEffect(() => {
-    loadVMStatus();
+    loadUserVMs();
     
     // Clear timers on component unmount
     return () => {
@@ -33,21 +32,32 @@ const TesterVirtualDesktop = () => {
     };
   }, []);
 
-  const loadVMStatus = async () => {
+  const loadUserVMs = async () => {
     try {
-      const status = await vmService.getVMStatus();
-      setVmStatus(status);
+      const response = await vmService.getUserVMs();
+      setUserVMs(response.vms);
+      
+      // Process VM data and set status
+      const windowsVM = response.vms.find(vm => vm.instance_os.toLowerCase() === 'windows');
+      const linuxVM = response.vms.find(vm => vm.instance_os.toLowerCase() === 'linux');
       
       // Check if VMs are already running
-      if (status.windows?.toLowerCase() === 'running') {
+      if (windowsVM && windowsVM.status.toLowerCase() === 'running') {
         setCanConnect(prev => ({ ...prev, windows: true }));
+        if (windowsVM.guacamole_url) {
+          setConnectionUrls(prev => ({ ...prev, windows: windowsVM.guacamole_url || undefined }));
+        }
       }
-      if (status.linux?.toLowerCase() === 'running') {
+      
+      if (linuxVM && linuxVM.status.toLowerCase() === 'running') {
         setCanConnect(prev => ({ ...prev, linux: true }));
+        if (linuxVM.guacamole_url) {
+          setConnectionUrls(prev => ({ ...prev, linux: linuxVM.guacamole_url || undefined }));
+        }
       }
     } catch (error) {
-      toast.error("Failed to load VM status", {
-        description: "Could not retrieve the current status of your virtual machines."
+      toast.error("Failed to load VM data", {
+        description: "Could not retrieve information about your virtual machines."
       });
     } finally {
       setIsLoading(false);
@@ -91,6 +101,9 @@ const TesterVirtualDesktop = () => {
             toast.success(`VM Ready`, {
               description: `Your ${activeOs} VM is now ready to connect.`,
             });
+
+            // Reload VM data
+            loadUserVMs();
           }, 60000); // 60 seconds = 1 minute
           
           setConnectTimers(prev => ({ ...prev, [activeOs]: timer }));
@@ -112,6 +125,9 @@ const TesterVirtualDesktop = () => {
             clearTimeout(connectTimers[activeOs]);
             setConnectTimers(prev => ({ ...prev, [activeOs]: undefined }));
           }
+
+          // Reload VM data
+          loadUserVMs();
           break;
           
         case 'Restart':
@@ -144,6 +160,9 @@ const TesterVirtualDesktop = () => {
             toast.success(`VM Ready`, {
               description: `Your ${activeOs} VM is now ready to connect.`,
             });
+
+            // Reload VM data
+            loadUserVMs();
           }, 60000); // 60 seconds = 1 minute
           
           setConnectTimers(prev => ({ ...prev, [activeOs]: restartTimer }));
@@ -151,14 +170,6 @@ const TesterVirtualDesktop = () => {
           
         default:
           return;
-      }
-
-      // Refresh VM status
-      await loadVMStatus();
-
-      // If we got a URL back from starting the VM, store it (but don't connect yet)
-      if (response.URL) {
-        setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
       }
     } catch (error) {
       toast.error(`Failed to ${action.toLowerCase()} VM`, {
@@ -186,6 +197,12 @@ const TesterVirtualDesktop = () => {
     const remainingSeconds = Math.max(0, 60 - elapsedSeconds);
     
     return remainingSeconds;
+  };
+
+  // Find VM status for current OS
+  const getVmStatus = (os: 'windows' | 'linux') => {
+    const vm = userVMs.find(vm => vm.instance_os.toLowerCase() === os.toLowerCase());
+    return vm?.status || 'Not Available';
   };
 
   if (isLoading) {
@@ -239,10 +256,10 @@ const TesterVirtualDesktop = () => {
                       <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
-                          vmStatus?.windows?.toLowerCase() === 'running' ? 'text-green-500' : 
+                          getVmStatus('windows').toLowerCase() === 'running' ? 'text-green-500' : 
                           'text-amber-500'
                         }>
-                          {vmStatus?.windows || 'Not Available'}
+                          {getVmStatus('windows')}
                         </span>
                       </p>
                     </div>
@@ -252,7 +269,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
-                        disabled={vmStatus?.windows?.toLowerCase() === 'running' || actionInProgress}
+                        disabled={getVmStatus('windows').toLowerCase() === 'running' || actionInProgress}
                       >
                         {actionInProgress && activeOs === 'windows' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -264,7 +281,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
-                        disabled={vmStatus?.windows?.toLowerCase() !== 'running' || actionInProgress}
+                        disabled={getVmStatus('windows').toLowerCase() !== 'running' || actionInProgress}
                       >
                         {actionInProgress && activeOs === 'windows' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -274,7 +291,7 @@ const TesterVirtualDesktop = () => {
                     </div>
                   </div>
                   
-                  {vmStatus?.windows?.toLowerCase() === 'running' && !canConnect.windows && (
+                  {getVmStatus('windows').toLowerCase() === 'running' && !canConnect.windows && (
                     <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
@@ -293,15 +310,15 @@ const TesterVirtualDesktop = () => {
                   
                   <Button 
                     className="w-full bg-primary/80 hover:bg-primary text-primary-foreground mt-4"
-                    disabled={!canConnect.windows || vmStatus?.windows?.toLowerCase() !== 'running' || !connectionUrls.windows}
+                    disabled={!canConnect.windows || getVmStatus('windows').toLowerCase() !== 'running' || !connectionUrls.windows}
                     onClick={handleConnect}
                   >
-                    {!canConnect.windows && vmStatus?.windows?.toLowerCase() === 'running' ? (
+                    {!canConnect.windows && getVmStatus('windows').toLowerCase() === 'running' ? (
                       <>
                         <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
                         Preparing connection...
                       </>
-                    ) : vmStatus?.windows?.toLowerCase() === 'running' ? (
+                    ) : getVmStatus('windows').toLowerCase() === 'running' ? (
                       'Connect to Desktop'
                     ) : (
                       'Start VM to Connect'
@@ -318,10 +335,10 @@ const TesterVirtualDesktop = () => {
                       <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
-                          vmStatus?.linux?.toLowerCase() === 'running' ? 'text-green-500' : 
+                          getVmStatus('linux').toLowerCase() === 'running' ? 'text-green-500' : 
                           'text-amber-500'
                         }>
-                          {vmStatus?.linux || 'Not Available'}
+                          {getVmStatus('linux')}
                         </span>
                       </p>
                     </div>
@@ -331,7 +348,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
-                        disabled={vmStatus?.linux?.toLowerCase() === 'running' || actionInProgress}
+                        disabled={getVmStatus('linux').toLowerCase() === 'running' || actionInProgress}
                       >
                         {actionInProgress && activeOs === 'linux' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -343,7 +360,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
-                        disabled={vmStatus?.linux?.toLowerCase() !== 'running' || actionInProgress}
+                        disabled={getVmStatus('linux').toLowerCase() !== 'running' || actionInProgress}
                       >
                         {actionInProgress && activeOs === 'linux' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -353,7 +370,7 @@ const TesterVirtualDesktop = () => {
                     </div>
                   </div>
                   
-                  {vmStatus?.linux?.toLowerCase() === 'running' && !canConnect.linux && (
+                  {getVmStatus('linux').toLowerCase() === 'running' && !canConnect.linux && (
                     <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
@@ -372,15 +389,15 @@ const TesterVirtualDesktop = () => {
                   
                   <Button 
                     className="w-full bg-primary/80 hover:bg-primary text-primary-foreground mt-4"
-                    disabled={!canConnect.linux || vmStatus?.linux?.toLowerCase() !== 'running' || !connectionUrls.linux}
+                    disabled={!canConnect.linux || getVmStatus('linux').toLowerCase() !== 'running' || !connectionUrls.linux}
                     onClick={handleConnect}
                   >
-                    {!canConnect.linux && vmStatus?.linux?.toLowerCase() === 'running' ? (
+                    {!canConnect.linux && getVmStatus('linux').toLowerCase() === 'running' ? (
                       <>
                         <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
                         Preparing connection...
                       </>
-                    ) : vmStatus?.linux?.toLowerCase() === 'running' ? (
+                    ) : getVmStatus('linux').toLowerCase() === 'running' ? (
                       'Connect to Desktop'
                     ) : (
                       'Start VM to Connect'
@@ -428,7 +445,7 @@ const TesterVirtualDesktop = () => {
                 <Button 
                   variant="outline" 
                   className="w-full border-input hover:bg-background"
-                  onClick={loadVMStatus}
+                  onClick={loadUserVMs}
                 >
                   Refresh Status
                 </Button>

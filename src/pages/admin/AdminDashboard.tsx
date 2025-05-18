@@ -59,31 +59,46 @@ const AdminDashboard = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/admin/user/get-all-users');
+        console.log('API response for users:', response.data);
+        
+        let usersArray = [];
+        
+        // Handle different response formats
+        if (response.data && Array.isArray(response.data)) {
+          // Direct array response
+          usersArray = response.data;
+        } else if (response.data && response.data.users && Array.isArray(response.data.users)) {
+          // Wrapped in users object
+          usersArray = response.data.users;
+        } else {
+          console.error('Unexpected API response format:', response.data);
+          return { active: [], inactive: [] };
+        }
         
         // Transform API data to required format
-        const activeUsers = response.data.filter((user: any) => 
-          user.status.toLowerCase() === 'active'
-        ).map((user: any) => ({
-          id: user.id || user.employee_id,
-          name: user.name,
-          role: user.role,
-          status: user.status,
-          email: user.email,
-          lastLogin: user.last_login || 'Never',
-          employee_id: user.employee_id
-        }));
+        const activeUsers = usersArray
+          .filter((user: any) => user.status && user.status.toLowerCase() === 'active')
+          .map((user: any) => ({
+            id: user.id || user.employee_id,
+            name: user.name,
+            role: user.role,
+            status: user.status,
+            email: user.email,
+            lastLogin: user.last_login || 'Never',
+            employee_id: user.employee_id
+          }));
         
-        const inactiveUsers = response.data.filter((user: any) => 
-          user.status.toLowerCase() !== 'active'
-        ).map((user: any) => ({
-          id: user.id || user.employee_id,
-          name: user.name,
-          role: user.role,
-          status: user.status,
-          email: user.email,
-          lastLogin: user.last_login || 'Never',
-          employee_id: user.employee_id
-        }));
+        const inactiveUsers = usersArray
+          .filter((user: any) => !user.status || user.status.toLowerCase() !== 'active')
+          .map((user: any) => ({
+            id: user.id || user.employee_id,
+            name: user.name,
+            role: user.role,
+            status: user.status || 'Inactive',
+            email: user.email,
+            lastLogin: user.last_login || 'Never',
+            employee_id: user.employee_id
+          }));
         
         return { active: activeUsers, inactive: inactiveUsers };
       } catch (error) {
