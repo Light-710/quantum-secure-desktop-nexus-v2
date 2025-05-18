@@ -28,10 +28,27 @@ export interface AllVMsResponse {
   vms: VMInfo[];
 }
 
+export interface UserVM {
+  instance_id: string;
+  instance_os: string;
+  guacamole_url: string | null;
+  status: string;
+}
+
+export interface UserVMsResponse {
+  vms: UserVM[];
+}
+
 export const vmService = {
   // Get all VMs for admin view
   getAllVMs: async (): Promise<AllVMsResponse> => {
     const response = await api.get('/admin/vm/get-all-vms');
+    return response.data;
+  },
+
+  // Get VMs for the current user
+  getUserVMs: async (): Promise<UserVMsResponse> => {
+    const response = await api.get('/vm/get-vms');
     return response.data;
   },
 
