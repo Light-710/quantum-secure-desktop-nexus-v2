@@ -287,7 +287,7 @@ const AdminDashboard = () => {
                 variant="outline" 
                 size="sm"
                 className="w-full border-[#D6D2C9] hover:bg-[#F7F5F2]"
-                onClick={() => navigate('/dashboard/admin/virtual-desktops')}
+                onClick={() => navigate('/dashboard/admin/vm')}
               >
                 View All VMs
               </Button>

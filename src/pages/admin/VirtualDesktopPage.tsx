@@ -273,7 +273,7 @@ const VirtualDesktopPage = () => {
                       <TableCell className="text-sm text-cyber-gray">
                         <div>
                           <div>{vm.user_name || 'N/A'}</div>
-                          <div className="text-xs opacity-70">{vm.assigned_user}</div>
+                          <div className="text-xs opacity-70">ID: {vm.assigned_user}</div>
                         </div>
                       </TableCell>
 

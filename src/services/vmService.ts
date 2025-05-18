@@ -42,7 +42,7 @@ export interface UserVMsResponse {
 export const vmService = {
   // Get all VMs for admin view
   getAllVMs: async (): Promise<AllVMsResponse> => {
-    const response = await api.get('/vm/get-vms');
+    const response = await api.get('/admin/vm/get-all-vms');
     return response.data;
   },
 
