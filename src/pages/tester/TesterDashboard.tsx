@@ -20,7 +20,7 @@ const TesterDashboard = () => {
     queryKey: ['tester-projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/project/tester-projects/${user?.employee_id}`);
+        const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
         console.error('Failed to fetch projects:', error);
@@ -153,7 +153,7 @@ const TesterDashboard = () => {
                     <div key={project.id} className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
                       <h4 className="text-cyber-teal font-medium">{project.name}</h4>
                       <div className="flex justify-between text-sm mt-1">
-                        <span className="text-cyber-gray">ID: {project.id}</span>
+                        <span className="text-cyber-gray">{project.description}</span>
                         <span className={
                           project.status === 'In Progress' 
                             ? 'text-cyber-blue' 
