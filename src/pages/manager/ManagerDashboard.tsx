@@ -20,7 +20,7 @@ const ManagerDashboard = () => {
     queryKey: ['manager-projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/project/manager-projects/${user?.employee_id}`);
+        const response = await api.get(`/project/get-projects`);
         return response.data || [];
       } catch (error) {
         console.error('Failed to fetch projects:', error);
@@ -133,10 +133,7 @@ const ManagerDashboard = () => {
                         <span className="ml-3 text-warm-100">{project.name}</span>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        project.status === 'In Progress' 
-                          ? 'bg-blue-500/20 text-blue-500' 
-                          : project.status === 'Completed' 
-                            ? 'bg-green-500/20 text-green-500' 
+                        project.status.toLowerCase() === 'in progress' ? 'bg-blue-500/20 text-blue-500' : project.status.toLowerCase() === 'complete' ? 'bg-green-500/20 text-green-500' 
                             : 'bg-yellow-500/20 text-yellow-500'
                       }`}>
                         {project.status}
