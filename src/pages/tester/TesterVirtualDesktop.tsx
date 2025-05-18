@@ -4,13 +4,12 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from '@/components/ui/sonner';
 import { Monitor, Server } from 'lucide-react';
 import { vmService } from '@/services/vmService';
 import type { VMStatus } from '@/services/vmService';
 
 const TesterVirtualDesktop = () => {
-  const { toast } = useToast();
   const [activeOs, setActiveOs] = React.useState<'windows' | 'linux'>('windows');
   const [vmStatus, setVmStatus] = useState<VMStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,10 +46,8 @@ const TesterVirtualDesktop = () => {
         setCanConnect(prev => ({ ...prev, linux: true }));
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load VM status",
-        variant: "destructive",
+      toast.error("Failed to load VM status", {
+        description: "Could not retrieve the current status of your virtual machines."
       });
     } finally {
       setIsLoading(false);
@@ -65,6 +62,11 @@ const TesterVirtualDesktop = () => {
       let response;
       switch (action) {
         case 'Start':
+          // Show immediate toast about starting
+          toast.info(`Starting ${activeOs} VM`, {
+            description: "This will take about a minute. Please wait."
+          });
+          
           response = await vmService.startVM(activeOs);
           
           // Clear any existing timer
@@ -86,8 +88,7 @@ const TesterVirtualDesktop = () => {
             // Clear timer reference
             setConnectTimers(prev => ({ ...prev, [activeOs]: undefined }));
             
-            toast({
-              title: `VM Ready`,
+            toast.success(`VM Ready`, {
               description: `Your ${activeOs} VM is now ready to connect.`,
             });
           }, 60000); // 60 seconds = 1 minute
@@ -97,6 +98,10 @@ const TesterVirtualDesktop = () => {
           
         case 'Stop':
           response = await vmService.stopVM(activeOs);
+          toast.info(`${activeOs} VM stopped`, {
+            description: response.message || "Virtual machine has been stopped successfully."
+          });
+          
           // Reset connection state
           setCanConnect(prev => ({ ...prev, [activeOs]: false }));
           setConnectionUrls(prev => ({ ...prev, [activeOs]: undefined }));
@@ -110,6 +115,10 @@ const TesterVirtualDesktop = () => {
           break;
           
         case 'Restart':
+          toast.info(`Restarting ${activeOs} VM`, {
+            description: "This will take about a minute. Please wait."
+          });
+          
           response = await vmService.restartVM(activeOs);
           
           // Reset connection state temporarily
@@ -132,8 +141,7 @@ const TesterVirtualDesktop = () => {
             // Clear timer reference
             setConnectTimers(prev => ({ ...prev, [activeOs]: undefined }));
             
-            toast({
-              title: `VM Ready`,
+            toast.success(`VM Ready`, {
               description: `Your ${activeOs} VM is now ready to connect.`,
             });
           }, 60000); // 60 seconds = 1 minute
@@ -145,11 +153,6 @@ const TesterVirtualDesktop = () => {
           return;
       }
 
-      toast({
-        title: `VM ${action} Initiated`,
-        description: response.message,
-      });
-
       // Refresh VM status
       await loadVMStatus();
 
@@ -158,10 +161,8 @@ const TesterVirtualDesktop = () => {
         setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: `Failed to ${action.toLowerCase()} VM`,
-        variant: "destructive",
+      toast.error(`Failed to ${action.toLowerCase()} VM`, {
+        description: "An error occurred while managing your virtual machine. Please try again."
       });
     } finally {
       setActionInProgress(false);
@@ -191,7 +192,7 @@ const TesterVirtualDesktop = () => {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-warm-200"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
         </div>
       </DashboardLayout>
     );
@@ -199,47 +200,47 @@ const TesterVirtualDesktop = () => {
 
   return (
     <DashboardLayout>
-      <Card className="border-warm-100/30 mb-6 bg-gradient-to-b from-warm-50 to-white">
+      <Card className="border-primary/10 mb-6 bg-background/80 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-2xl text-warm-300">Virtual Desktop Access</CardTitle>
-          <CardDescription className="text-warm-200">
+          <CardTitle className="text-2xl text-primary/80">Virtual Desktop Access</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Connect to your secure testing environment
           </CardDescription>
         </CardHeader>
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-warm-100/30 h-full bg-white">
+        <Card className="border-primary/10 h-full bg-background/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl text-warm-300 flex items-center">
-              <Monitor className="mr-2 text-warm-100" size={20} />
+            <CardTitle className="text-xl text-primary/80 flex items-center">
+              <Monitor className="mr-2 text-muted-foreground" size={20} />
               Virtual Desktop Console
             </CardTitle>
-            <CardDescription className="text-warm-200">
+            <CardDescription className="text-muted-foreground">
               Select your preferred operating system and connect to your virtual environment
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="windows" onValueChange={(value) => setActiveOs(value as 'windows' | 'linux')}>
-              <TabsList className="grid w-full grid-cols-2 mb-4 bg-warm-50">
-                <TabsTrigger value="windows" className="data-[state=active]:bg-warm-100/20 data-[state=active]:text-warm-300">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="windows">
                   Windows
                 </TabsTrigger>
-                <TabsTrigger value="linux" className="data-[state=active]:bg-warm-100/20 data-[state=active]:text-warm-300">
+                <TabsTrigger value="linux">
                   Linux
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="windows" className="border rounded-md border-warm-100/20 p-4 bg-warm-50/20">
+              <TabsContent value="windows" className="border rounded-md border-input p-4 bg-card/50">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-warm-300 font-medium">Windows VM</h4>
-                      <p className="text-sm text-warm-200">
+                      <h4 className="text-primary/80 font-medium">Windows VM</h4>
+                      <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
                           vmStatus?.windows?.toLowerCase() === 'running' ? 'text-green-500' : 
-                          'text-yellow-500'
+                          'text-amber-500'
                         }>
                           {vmStatus?.windows || 'Not Available'}
                         </span>
@@ -249,29 +250,35 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-warm-100/30 hover:bg-warm-100/20 hover:text-warm-300"
+                        className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
                         disabled={vmStatus?.windows?.toLowerCase() === 'running' || actionInProgress}
                       >
+                        {actionInProgress && activeOs === 'windows' ? (
+                          <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        ) : null}
                         Start
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-warm-100/30 hover:bg-warm-300/20 hover:text-warm-300"
+                        className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
                         disabled={vmStatus?.windows?.toLowerCase() !== 'running' || actionInProgress}
                       >
+                        {actionInProgress && activeOs === 'windows' ? (
+                          <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        ) : null}
                         Stop
                       </Button>
                     </div>
                   </div>
                   
                   {vmStatus?.windows?.toLowerCase() === 'running' && !canConnect.windows && (
-                    <div className="mt-3 p-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200">
+                    <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
-                          <div className="w-8 h-8 border-4 border-yellow-200 border-t-yellow-500 rounded-full animate-spin"></div>
+                          <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
                           <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
                             {getRemainingTime('windows')}
                           </div>
@@ -285,30 +292,34 @@ const TesterVirtualDesktop = () => {
                   )}
                   
                   <Button 
-                    className="w-full bg-warm-200 hover:bg-warm-300 text-white mt-4"
+                    className="w-full bg-primary/80 hover:bg-primary text-primary-foreground mt-4"
                     disabled={!canConnect.windows || vmStatus?.windows?.toLowerCase() !== 'running' || !connectionUrls.windows}
                     onClick={handleConnect}
                   >
-                    {!canConnect.windows && vmStatus?.windows?.toLowerCase() === 'running'
-                      ? 'Preparing connection...'
-                      : vmStatus?.windows?.toLowerCase() === 'running'
-                        ? 'Connect to Desktop'
-                        : 'Start VM to Connect'
-                    }
+                    {!canConnect.windows && vmStatus?.windows?.toLowerCase() === 'running' ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        Preparing connection...
+                      </>
+                    ) : vmStatus?.windows?.toLowerCase() === 'running' ? (
+                      'Connect to Desktop'
+                    ) : (
+                      'Start VM to Connect'
+                    )}
                   </Button>
                 </div>
               </TabsContent>
               
-              <TabsContent value="linux" className="border rounded-md border-warm-100/20 p-4 bg-warm-50/20">
+              <TabsContent value="linux" className="border rounded-md border-input p-4 bg-card/50">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-warm-300 font-medium">Linux VM</h4>
-                      <p className="text-sm text-warm-200">
+                      <h4 className="text-primary/80 font-medium">Linux VM</h4>
+                      <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
                           vmStatus?.linux?.toLowerCase() === 'running' ? 'text-green-500' : 
-                          'text-yellow-500'
+                          'text-amber-500'
                         }>
                           {vmStatus?.linux || 'Not Available'}
                         </span>
@@ -318,29 +329,35 @@ const TesterVirtualDesktop = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-warm-100/30 hover:bg-warm-100/20 hover:text-warm-300"
+                        className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
                         disabled={vmStatus?.linux?.toLowerCase() === 'running' || actionInProgress}
                       >
+                        {actionInProgress && activeOs === 'linux' ? (
+                          <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        ) : null}
                         Start
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        className="border-warm-100/30 hover:bg-warm-300/20 hover:text-warm-300"
+                        className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
                         disabled={vmStatus?.linux?.toLowerCase() !== 'running' || actionInProgress}
                       >
+                        {actionInProgress && activeOs === 'linux' ? (
+                          <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        ) : null}
                         Stop
                       </Button>
                     </div>
                   </div>
                   
                   {vmStatus?.linux?.toLowerCase() === 'running' && !canConnect.linux && (
-                    <div className="mt-3 p-2 bg-yellow-50 text-yellow-700 rounded border border-yellow-200">
+                    <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
-                          <div className="w-8 h-8 border-4 border-yellow-200 border-t-yellow-500 rounded-full animate-spin"></div>
+                          <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
                           <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
                             {getRemainingTime('linux')}
                           </div>
@@ -354,16 +371,20 @@ const TesterVirtualDesktop = () => {
                   )}
                   
                   <Button 
-                    className="w-full bg-warm-200 hover:bg-warm-300 text-white mt-4"
+                    className="w-full bg-primary/80 hover:bg-primary text-primary-foreground mt-4"
                     disabled={!canConnect.linux || vmStatus?.linux?.toLowerCase() !== 'running' || !connectionUrls.linux}
                     onClick={handleConnect}
                   >
-                    {!canConnect.linux && vmStatus?.linux?.toLowerCase() === 'running'
-                      ? 'Preparing connection...'
-                      : vmStatus?.linux?.toLowerCase() === 'running'
-                        ? 'Connect to Desktop'
-                        : 'Start VM to Connect'
-                    }
+                    {!canConnect.linux && vmStatus?.linux?.toLowerCase() === 'running' ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                        Preparing connection...
+                      </>
+                    ) : vmStatus?.linux?.toLowerCase() === 'running' ? (
+                      'Connect to Desktop'
+                    ) : (
+                      'Start VM to Connect'
+                    )}
                   </Button>
                 </div>
               </TabsContent>
@@ -371,21 +392,21 @@ const TesterVirtualDesktop = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-warm-100/30 h-full bg-white">
+        <Card className="border-primary/10 h-full bg-background/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl text-warm-300 flex items-center">
-              <Server className="mr-2 text-warm-100" size={20} />
+            <CardTitle className="text-xl text-primary/80 flex items-center">
+              <Server className="mr-2 text-muted-foreground" size={20} />
               User Guide
             </CardTitle>
-            <CardDescription className="text-warm-200">
+            <CardDescription className="text-muted-foreground">
               How to use your virtual desktop environment
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="border border-warm-100/20 rounded-md p-3 bg-warm-50/20">
-                <h4 className="text-warm-300 font-medium">Getting Started</h4>
-                <ul className="text-sm text-warm-200 mt-2 space-y-2 list-disc pl-4">
+              <div className="border border-input rounded-md p-3 bg-card/50">
+                <h4 className="text-primary/80 font-medium">Getting Started</h4>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-2 list-disc pl-4">
                   <li>Start your desired VM using the controls on the left</li>
                   <li>Wait for the VM to initialize (approximately 1 minute)</li>
                   <li>Click 'Connect to Desktop' when available</li>
@@ -393,9 +414,9 @@ const TesterVirtualDesktop = () => {
                 </ul>
               </div>
               
-              <div className="border border-warm-100/20 rounded-md p-3 bg-warm-50/20">
-                <h4 className="text-warm-300 font-medium">Best Practices</h4>
-                <ul className="text-sm text-warm-200 mt-2 space-y-2 list-disc pl-4">
+              <div className="border border-input rounded-md p-3 bg-card/50">
+                <h4 className="text-primary/80 font-medium">Best Practices</h4>
+                <ul className="text-sm text-muted-foreground mt-2 space-y-2 list-disc pl-4">
                   <li>Always shut down your VM when not in use</li>
                   <li>Save your work frequently</li>
                   <li>Report any connection or performance issues to your manager</li>
@@ -406,7 +427,7 @@ const TesterVirtualDesktop = () => {
               <div className="pt-2">
                 <Button 
                   variant="outline" 
-                  className="w-full border-warm-100/30 hover:bg-warm-50"
+                  className="w-full border-input hover:bg-background"
                   onClick={loadVMStatus}
                 >
                   Refresh Status

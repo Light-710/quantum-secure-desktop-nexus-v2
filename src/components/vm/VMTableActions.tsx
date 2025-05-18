@@ -43,7 +43,7 @@ export const VMTableActions = ({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+            className="h-8 w-8 p-0 border-primary/30 hover:bg-destructive/20 hover:text-destructive"
             onClick={() => onAction(vmId, 'Stop', instanceOs, employeeId)}
             disabled={actionLoading === vmId}
             title="Stop VM"
@@ -59,7 +59,7 @@ export const VMTableActions = ({
             <Button
               variant="outline"
               size="sm"
-              className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+              className="h-8 w-8 p-0 border-primary/30 hover:bg-green-500/20 hover:text-green-500"
               onClick={handleConnect}
               title="Connect to VM"
             >
@@ -71,7 +71,7 @@ export const VMTableActions = ({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-green-400/20 hover:text-green-400"
+          className="h-8 w-8 p-0 border-primary/30 hover:bg-green-500/20 hover:text-green-500"
           onClick={() => onAction(vmId, 'Start', instanceOs, employeeId)}
           disabled={actionLoading === vmId}
           title="Start VM"
@@ -88,7 +88,7 @@ export const VMTableActions = ({
       <Button
         variant="outline"
         size="sm"
-        className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+        className="h-8 w-8 p-0 border-primary/30 hover:bg-primary/20 hover:text-primary"
         onClick={onViewDetails}
         title="View Details"
       >
@@ -101,7 +101,7 @@ export const VMTableActions = ({
         <Button
           variant="outline"
           size="sm"
-          className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+          className="h-8 w-8 p-0 border-primary/30 hover:bg-blue-500/20 hover:text-blue-500"
           onClick={() => onAction(vmId, 'Restart', instanceOs, employeeId)}
           disabled={actionLoading === vmId}
           title="Restart VM"

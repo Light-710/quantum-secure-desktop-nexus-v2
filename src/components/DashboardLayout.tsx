@@ -1,165 +1,156 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, LogOut, LayoutDashboard, Users, Monitor, Activity, Database, Bell, MessageCircle, FolderOpen } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useMobile } from '@/hooks/use-mobile';
+import {
+  LayoutDashboard,
+  MessageSquare,
+  Monitor,
+  LogOut,
+  Menu,
+  X,
+  Users,
+  Settings,
+  FolderKanban,
+} from 'lucide-react';
 
-type DashboardLayoutProps = {
-  children: React.ReactNode;
-};
-
-const DashboardLayout = ({ children }: DashboardLayoutProps) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isMobile = useMobile();
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase();
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
-  const getNavItems = () => {
-    const roleItems = {
-      Tester: [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/tester' },
-        { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/tester/desktop' },
-        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/tester/chat' },
-      ],
-      Manager: [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/manager' },
-        { name: 'Projects', icon: <Activity size={20} />, path: '/dashboard/manager/projects' },
-        { name: 'Team', icon: <Users size={20} />, path: '/dashboard/manager/team' },
-        { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/manager/virtual-desktops' },
-        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/manager/chat' },
-      ],
-      Admin: [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/admin' },
-        { name: 'Users', icon: <Users size={20} />, path: '/dashboard/admin/users' },
-        { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/admin/virtual-desktops' },
-        { name: 'Projects', icon: <FolderOpen size={20} />, path: '/dashboard/admin/projects' },
-        { name: 'Chats', icon: <MessageCircle size={20} />, path: '/dashboard/admin/chats' },
-      ],
-    };
+  const managerLinks = [
+    { name: 'Dashboard', path: '/dashboard/manager', icon: <LayoutDashboard size={20} /> },
+    { name: 'Projects', path: '/dashboard/manager/projects', icon: <FolderKanban size={20} /> },
+    { name: 'Team', path: '/dashboard/manager/team', icon: <Users size={20} /> },
+    { name: 'Chat', path: '/dashboard/manager/chat', icon: <MessageSquare size={20} /> },
+    { name: 'Virtual Desktop', path: '/dashboard/manager/desktop', icon: <Monitor size={20} /> },
+  ];
 
-    return user?.role ? roleItems[user.role as keyof typeof roleItems] || [] : [];
+  const testerLinks = [
+    { name: 'Dashboard', path: '/dashboard/tester', icon: <LayoutDashboard size={20} /> },
+    { name: 'Projects', path: '/dashboard/tester/projects', icon: <FolderKanban size={20} /> },
+    { name: 'Chat', path: '/dashboard/tester/chat', icon: <MessageSquare size={20} /> },
+    { name: 'Virtual Desktop', path: '/dashboard/tester/desktop', icon: <Monitor size={20} /> },
+  ];
+  
+  const adminLinks = [
+    { name: 'Dashboard', path: '/dashboard/admin', icon: <LayoutDashboard size={20} /> },
+    { name: 'Projects', path: '/dashboard/admin/projects', icon: <FolderKanban size={20} /> },
+    { name: 'Users', path: '/dashboard/admin/users', icon: <Users size={20} /> },
+    { name: 'Virtual Desktop', path: '/dashboard/admin/vm', icon: <Monitor size={20} /> },
+    { name: 'Settings', path: '/dashboard/admin/settings', icon: <Settings size={20} /> },
+  ];
+
+  let links = testerLinks; // Default to tester links
+  
+  if (user?.role === 'Manager') {
+    links = managerLinks;
+  } else if (user?.role === 'Admin') {
+    links = adminLinks;
+  }
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   return (
-    <div className="dashboard-layout">
-      <aside className={`bg-[#FCFAF7] border-r border-[#D6D2C9] h-screen fixed top-0 left-0 z-30 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'}`}>
-        <div className="flex flex-col h-full">
-          <div className="p-4 flex items-center justify-center">
-            <Link to={`/dashboard/${user?.role?.toLowerCase()}`} className="flex items-center">
-              <span className={`text-2xl font-bold text-[#C47D5F] ${isSidebarOpen ? 'block' : 'hidden'}`}>PTNG</span>
-              <span className={`text-2xl font-bold text-[#C47D5F] ${isSidebarOpen ? 'hidden' : 'block'}`}>P</span>
-            </Link>
-          </div>
-          
-          <button 
-            className="absolute -right-3 top-6 bg-[#FCFAF7] border border-[#D6D2C9] rounded-full p-1"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <svg 
-              className={`w-3 h-3 text-[#5F5D58] transition-transform ${isSidebarOpen ? 'rotate-0' : 'rotate-180'}`} 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                fill="currentColor" 
-                d={isSidebarOpen ? 'M15 6L9 12L15 18' : 'M9 6L15 12L9 18'}
-              />
-            </svg>
-          </button>
-          
-          <Separator className="my-4 bg-[#D6D2C9]" />
-          
-          <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-            {getNavItems().map((item, index) => (
-              <Link 
-                key={index}
-                to={item.path}
-                className="flex items-center px-4 py-3 text-[#5F5D58] hover:text-[#C47D5F] hover:bg-[#F7F5F2] rounded-md transition-colors"
+    <div className="flex h-screen bg-warm-50">
+      {/* Sidebar for desktop */}
+      <aside
+        className={`fixed inset-y-0 z-50 flex flex-col w-64 transition-transform duration-300 bg-white border-r border-warm-100/30 shadow-sm ${
+          sidebarOpen || !isMobile ? 'translate-x-0' : '-translate-x-full'
+        } lg:relative lg:translate-x-0`}
+      >
+        <div className="flex items-center justify-between h-16 px-4 border-b border-warm-100/30">
+          <Link to="/" className="flex items-center space-x-2">
+            <span className="text-xl font-bold text-warm-300">PenTest NG</span>
+          </Link>
+          {isMobile && (
+            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+              <X size={20} />
+            </Button>
+          )}
+        </div>
+
+        <div className="flex flex-col flex-grow p-4 overflow-y-auto">
+          <nav className="flex flex-col flex-grow space-y-1">
+            {links.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center px-4 py-3 text-sm rounded-lg ${
+                  location.pathname === link.path
+                    ? 'bg-warm-100/30 text-warm-300 font-medium'
+                    : 'text-warm-200 hover:bg-warm-50 hover:text-warm-300'
+                }`}
               >
-                <span className="text-[#A8A39D]">{item.icon}</span>
-                {isSidebarOpen && <span className="ml-3">{item.name}</span>}
+                <span className="mr-3 text-warm-200">{link.icon}</span>
+                {link.name}
               </Link>
             ))}
           </nav>
-          
-          <div className="p-4 border-t border-[#D6D2C9]">
-            <div className="flex items-center">
-              <Avatar className="h-10 w-10 border border-[#D6D2C9]">
-                <AvatarImage src={user?.profile_picture} />
-                <AvatarFallback className="bg-[#C47D5F]/10 text-[#C47D5F]">
-                  {user?.name ? getInitials(user.name) : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              {isSidebarOpen && (
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-[#3E3D3A] truncate max-w-[140px]">{user?.name}</p>
-                  <p className="text-xs text-[#A8A39D]">
-                    <span className={`
-                      inline-block w-2 h-2 rounded-full mr-1 
-                      ${user?.role === 'Admin' ? 'bg-[#A84332]' : 
-                        user?.role === 'Manager' ? 'bg-[#8A9B6E]' : 
-                        user?.role === 'Tester' ? 'bg-[#C47D5F]' : 'bg-[#C47D5F]'}
-                    `}></span>
-                    {user?.role}
-                  </p>
-                </div>
-              )}
+
+          <div className="mt-auto pt-4 border-t border-warm-100/20">
+            <div className="px-4 py-2">
+              <p className="text-xs text-warm-200">Signed in as</p>
+              <p className="text-sm font-medium text-warm-300">{user?.name}</p>
+              <p className="text-xs text-warm-200">{user?.email}</p>
+              <p className="text-xs font-medium mt-1 text-warm-200">{user?.role}</p>
             </div>
-            <div className={`mt-4 flex ${isSidebarOpen ? 'justify-between' : 'justify-center'}`}>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
-                onClick={() => navigate(`/dashboard/${user?.role?.toLowerCase()}`)}
-              >
-                <Settings size={18} />
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#A84332]/10 hover:text-[#A84332]"
-                onClick={logout}
-              >
-                <LogOut size={18} />
-              </Button>
+
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-4 py-2 mt-2 text-warm-200 hover:bg-warm-50 hover:text-warm-300"
+              onClick={handleLogout}
+            >
+              <LogOut size={16} className="mr-2" />
+              Logout
+            </Button>
+
+            <div className="mt-2 flex justify-center">
+              <ThemeToggle />
             </div>
           </div>
         </div>
       </aside>
-      
-      <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <header className="bg-[#FCFAF7] sticky top-0 z-20 py-4 px-6 flex items-center justify-between border-b border-[#D6D2C9]">
-          <div>
-            <h1 className="text-xl font-semibold text-[#3E3D3A]">
-              {user?.role} Dashboard
-            </h1>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <Button 
-              variant="outline" 
-              size="icon"
-              className="rounded-full border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2]"
-            >
-              <Bell size={18} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#A84332] text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && isMobile && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+
+      {/* Main content */}
+      <main className="flex flex-col flex-grow overflow-hidden">
+        {/* Top bar */}
+        <header className="flex items-center h-16 px-4 bg-white border-b border-warm-100/30 shadow-sm">
+          {isMobile && (
+            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-4">
+              <Menu size={20} />
             </Button>
+          )}
+          <div className="flex-grow">
+            <h1 className="text-lg font-medium text-warm-300">
+              {location.pathname.split('/').pop()?.charAt(0).toUpperCase() + location.pathname.split('/').pop()?.slice(1) || 'Dashboard'}
+            </h1>
           </div>
         </header>
         
-        <div className="p-6 bg-[#F7F5F2]">
+        {/* Page content */}
+        <div className="flex-grow p-4 overflow-y-auto">
           {children}
         </div>
       </main>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
@@ -370,10 +371,10 @@ const ChatPanel = () => {
   const typingUserNames = typingUsers.map(t => t.user);
 
   return (
-    <Card className="h-full border-warm-100/30 bg-white">
+    <Card className="h-full border-primary/10 bg-background/80 backdrop-blur-sm">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl text-warm-300 flex items-center gap-2">
-          <MessageCircle className="text-warm-200" size={20} />
+        <CardTitle className="text-xl text-primary/80 flex items-center gap-2">
+          <MessageCircle className="text-primary/60" size={20} />
           Project Chat
         </CardTitle>
         <div className="mt-2">
@@ -390,7 +391,7 @@ const ChatPanel = () => {
             <ScrollArea className="flex-1 mb-2 pr-2" ref={scrollAreaRef}>
               {isLoadingMessages ? (
                 <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin h-8 w-8 border-2 border-warm-200 border-t-warm-300 rounded-full"></div>
+                  <div className="animate-spin h-8 w-8 border-2 border-primary/20 border-t-primary rounded-full"></div>
                 </div>
               ) : (
                 <MessageList messages={messages} />
@@ -410,7 +411,7 @@ const ChatPanel = () => {
             />
           </>
         ) : (
-          <div className="flex items-center justify-center h-full text-warm-200">
+          <div className="flex items-center justify-center h-full text-muted-foreground">
             Select a project to start chatting
           </div>
         )}

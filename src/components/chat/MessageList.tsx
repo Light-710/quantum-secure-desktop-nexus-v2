@@ -13,10 +13,15 @@ const MessageList = ({ messages }: MessageListProps) => {
   // Ensure messages is always an array
   const messageArray = Array.isArray(messages) ? messages : [];
 
+  // Sort messages chronologically - oldest first
+  const sortedMessages = [...messageArray].sort((a, b) => 
+    a.timestamp.getTime() - b.timestamp.getTime()
+  );
+
   return (
     <div className="space-y-4 pb-4">
-      {messageArray.length > 0 ? (
-        messageArray.map((message) => (
+      {sortedMessages.length > 0 ? (
+        sortedMessages.map((message) => (
           <div
             key={message.id}
             className={`flex gap-3 ${
@@ -67,11 +72,6 @@ const MessageList = ({ messages }: MessageListProps) => {
                     {message.senderRole === 'Admin' && (
                       <span className="text-xs px-1.5 py-0.5 rounded-sm bg-destructive/20 text-destructive">
                         Admin
-                      </span>
-                    )}
-                    {message.status === 'sending' && (
-                      <span className="text-xs text-warm-200 italic">
-                        sending...
                       </span>
                     )}
                   </div>

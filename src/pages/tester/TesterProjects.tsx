@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,9 +11,12 @@ import { toast } from '@/components/ui/sonner';
 import DashboardLayout from '@/components/DashboardLayout';
 import api from '@/services/api';
 import { Project } from '@/types/project';
+import ProjectDetailsDialog from '@/components/projects/ProjectDetailsDialog';
 
 const TesterProjects = () => {
   const { user } = useAuth();
+  const [selectedProject, setSelectedProject] = useState<string | number | null>(null);
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
 
   // Fetch user's assigned projects
   const { data: projects = [], isLoading } = useQuery({
@@ -44,46 +47,55 @@ const TesterProjects = () => {
     }
   };
 
+  const handleViewDetails = (projectId: string | number) => {
+    setSelectedProject(projectId);
+    setIsDetailsDialogOpen(true);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-bold text-warm-300">Your Projects</h1>
-        <p className="text-warm-200">View and manage all your assigned testing projects.</p>
+        <h1 className="text-3xl font-bold text-primary/80">Your Projects</h1>
+        <p className="text-muted-foreground">View and manage all your assigned testing projects.</p>
 
         {isLoading ? (
           <div className="flex justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-warm-200 border-t-warm-300"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary"></div>
           </div>
         ) : projects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project: Project) => (
-              <Card key={project.id} className="overflow-hidden bg-gradient-to-br from-warm-50 to-white border border-warm-100/30 shadow-sm hover:shadow-md transition-all duration-200">
+              <Card key={project.id} className="overflow-hidden bg-background/80 border-primary/10 shadow-sm hover:shadow-md transition-all duration-200">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl font-bold text-warm-300">{project.name}</CardTitle>
+                    <CardTitle className="text-xl font-bold text-primary/80">{project.name}</CardTitle>
                     <Badge className={`${getStatusColor(project.status)}`}>{project.status}</Badge>
                   </div>
-                  <CardDescription className="line-clamp-2 text-warm-200">{project.description}</CardDescription>
+                  <CardDescription className="line-clamp-2 text-muted-foreground">{project.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3 mt-2">
                     <div className="flex items-center text-sm">
-                      <Calendar className="h-4 w-4 mr-2 text-warm-200" />
-                      <span className="text-warm-200">
+                      <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                      <span className="text-muted-foreground">
                         {project.start_date ? format(new Date(project.start_date), 'MMM d, yyyy') : 'Not specified'} 
                         {project.end_date ? ` - ${format(new Date(project.end_date), 'MMM d, yyyy')}` : ''}
                       </span>
                     </div>
                     {project.manager_name && (
                       <div className="flex items-center text-sm">
-                        <Users className="h-4 w-4 mr-2 text-warm-200" />
-                        <span className="text-warm-200">Manager: {project.manager_name}</span>
+                        <Users className="h-4 w-4 mr-2 text-muted-foreground" />
+                        <span className="text-muted-foreground">Manager: {project.manager_name}</span>
                       </div>
                     )}
                   </div>
                 </CardContent>
                 <CardFooter className="pt-0 flex justify-end">
-                  <Button variant="ghost" className="text-warm-300 hover:text-warm-200 hover:bg-warm-50 p-0">
+                  <Button
+                    variant="ghost"
+                    className="text-primary/80 hover:text-primary hover:bg-primary/10 p-0"
+                    onClick={() => handleViewDetails(project.id)}
+                  >
                     View details <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </CardFooter>
@@ -91,16 +103,23 @@ const TesterProjects = () => {
             ))}
           </div>
         ) : (
-          <Card className="bg-warm-50 border border-warm-100/30">
+          <Card className="bg-muted/30 border-primary/10">
             <CardContent className="flex flex-col items-center justify-center py-12">
-              <h3 className="text-xl font-semibold text-warm-300 mb-2">No projects assigned</h3>
-              <p className="text-warm-200 text-center max-w-md">
+              <h3 className="text-xl font-semibold text-primary/80 mb-2">No projects assigned</h3>
+              <p className="text-muted-foreground text-center max-w-md">
                 You don't have any projects assigned to you yet. New projects will appear here once they are assigned.
               </p>
             </CardContent>
           </Card>
         )}
       </div>
+
+      {/* Project Details Dialog */}
+      <ProjectDetailsDialog
+        projectId={selectedProject}
+        open={isDetailsDialogOpen}
+        onClose={() => setIsDetailsDialogOpen(false)}
+      />
     </DashboardLayout>
   );
 };
