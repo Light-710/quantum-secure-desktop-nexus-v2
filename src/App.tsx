@@ -15,13 +15,14 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import AdminSetup from "@/pages/AdminSetup";
 
 // Dashboard pages
-import EmployeeDashboard from "@/pages/employee/EmployeeDashboard";
-import EmployeeChat from "@/pages/employee/EmployeeChat";
-import EmployeeVirtualDesktop from "@/pages/employee/EmployeeVirtualDesktop";
+import TesterDashboard from "@/pages/tester/TesterDashboard";
+import TesterChat from "@/pages/tester/TesterChat";
+import TesterVirtualDesktop from "@/pages/tester/TesterVirtualDesktop";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
 import ManagerProjects from "@/pages/manager/ManagerProjects";
 import ManagerTeam from "@/pages/manager/ManagerTeam";
 import ManagerChat from "@/pages/manager/ManagerChat";
+import ManagerVirtualDesktop from "@/pages/manager/ManagerVirtualDesktop";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersPage from "@/pages/admin/UsersPage";
 import VirtualDesktopPage from "@/pages/admin/VirtualDesktopPage";
@@ -48,12 +49,12 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             
-            {/* Tester Routes (previously Employee Routes) */}
+            {/* Tester Routes */}
             <Route 
               path="/dashboard/tester" 
               element={
                 <ProtectedRoute allowedRoles={['Tester']}>
-                  <EmployeeDashboard />
+                  <TesterDashboard />
                 </ProtectedRoute>
               } 
             />
@@ -61,7 +62,7 @@ const App = () => (
               path="/dashboard/tester/chat" 
               element={
                 <ProtectedRoute allowedRoles={['Tester']}>
-                  <EmployeeChat />
+                  <TesterChat />
                 </ProtectedRoute>
               } 
             />
@@ -69,7 +70,7 @@ const App = () => (
               path="/dashboard/tester/desktop" 
               element={
                 <ProtectedRoute allowedRoles={['Tester']}>
-                  <EmployeeVirtualDesktop />
+                  <TesterVirtualDesktop />
                 </ProtectedRoute>
               } 
             />
@@ -104,6 +105,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Manager']}>
                   <ManagerChat />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/manager/virtual-desktops" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerVirtualDesktop />
                 </ProtectedRoute>
               } 
             />

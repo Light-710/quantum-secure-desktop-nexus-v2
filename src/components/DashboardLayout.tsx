@@ -26,20 +26,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const getNavItems = () => {
     const roleItems = {
-      Employee: [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/employee' },
-        { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/employee/desktop' },
-        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/employee/chat' },
-      ],
       Tester: [
-        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/employee' },
-        { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/employee/desktop' },
-        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/employee/chat' },
+        { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/tester' },
+        { name: 'Virtual Desktop', icon: <Monitor size={20} />, path: '/dashboard/tester/desktop' },
+        { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/tester/chat' },
       ],
       Manager: [
         { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard/manager' },
         { name: 'Projects', icon: <Activity size={20} />, path: '/dashboard/manager/projects' },
         { name: 'Team', icon: <Users size={20} />, path: '/dashboard/manager/team' },
+        { name: 'Virtual Desktops', icon: <Monitor size={20} />, path: '/dashboard/manager/virtual-desktops' },
         { name: 'Chat', icon: <MessageCircle size={20} />, path: '/dashboard/manager/chat' },
       ],
       Admin: [

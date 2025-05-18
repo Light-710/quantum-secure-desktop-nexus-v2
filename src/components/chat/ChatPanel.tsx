@@ -27,6 +27,7 @@ const ChatPanel = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const messageListRef = useRef<Message[]>([]);
   const typingTimeoutRef = useRef<{[key: string]: NodeJS.Timeout}>({});
+  const localMessageIds = useRef<Set<string>>(new Set()); // Track local message IDs
 
   // Update ref when messages change
   useEffect(() => {
@@ -88,15 +89,23 @@ const ChatPanel = () => {
       return;
     }
     
-    const formattedMessages = messageArray.map((msg: ApiMessage) => ({
-      id: msg.id || msg.message_id || Date.now() + Math.random(),
-      sender: msg.sender_name || 'Unknown',
-      content: msg.content || '',
-      timestamp: new Date(msg.timestamp || Date.now()),
-      senderRole: (msg.sender_role as UserRole) || 'Employee',
-      is_file: msg.is_file || false,
-      file_path: msg.file_path || ''
-    }));
+    const formattedMessages = messageArray.map((msg: ApiMessage) => {
+      // Map API sender_role to a valid UserRole type
+      const senderRole: UserRole = 
+        (msg.sender_role === 'Manager' || msg.sender_role === 'Admin' || msg.sender_role === 'Tester') 
+        ? msg.sender_role as UserRole 
+        : 'Tester'; // Default to Tester if unknown
+      
+      return {
+        id: msg.id || msg.message_id || `${Date.now()}-${Math.random()}`,
+        sender: msg.sender_name || 'Unknown',
+        content: msg.content || '',
+        timestamp: new Date(msg.timestamp || Date.now()),
+        senderRole: senderRole,
+        is_file: msg.is_file || false,
+        file_path: msg.file_path || ''
+      };
+    });
 
     setMessages(formattedMessages);
   }, [messagesData]);
@@ -128,18 +137,35 @@ const ChatPanel = () => {
       onMessage: (data) => {
         console.log('New message received', data);
         
-        // Check if we already have this message (avoid duplicates)
+        // Check if it's one of our own local messages by its ID
+        const localMsgPrefix = `local-`;
+        if (data.sender_id === user.employee_id && data.id && localMessageIds.current.has(`${localMsgPrefix}${data.id}`)) {
+          // Replace the local optimistic message with the confirmed message
+          localMessageIds.current.delete(`${localMsgPrefix}${data.id}`);
+          
+          setMessages(prevMessages => prevMessages.filter(msg => 
+            msg.id !== `${localMsgPrefix}${data.id}`
+          ));
+        }
+        
+        // Check if we already have this message ID (avoid duplicates)
         const isDuplicate = messageListRef.current.some(msg => 
           (msg.id === data.id || msg.id === data.message_id)
         );
         
         if (!isDuplicate) {
+          // Map API sender_role to a valid UserRole type
+          const senderRole: UserRole = 
+            (data.sender_role === 'Manager' || data.sender_role === 'Admin' || data.sender_role === 'Tester') 
+            ? data.sender_role as UserRole 
+            : 'Tester'; // Default to Tester if unknown
+          
           const newMsg: Message = {
-            id: data.id || data.message_id || Date.now() + Math.random(),
+            id: data.id || data.message_id || `${Date.now()}-${Math.random()}`,
             sender: data.sender_name || 'Unknown',
             content: data.content || '',
             timestamp: new Date(data.timestamp || Date.now()),
-            senderRole: (data.sender_role as UserRole) || 'Employee',
+            senderRole: senderRole,
             is_file: data.is_file || false,
             file_path: data.file_path || ''
           };
@@ -212,6 +238,7 @@ const ChatPanel = () => {
       });
       typingTimeoutRef.current = {};
       setTypingUsers([]);
+      localMessageIds.current.clear();
     };
   }, [selectedProject, user]);
 
@@ -269,21 +296,33 @@ const ChatPanel = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim() && selectedProject) {
+      // Create a unique ID for this message that we can track
+      const messageId = Date.now().toString();
+      const localMsgId = `local-${messageId}`;
+      
+      // Add local message ID to our tracking set
+      localMessageIds.current.add(localMsgId);
+      
       // Add optimistic message
       const optimisticMessage: Message = {
-        id: `local-${Date.now()}`,
+        id: localMsgId,
         sender: user?.name || 'You',
         content: newMessage,
         timestamp: new Date(),
-        senderRole: user?.role as UserRole || 'Employee',
+        senderRole: user?.role as UserRole || 'Tester', 
         isLocal: true,
         status: 'sending'
       };
       
-      setMessages(prev => [...prev, optimisticMessage]);
+      // Only show optimistic message if using REST API
+      const usingSocketIo = socketService.isConnected();
+      
+      if (!usingSocketIo) {
+        setMessages(prev => [...prev, optimisticMessage]);
+      }
       
       // Try to send through WebSocket first
-      const socketSent = socketService.isConnected() && 
+      const socketSent = usingSocketIo && 
                         socketService.sendMessage(selectedProject, newMessage);
       
       // If socket fails or isn't connected, fall back to REST API
@@ -316,6 +355,7 @@ const ChatPanel = () => {
     setSelectedProject(projectId);
     setMessages([]);
     setTypingUsers([]);
+    localMessageIds.current.clear();
   };
   
   const handleTypingStart = () => {
