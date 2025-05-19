@@ -43,17 +43,20 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
         return 'bg-slate-500';
     }
   };
+  
+  // Sort messages in chronological order (oldest first, newest last)
+  const sortedMessages = [...messages].sort((a, b) => {
+    return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+  });
 
-  // Messages are already in chronological order (oldest first, newest last)
-  // This is the standard display order for chat applications
   return (
     <div className="flex flex-col space-y-4 p-3">
-      {messages.length === 0 ? (
+      {sortedMessages.length === 0 ? (
         <div className="text-center text-muted-foreground py-6">
           No messages yet. Start the conversation!
         </div>
       ) : (
-        messages.map((message) => (
+        sortedMessages.map((message) => (
           <div
             key={message.id}
             className={cn(
