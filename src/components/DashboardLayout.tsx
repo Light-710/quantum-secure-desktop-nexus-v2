@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -16,14 +16,32 @@ import {
   Settings,
   FolderKanban,
   MessageCircle,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  // Load sidebar collapsed state from localStorage on mount
+  useEffect(() => {
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState) {
+      setSidebarCollapsed(savedState === 'true');
+    }
+  }, []);
+
+  // Save sidebar collapsed state to localStorage
+  const toggleCollapse = () => {
+    const newState = !sidebarCollapsed;
+    setSidebarCollapsed(newState);
+    localStorage.setItem('sidebarCollapsed', String(newState));
+  };
 
   const handleLogout = () => {
     logout();
@@ -53,7 +71,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Users', path: '/dashboard/admin/users', icon: <Users size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/admin/vm', icon: <Monitor size={20} /> },
     { name: 'AI Chat', path: '/dashboard/admin/ai-chat', icon: <MessageCircle size={20} /> },
-    { name: 'Settings', path: '/dashboard/admin/settings', icon: <Settings size={20} /> },
+    // Removed Settings page from admin navigation
   ];
 
   let links = testerLinks; // Default to tester links
@@ -72,14 +90,23 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex h-screen bg-warm-50">
       {/* Sidebar for desktop */}
       <aside
-        className={`fixed inset-y-0 z-50 flex flex-col w-64 transition-transform duration-300 bg-white border-r border-warm-100/30 shadow-sm ${
+        className={`fixed inset-y-0 z-50 flex flex-col transition-all duration-300 bg-white border-r border-warm-100/30 shadow-sm ${
           sidebarOpen || !isMobile ? 'translate-x-0' : '-translate-x-full'
-        } lg:relative lg:translate-x-0`}
+        } lg:relative ${
+          sidebarCollapsed && !isMobile ? 'w-20' : 'w-64'
+        }`}
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-warm-100/30">
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-warm-300">PenTest NG</span>
-          </Link>
+          {!sidebarCollapsed || isMobile ? (
+            <Link to="/" className="flex items-center space-x-2">
+              <span className="text-xl font-bold text-warm-300">PenTest NG</span>
+            </Link>
+          ) : (
+            <div className="w-full flex justify-center">
+              <span className="text-xl font-bold text-warm-300">PN</span>
+            </div>
+          )}
+          
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={toggleSidebar}>
               <X size={20} />
@@ -97,29 +124,35 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                   location.pathname === link.path
                     ? 'bg-warm-100/30 text-warm-300 font-medium'
                     : 'text-warm-200 hover:bg-warm-50 hover:text-warm-300'
-                }`}
+                } ${sidebarCollapsed && !isMobile ? 'justify-center' : ''}`}
+                title={sidebarCollapsed && !isMobile ? link.name : ''}
               >
-                <span className="mr-3 text-warm-200">{link.icon}</span>
-                {link.name}
+                <span className="text-warm-200">{link.icon}</span>
+                {(!sidebarCollapsed || isMobile) && <span className="ml-3">{link.name}</span>}
               </Link>
             ))}
           </nav>
 
           <div className="mt-auto pt-4 border-t border-warm-100/20">
-            <div className="px-4 py-2">
-              <p className="text-xs text-warm-200">Signed in as</p>
-              <p className="text-sm font-medium text-warm-300">{user?.name}</p>
-              <p className="text-xs text-warm-200">{user?.email}</p>
-              <p className="text-xs font-medium mt-1 text-warm-200">{user?.role}</p>
-            </div>
+            {(!sidebarCollapsed || isMobile) && (
+              <div className="px-4 py-2">
+                <p className="text-xs text-warm-200">Signed in as</p>
+                <p className="text-sm font-medium text-warm-300">{user?.name}</p>
+                <p className="text-xs text-warm-200">{user?.email}</p>
+                <p className="text-xs font-medium mt-1 text-warm-200">{user?.role}</p>
+              </div>
+            )}
 
             <Button
               variant="ghost"
-              className="w-full justify-start px-4 py-2 mt-2 text-warm-200 hover:bg-warm-50 hover:text-warm-300"
+              className={`w-full justify-start px-4 py-2 mt-2 text-warm-200 hover:bg-warm-50 hover:text-warm-300 ${
+                sidebarCollapsed && !isMobile ? 'justify-center' : ''
+              }`}
               onClick={handleLogout}
+              title={sidebarCollapsed && !isMobile ? 'Logout' : ''}
             >
-              <LogOut size={16} className="mr-2" />
-              Logout
+              <LogOut size={16} className={sidebarCollapsed && !isMobile ? '' : 'mr-2'} />
+              {(!sidebarCollapsed || isMobile) && 'Logout'}
             </Button>
 
             <div className="mt-2 flex justify-center">
@@ -127,6 +160,18 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
           </div>
         </div>
+        
+        {/* Collapse toggle button (desktop only) */}
+        {!isMobile && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleCollapse} 
+            className="absolute top-20 -right-3 h-6 w-6 rounded-full bg-white border border-warm-100/30 shadow-sm"
+          >
+            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </Button>
+        )}
       </aside>
 
       {/* Mobile overlay */}

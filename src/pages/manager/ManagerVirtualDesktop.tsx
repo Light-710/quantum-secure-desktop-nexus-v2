@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
-import { Monitor, Server } from 'lucide-react';
+import { Monitor, Server, RefreshCw } from 'lucide-react';
 import { vmService, UserVM } from '@/services/vmService';
 
 const ManagerVirtualDesktop = () => {
@@ -20,6 +20,7 @@ const ManagerVirtualDesktop = () => {
     linux: false
   });
   const [vmStartTime, setVmStartTime] = useState<{windows?: Date, linux?: Date}>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadUserVMs();
@@ -34,7 +35,9 @@ const ManagerVirtualDesktop = () => {
 
   const loadUserVMs = async () => {
     try {
+      setRefreshing(true);
       const response = await vmService.getUserVMs();
+      console.log('User VMs response:', response);
       setUserVMs(response.vms);
       
       // Process VM data and set status
@@ -47,6 +50,9 @@ const ManagerVirtualDesktop = () => {
         if (windowsVM.guacamole_url) {
           setConnectionUrls(prev => ({ ...prev, windows: windowsVM.guacamole_url || undefined }));
         }
+      } else {
+        setCanConnect(prev => ({ ...prev, windows: false }));
+        setConnectionUrls(prev => ({ ...prev, windows: undefined }));
       }
       
       if (linuxVM && linuxVM.status.toLowerCase() === 'running') {
@@ -54,13 +60,22 @@ const ManagerVirtualDesktop = () => {
         if (linuxVM.guacamole_url) {
           setConnectionUrls(prev => ({ ...prev, linux: linuxVM.guacamole_url || undefined }));
         }
+      } else {
+        setCanConnect(prev => ({ ...prev, linux: false }));
+        setConnectionUrls(prev => ({ ...prev, linux: undefined }));
       }
+
+      toast.success("VM data refreshed", {
+        description: "Your virtual desktop information has been updated."
+      });
     } catch (error) {
+      console.error('Failed to load VM data:', error);
       toast.error("Failed to load VM data", {
         description: "Could not retrieve information about your virtual machines."
       });
     } finally {
       setIsLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -218,11 +233,23 @@ const ManagerVirtualDesktop = () => {
   return (
     <DashboardLayout>
       <Card className="border-primary/10 mb-6 bg-background/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl text-primary/80">My Virtual Desktop</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Connect to your secure testing environment
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-2xl text-primary/80">My Virtual Desktop</CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Connect to your secure testing environment
+            </CardDescription>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-1"
+            onClick={loadUserVMs}
+            disabled={refreshing}
+          >
+            <RefreshCw size={16} className={refreshing ? "animate-spin" : ""} />
+            {refreshing ? "Refreshing..." : "Refresh Status"}
+          </Button>
         </CardHeader>
       </Card>
 
@@ -446,8 +473,16 @@ const ManagerVirtualDesktop = () => {
                   variant="outline" 
                   className="w-full border-input hover:bg-background"
                   onClick={loadUserVMs}
+                  disabled={refreshing}
                 >
-                  Refresh Status
+                  {refreshing ? (
+                    <>
+                      <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
+                      Refreshing...
+                    </>
+                  ) : (
+                    'Refresh Status'
+                  )}
                 </Button>
               </div>
             </div>

@@ -12,7 +12,7 @@ import api from '@/services/api';
 import { toast } from '@/components/ui/sonner';
 import { 
   Users, Monitor, Activity, MessageCircle,
-  UserPlus, FolderOpen, RefreshCw
+  UserPlus, FolderOpen, RefreshCw, PieChart, CheckCircle, AlertCircle, Clock
 } from 'lucide-react';
 
 // User Type
@@ -152,14 +152,27 @@ const AdminDashboard = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/admin/project/get-all-projects');
+        console.log('API response for projects:', response.data);
+        
+        let projectsArray = [];
+        
+        // Handle different response formats
+        if (response.data && Array.isArray(response.data)) {
+          projectsArray = response.data;
+        } else if (response.data && response.data.projects && Array.isArray(response.data.projects)) {
+          projectsArray = response.data.projects;
+        } else {
+          console.error('Unexpected API response format for projects:', response.data);
+          return [];
+        }
         
         // Transform API data to required format
-        return response.data.map((project: any) => ({
+        return projectsArray.map((project: any) => ({
           id: project.id,
           name: project.name,
           status: project.status,
           manager: project.manager_name,
-          teamSize: project.team_size || project.team_members?.length || 0
+          teamSize: project.team_size || (project.team_members ? project.team_members.length : 0)
         }));
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -187,6 +200,30 @@ const AdminDashboard = () => {
       description: "Dashboard data has been updated",
     });
   };
+  
+  // Calculate project statistics
+  const projectStats = React.useMemo(() => {
+    const active = projectsData.filter(p => p.status.toLowerCase() === 'active').length;
+    const completed = projectsData.filter(p => p.status.toLowerCase() === 'completed').length;
+    const onHoldOrIssues = projectsData.filter(p => 
+      ['on hold', 'cancelled', 'issues'].includes(p.status.toLowerCase())
+    ).length;
+    const pending = projectsData.filter(p => p.status.toLowerCase() === 'pending').length;
+    
+    const total = projectsData.length;
+    
+    return {
+      active,
+      completed,
+      onHoldOrIssues,
+      pending,
+      total,
+      activePercent: total > 0 ? (active / total) * 100 : 0,
+      completedPercent: total > 0 ? (completed / total) * 100 : 0,
+      onHoldOrIssuesPercent: total > 0 ? (onHoldOrIssues / total) * 100 : 0,
+      pendingPercent: total > 0 ? (pending / total) * 100 : 0
+    };
+  }, [projectsData]);
   
   return (
     <DashboardLayout>
@@ -243,7 +280,7 @@ const AdminDashboard = () => {
                   <Skeleton className="h-9 w-16 bg-[#C47D5F]/10" />
                 ) : (
                   <h3 className="text-3xl font-bold text-[#C47D5F] mt-1">
-                    {projectsData.filter(p => p.status.toLowerCase() === 'active').length}
+                    {projectStats.active}
                   </h3>
                 )}
               </div>
@@ -563,35 +600,81 @@ const AdminDashboard = () => {
           {isLoadingProjects ? (
             <Skeleton className="h-24 w-full bg-[#F7F5F2]" />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
-                <div className="text-[#8E8B85] text-sm mb-2">Active</div>
-                <div className="text-2xl font-bold text-[#8A9B6E]">
-                  {projectsData.filter(p => p.status.toLowerCase() === 'active').length}
+            <>
+              <div className="mb-4">
+                <div className="h-6 w-full bg-[#F7F5F2] rounded-full overflow-hidden flex">
+                  <div 
+                    className="h-full bg-green-500" 
+                    style={{ width: `${projectStats.activePercent}%` }}
+                    title={`Active: ${projectStats.active} (${projectStats.activePercent.toFixed(1)}%)`}
+                  ></div>
+                  <div 
+                    className="h-full bg-blue-500" 
+                    style={{ width: `${projectStats.completedPercent}%` }}
+                    title={`Completed: ${projectStats.completed} (${projectStats.completedPercent.toFixed(1)}%)`}
+                  ></div>
+                  <div 
+                    className="h-full bg-amber-500" 
+                    style={{ width: `${projectStats.pendingPercent}%` }}
+                    title={`Pending: ${projectStats.pending} (${projectStats.pendingPercent.toFixed(1)}%)`}
+                  ></div>
+                  <div 
+                    className="h-full bg-red-500" 
+                    style={{ width: `${projectStats.onHoldOrIssuesPercent}%` }}
+                    title={`Issues/On Hold: ${projectStats.onHoldOrIssues} (${projectStats.onHoldOrIssuesPercent.toFixed(1)}%)`}
+                  ></div>
                 </div>
-                <div className="text-xs text-[#8E8B85] mt-1">Projects in progress</div>
-              </div>
-              
-              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
-                <div className="text-[#8E8B85] text-sm mb-2">Completed</div>
-                <div className="text-2xl font-bold text-[#6D98BA]">
-                  {projectsData.filter(p => p.status.toLowerCase() === 'completed').length}
+                <div className="flex justify-between text-xs text-[#8E8B85] mt-1">
+                  <span>Total Projects: {projectStats.total}</span>
                 </div>
-                <div className="text-xs text-[#8E8B85] mt-1">Successfully delivered projects</div>
               </div>
-              
-              <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
-                <div className="text-[#8E8B85] text-sm mb-2">On Hold/Issues</div>
-                <div className="text-2xl font-bold text-[#C47D5F]">
-                  {projectsData.filter(p => 
-                    p.status.toLowerCase() === 'on hold' || 
-                    p.status.toLowerCase() === 'cancelled' ||
-                    p.status.toLowerCase() === 'issues'
-                  ).length}
+            
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                  <div className="flex items-center text-green-600 mb-2">
+                    <PieChart className="w-4 h-4 mr-1" />
+                    <div className="text-sm">Active</div>
+                  </div>
+                  <div className="text-2xl font-bold text-[#8A9B6E]">
+                    {projectStats.active}
+                  </div>
+                  <div className="text-xs text-[#8E8B85] mt-1">Projects in progress</div>
                 </div>
-                <div className="text-xs text-[#8E8B85] mt-1">Projects requiring attention</div>
+                
+                <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                  <div className="flex items-center text-blue-600 mb-2">
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    <div className="text-sm">Completed</div>
+                  </div>
+                  <div className="text-2xl font-bold text-[#6D98BA]">
+                    {projectStats.completed}
+                  </div>
+                  <div className="text-xs text-[#8E8B85] mt-1">Successfully delivered projects</div>
+                </div>
+                
+                <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                  <div className="flex items-center text-amber-600 mb-2">
+                    <Clock className="w-4 h-4 mr-1" />
+                    <div className="text-sm">Pending</div>
+                  </div>
+                  <div className="text-2xl font-bold text-amber-500">
+                    {projectStats.pending}
+                  </div>
+                  <div className="text-xs text-[#8E8B85] mt-1">Projects awaiting start</div>
+                </div>
+                
+                <div className="border border-[#D6D2C9] rounded-md p-4 bg-white">
+                  <div className="flex items-center text-red-600 mb-2">
+                    <AlertCircle className="w-4 h-4 mr-1" />
+                    <div className="text-sm">Issues/On Hold</div>
+                  </div>
+                  <div className="text-2xl font-bold text-[#C47D5F]">
+                    {projectStats.onHoldOrIssues}
+                  </div>
+                  <div className="text-xs text-[#8E8B85] mt-1">Projects requiring attention</div>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </CardContent>
       </Card>
