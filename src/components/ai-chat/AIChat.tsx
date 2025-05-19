@@ -101,7 +101,7 @@ const AIChat = () => {
                 {message.isUser ? (
                   <p>{message.content}</p>
                 ) : (
-                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:mb-2 prose-headings:mt-3 prose-pre:my-0 prose-pre:p-2 prose-pre:bg-warm-50/50 prose-pre:border prose-pre:border-warm-100/20">
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:mb-2 prose-headings:mt-3 prose-pre:my-0 prose-pre:p-3 prose-pre:bg-warm-50/70 prose-pre:border prose-pre:border-warm-100/20 prose-code:text-warm-200 prose-code:bg-warm-50/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
                     <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
                 )}
