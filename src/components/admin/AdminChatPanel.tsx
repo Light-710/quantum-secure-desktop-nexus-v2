@@ -24,7 +24,8 @@ const AdminChatPanel = () => {
     queryKey: ['projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/project/get-projects`);
+        const response = await api.get(`/admin/project/get-all-projects`);
+
         return response.data || [];
       } catch (error) {
         console.error('Error fetching projects:', error);
