@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SendHorizontalIcon } from "lucide-react";
@@ -15,10 +15,41 @@ interface Message {
   timestamp: Date;
 }
 
+const LOCAL_STORAGE_KEY = 'ai_chat_history';
+
 const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [question, setQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Load messages from localStorage on component mount
+  useEffect(() => {
+    try {
+      const savedMessages = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedMessages) {
+        // Parse the saved messages and convert timestamp strings back to Date objects
+        const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(parsedMessages);
+      }
+    } catch (error) {
+      console.error('Error loading chat history from localStorage:', error);
+      toast.error("Couldn't load chat history", {
+        description: "There was a problem loading your previous conversations."
+      });
+    }
+  }, []);
+  
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages));
+    } catch (error) {
+      console.error('Error saving chat history to localStorage:', error);
+    }
+  }, [messages]);
   
   const handleSendQuestion = async () => {
     if (!question.trim()) return;
@@ -70,11 +101,31 @@ const AIChat = () => {
     }
   };
 
+  const clearChatHistory = () => {
+    setMessages([]);
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    toast.success("Chat history cleared", {
+      description: "All previous conversations have been removed."
+    });
+  };
+
   return (
     <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-background">
-      <div className="p-4 border-b">
-        <h2 className="font-semibold text-lg text-warm-300">AI Assistant</h2>
-        <p className="text-sm text-warm-200">Ask any question related to your work.</p>
+      <div className="p-4 border-b flex justify-between items-center">
+        <div>
+          <h2 className="font-semibold text-lg text-warm-300">AI Assistant</h2>
+          <p className="text-sm text-warm-200">Ask any question related to your work.</p>
+        </div>
+        {messages.length > 0 && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={clearChatHistory}
+            className="text-xs"
+          >
+            Clear History
+          </Button>
+        )}
       </div>
       
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
