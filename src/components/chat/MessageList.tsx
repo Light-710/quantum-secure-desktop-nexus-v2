@@ -93,7 +93,7 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
                       <File className="h-4 w-4 text-blue-500" />
                       <span className="text-sm">{message.content || message.file_path?.split('/').pop()}</span>
                     </div>
-                    {onFileDownload && message.file_path && (
+                    {onFileDownload && message.file_path && message.project_id && (
                       <Button 
                         variant="ghost" 
                         size="sm" 
