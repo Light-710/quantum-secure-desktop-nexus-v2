@@ -12,6 +12,7 @@ export interface Message {
   isLocal?: boolean; // Flag for messages sent but not yet confirmed by server
   status?: 'sending' | 'sent' | 'error';
   isStatusMessage?: boolean; // Flag for system/status messages
+  project_id?: string | number; // Added for file downloads
 }
 
 export interface ApiMessage {
@@ -24,6 +25,7 @@ export interface ApiMessage {
   timestamp: string;
   is_file?: boolean;
   file_path?: string;
+  project_id?: string | number; // Added for file downloads
 }
 
 export interface ApiMessageResponse {

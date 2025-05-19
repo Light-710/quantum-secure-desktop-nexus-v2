@@ -62,7 +62,7 @@ const AdminChatPanel = () => {
 
   // Process API messages and update state
   useEffect(() => {
-    if (!messagesData) return;
+    if (!messagesData || !selectedProject) return;
     
     // Handle both array format and object with messages property
     const messageArray = Array.isArray(messagesData) 
@@ -82,12 +82,13 @@ const AdminChatPanel = () => {
         timestamp: new Date(msg.timestamp || Date.now()),
         senderRole: user?.role || 'Admin',
         is_file: msg.is_file || false,
-        file_path: msg.file_path || ''
+        file_path: msg.file_path || '',
+        project_id: selectedProject // Add the project ID for downloads
       };
     });
 
     setMessages(formattedMessages);
-  }, [messagesData, user?.role]);
+  }, [messagesData, user?.role, selectedProject]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -151,7 +152,8 @@ const AdminChatPanel = () => {
         timestamp: new Date(),
         senderRole: user?.role || 'Admin', 
         isLocal: true,
-        status: 'sending'
+        status: 'sending',
+        project_id: selectedProject
       };
       
       setMessages(prev => [...prev, optimisticMessage]);

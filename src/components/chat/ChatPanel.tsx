@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle } from "lucide-react";
@@ -76,7 +75,7 @@ const ChatPanel = () => {
 
   // Process API messages and update state
   useEffect(() => {
-    if (!messagesData) return;
+    if (!messagesData || !selectedProject) return;
     
     // Handle both array format and object with messages property
     const messageArray = Array.isArray(messagesData) 
@@ -103,12 +102,13 @@ const ChatPanel = () => {
         timestamp: new Date(msg.timestamp || Date.now()),
         senderRole: senderRoleTyped,
         is_file: msg.is_file || false,
-        file_path: msg.file_path || ''
+        file_path: msg.file_path || '',
+        project_id: selectedProject // Add project_id for file downloads
       };
     });
 
     setMessages(formattedMessages);
-  }, [messagesData]);
+  }, [messagesData, selectedProject]);
 
   // Connect to WebSocket when project is selected
   useEffect(() => {
@@ -318,7 +318,8 @@ const ChatPanel = () => {
           timestamp: new Date(),
           senderRole: user?.role as UserRole || 'Tester', 
           isLocal: true,
-          status: 'sending'
+          status: 'sending',
+          project_id: selectedProject
         };
         
         setMessages(prev => [...prev, optimisticMessage]);

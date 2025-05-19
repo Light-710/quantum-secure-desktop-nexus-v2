@@ -3,7 +3,7 @@ import React from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Message } from './types';
 import { format } from 'date-fns';
-import { FileText, Info } from 'lucide-react';
+import { FileText, Info, Download } from 'lucide-react';
 
 interface MessageListProps {
   messages: Message[];
@@ -17,6 +17,12 @@ const MessageList = ({ messages }: MessageListProps) => {
   const sortedMessages = [...messageArray].sort((a, b) => 
     a.timestamp.getTime() - b.timestamp.getTime()
   );
+
+  // Extract filename from file_path
+  const getFilename = (filePath: string): string => {
+    // Extract the filename from the path
+    return filePath.split('/').pop() || 'file';
+  };
 
   return (
     <div className="space-y-4 pb-4">
@@ -76,15 +82,20 @@ const MessageList = ({ messages }: MessageListProps) => {
                     )}
                   </div>
                   {message.is_file ? (
-                    <a 
-                      href={message.file_path} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-primary hover:text-primary/80 mt-1"
-                    >
-                      <FileText size={16} />
-                      <span>{message.content}</span>
-                    </a>
+                    <div className="mt-1 flex items-center justify-between bg-muted/30 p-2 rounded-md">
+                      <div className="flex items-center gap-2 text-primary">
+                        <FileText size={16} />
+                        <span>{message.content}</span>
+                      </div>
+                      <a 
+                        href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/chat/download/${message.project_id}/${getFilename(message.file_path || '')}`}
+                        download={getFilename(message.file_path || '')}
+                        className="ml-4 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
+                        title="Download file"
+                      >
+                        <Download size={16} className="text-primary" />
+                      </a>
+                    </div>
                   ) : (
                     <p className="text-foreground mt-1">{message.content}</p>
                   )}
