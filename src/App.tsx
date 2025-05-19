@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,16 +18,19 @@ import TesterDashboard from "@/pages/tester/TesterDashboard";
 import TesterChat from "@/pages/tester/TesterChat";
 import TesterVirtualDesktop from "@/pages/tester/TesterVirtualDesktop";
 import TesterProjects from "@/pages/tester/TesterProjects";
+import TesterAIChat from "@/pages/tester/TesterAIChat";
 import ManagerDashboard from "@/pages/manager/ManagerDashboard";
 import ManagerProjects from "@/pages/manager/ManagerProjects";
 import ManagerTeam from "@/pages/manager/ManagerTeam";
 import ManagerChat from "@/pages/manager/ManagerChat";
+import ManagerAIChat from "@/pages/manager/ManagerAIChat";
 import ManagerVirtualDesktop from "@/pages/manager/ManagerVirtualDesktop";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import UsersPage from "@/pages/admin/UsersPage";
 import VirtualDesktopPage from "@/pages/admin/VirtualDesktopPage";
 import AdminProjects from "@/pages/admin/AdminProjects";
 import AdminChats from "@/pages/admin/AdminChats";
+import AdminAIChat from "@/pages/admin/AdminAIChat";
 
 // Error page
 import NotFound from "@/pages/NotFound";
@@ -83,6 +85,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/dashboard/tester/ai-chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Tester']}>
+                  <TesterAIChat />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Manager Routes */}
             <Route 
@@ -125,6 +135,14 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/dashboard/manager/ai-chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Manager']}>
+                  <ManagerAIChat />
+                </ProtectedRoute>
+              } 
+            />
             
             {/* Admin Routes */}
             <Route 
@@ -164,6 +182,14 @@ const App = () => (
               element={
                 <ProtectedRoute allowedRoles={['Admin']}>
                   <AdminChats />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard/admin/ai-chat" 
+              element={
+                <ProtectedRoute allowedRoles={['Admin']}>
+                  <AdminAIChat />
                 </ProtectedRoute>
               } 
             />

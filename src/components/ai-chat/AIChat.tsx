@@ -1,0 +1,152 @@
+
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SendHorizontalIcon } from "lucide-react";
+import { toast } from '@/components/ui/sonner';
+import { aiChatService } from '@/services/aiChatService';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface Message {
+  id: string;
+  content: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+const AIChat = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [question, setQuestion] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const handleSendQuestion = async () => {
+    if (!question.trim()) return;
+    
+    // Generate a unique ID for the message
+    const userMessageId = `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    // Add user message to chat
+    const userMessage: Message = {
+      id: userMessageId,
+      content: question,
+      isUser: true,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Clear input
+    setQuestion('');
+    
+    // Show loading state
+    setIsLoading(true);
+    
+    try {
+      // Send question to API
+      const response = await aiChatService.askQuestion(question);
+      
+      // Add AI response to chat
+      setMessages(prev => [...prev, {
+        id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        content: response.answer,
+        isUser: false,
+        timestamp: new Date()
+      }]);
+    } catch (error) {
+      console.error('Error asking AI:', error);
+      toast.error("Couldn't get an answer", { 
+        description: "There was a problem reaching the AI service."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendQuestion();
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-background">
+      <div className="p-4 border-b">
+        <h2 className="font-semibold text-lg text-warm-300">AI Assistant</h2>
+        <p className="text-sm text-warm-200">Ask any question related to your work.</p>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center space-y-2">
+              <p className="text-warm-200">No messages yet</p>
+              <p className="text-sm text-warm-200">Ask a question to get started</p>
+            </div>
+          </div>
+        ) : (
+          messages.map((message) => (
+            <div
+              key={message.id}
+              className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-lg p-3 ${
+                  message.isUser
+                    ? 'bg-warm-300 text-white'
+                    : 'bg-warm-50 border border-warm-100'
+                }`}
+              >
+                <p>{message.content}</p>
+                <div className={`text-xs mt-1 ${message.isUser ? 'text-white/80' : 'text-warm-200'}`}>
+                  {message.timestamp.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+        
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+              <Skeleton className="h-4 w-[150px]" />
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div className="p-4 border-t">
+        <div className="flex space-x-2">
+          <Input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your question..."
+            disabled={isLoading}
+            className="flex-1 focus:ring-warm-200 focus:border-warm-200"
+          />
+          <Button
+            type="button"
+            size="icon"
+            className="rounded-full bg-warm-300 hover:bg-warm-300/90"
+            onClick={handleSendQuestion}
+            disabled={!question.trim() || isLoading}
+          >
+            {isLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-warm-100 border-t-transparent" />
+            ) : (
+              <SendHorizontalIcon className="h-5 w-5 text-white" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AIChat;

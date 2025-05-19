@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import {
   Users,
   Settings,
   FolderKanban,
+  MessageCircle,
 } from 'lucide-react';
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
@@ -33,6 +35,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Projects', path: '/dashboard/manager/projects', icon: <FolderKanban size={20} /> },
     { name: 'Team', path: '/dashboard/manager/team', icon: <Users size={20} /> },
     { name: 'Chat', path: '/dashboard/manager/chat', icon: <MessageSquare size={20} /> },
+    { name: 'AI Chat', path: '/dashboard/manager/ai-chat', icon: <MessageCircle size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/manager/desktop', icon: <Monitor size={20} /> },
   ];
 
@@ -40,6 +43,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Dashboard', path: '/dashboard/tester', icon: <LayoutDashboard size={20} /> },
     { name: 'Projects', path: '/dashboard/tester/projects', icon: <FolderKanban size={20} /> },
     { name: 'Chat', path: '/dashboard/tester/chat', icon: <MessageSquare size={20} /> },
+    { name: 'AI Chat', path: '/dashboard/tester/ai-chat', icon: <MessageCircle size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/tester/desktop', icon: <Monitor size={20} /> },
   ];
   
@@ -48,6 +52,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Projects', path: '/dashboard/admin/projects', icon: <FolderKanban size={20} /> },
     { name: 'Users', path: '/dashboard/admin/users', icon: <Users size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/admin/vm', icon: <Monitor size={20} /> },
+    { name: 'AI Chat', path: '/dashboard/admin/ai-chat', icon: <MessageCircle size={20} /> },
     { name: 'Settings', path: '/dashboard/admin/settings', icon: <Settings size={20} /> },
   ];
 
