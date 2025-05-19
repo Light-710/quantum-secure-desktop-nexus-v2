@@ -67,7 +67,7 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
             {!message.isStatusMessage && (
               <Avatar className={cn("h-8 w-8", getAvatarColor(message.senderRole))}>
                 {message.sender && (
-                  <AvatarFallback className="text-xs text-white">
+                  <AvatarFallback className="text-xs font-semibold text-white">
                     {getInitials(message.sender)}
                   </AvatarFallback>
                 )}
