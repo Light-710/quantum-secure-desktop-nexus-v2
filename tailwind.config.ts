@@ -141,8 +141,45 @@ export default {
         "scan-line": "scan-line 4s linear infinite",
         "glitch": "glitch 0.5s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite"
-      }
+      },
+      typography: {
+        DEFAULT: {
+          css: {
+            color: '#5F5D58', // Match foreground color
+            a: {
+              color: '#C47D5F', // Terracotta (primary)
+              '&:hover': {
+                color: '#A84332', // Brick Red
+              },
+            },
+            h1: {
+              color: '#3E3D3A', // Warm Charcoal
+            },
+            h2: {
+              color: '#3E3D3A', // Warm Charcoal
+            },
+            h3: {
+              color: '#3E3D3A', // Warm Charcoal
+            },
+            h4: {
+              color: '#3E3D3A', // Warm Charcoal
+            },
+            code: {
+              color: '#A84332', // Brick Red
+              backgroundColor: '#F7F5F2', // Warm Off-White
+              padding: '0.2em 0.4em',
+              borderRadius: '0.25rem',
+            },
+            pre: {
+              backgroundColor: '#F7F5F2', // Warm Off-White
+              code: {
+                backgroundColor: 'transparent',
+              },
+            },
+          },
+        },
+      },
     }
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require('@tailwindcss/typography')],
 } satisfies Config;

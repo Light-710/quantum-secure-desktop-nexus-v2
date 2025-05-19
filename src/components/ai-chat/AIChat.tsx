@@ -6,6 +6,7 @@ import { SendHorizontalIcon } from "lucide-react";
 import { toast } from '@/components/ui/sonner';
 import { aiChatService } from '@/services/aiChatService';
 import { Skeleton } from '@/components/ui/skeleton';
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -97,7 +98,13 @@ const AIChat = () => {
                     : 'bg-warm-50 border border-warm-100'
                 }`}
               >
-                <p>{message.content}</p>
+                {message.isUser ? (
+                  <p>{message.content}</p>
+                ) : (
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:mb-2 prose-headings:mt-3 prose-pre:my-0 prose-pre:p-2 prose-pre:bg-warm-50/50 prose-pre:border prose-pre:border-warm-100/20">
+                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                  </div>
+                )}
                 <div className={`text-xs mt-1 ${message.isUser ? 'text-white/80' : 'text-warm-200'}`}>
                   {message.timestamp.toLocaleTimeString([], {
                     hour: '2-digit',

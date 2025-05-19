@@ -10,6 +10,8 @@ export const aiChatService = {
   askQuestion: async (question: string): Promise<AIChatResponse> => {
     const formData = new FormData();
     formData.append('question', question);
+    // Instruct the AI to format the response in markdown
+    formData.append('format', 'markdown');
     
     const response = await api.post('/ai-chat/ask', formData, {
       headers: {
