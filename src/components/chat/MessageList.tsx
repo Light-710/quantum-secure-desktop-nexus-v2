@@ -1,113 +1,122 @@
 
 import React from 'react';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Message } from './types';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Download, File } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { FileText, Info, Download } from 'lucide-react';
 
 interface MessageListProps {
   messages: Message[];
+  onFileDownload?: (filePath: string, projectId: string | number) => void;
 }
 
-const MessageList = ({ messages }: MessageListProps) => {
-  // Ensure messages is always an array
-  const messageArray = Array.isArray(messages) ? messages : [];
+const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
+  // Format timestamp for display
+  const formatTime = (date: Date) => {
+    return format(date, 'h:mm a');
+  };
 
-  // Sort messages chronologically - oldest first
-  const sortedMessages = [...messageArray].sort((a, b) => 
-    a.timestamp.getTime() - b.timestamp.getTime()
-  );
+  // Get initials for avatar
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(part => part[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  };
 
-  // Extract filename from file_path
-  const getFilename = (filePath: string): string => {
-    // Extract the filename from the path
-    return filePath.split('/').pop() || 'file';
+  // Get avatar color by role
+  const getAvatarColor = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case 'admin':
+        return 'bg-red-500';
+      case 'manager':
+        return 'bg-blue-500';
+      case 'employee':
+      case 'tester':
+        return 'bg-green-500';
+      default:
+        return 'bg-slate-500';
+    }
   };
 
   return (
-    <div className="space-y-4 pb-4">
-      {sortedMessages.length > 0 ? (
-        sortedMessages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex gap-3 ${
-              message.isStatusMessage 
-                ? 'bg-warm-50 justify-center' 
-                : message.senderRole === 'Manager' 
-                  ? 'bg-warm-50/50' 
-                  : ''
-            } p-3 rounded-lg animate-in fade-in-50`}
-          >
-            {message.isStatusMessage ? (
-              <div className="flex items-center text-warm-200 text-sm">
-                <Info size={14} className="mr-2" />
-                <span className="font-medium">{message.sender}</span>
-                <span className="mx-1">{message.content}</span>
-                <span className="text-xs opacity-70">
-                  {format(message.timestamp, 'h:mm a')}
-                </span>
-              </div>
-            ) : (
-              <>
-                <Avatar className={`h-8 w-8 ${
-                  message.senderRole === 'Manager' ? 'border border-secondary/40' : ''
-                }`}>
-                  <AvatarFallback className={`${
-                    message.senderRole === 'Manager' 
-                      ? 'bg-secondary/20 text-secondary' 
-                      : 'bg-primary/20 text-primary'
-                  }`}>
-                    {message.sender[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-medium ${
-                      message.senderRole === 'Manager' ? 'text-secondary' : 'text-primary'
-                    }`}>
-                      {message.sender}
-                    </span>
-                    <span className="text-xs text-warm-200">
-                      {format(message.timestamp, 'h:mm a')}
-                    </span>
-                    {message.senderRole === 'Manager' && (
-                      <span className="text-xs px-1.5 py-0.5 rounded-sm bg-secondary/20 text-secondary">
-                        Manager
-                      </span>
-                    )}
-                    {message.senderRole === 'Admin' && (
-                      <span className="text-xs px-1.5 py-0.5 rounded-sm bg-destructive/20 text-destructive">
-                        Admin
-                      </span>
-                    )}
-                  </div>
-                  {message.is_file ? (
-                    <div className="mt-1 flex items-center justify-between bg-muted/30 p-2 rounded-md">
-                      <div className="flex items-center gap-2 text-primary">
-                        <FileText size={16} />
-                        <span>{message.content}</span>
-                      </div>
-                      <a 
-                        href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/chat/download/${message.project_id}/${getFilename(message.file_path || '')}`}
-                        download={getFilename(message.file_path || '')}
-                        className="ml-4 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
-                        title="Download file"
-                      >
-                        <Download size={16} className="text-primary" />
-                      </a>
-                    </div>
-                  ) : (
-                    <p className="text-foreground mt-1">{message.content}</p>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        ))
-      ) : (
-        <div className="text-center p-6 text-warm-200">
+    <div className="flex flex-col space-y-4 p-3">
+      {messages.length === 0 ? (
+        <div className="text-center text-muted-foreground py-6">
           No messages yet. Start the conversation!
         </div>
+      ) : (
+        messages.map((message) => (
+          <div
+            key={message.id}
+            className={cn(
+              "flex gap-3 group",
+              message.isStatusMessage && "justify-center"
+            )}
+          >
+            {!message.isStatusMessage && (
+              <Avatar className={cn("h-8 w-8", getAvatarColor(message.senderRole))}>
+                {message.sender && (
+                  <AvatarFallback className="text-xs text-white">
+                    {getInitials(message.sender)}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+            )}
+            
+            <div className="flex flex-col flex-1">
+              {!message.isStatusMessage && (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold">{message.sender}</span>
+                  <Badge variant="outline" className="text-xs h-4 px-1 py-0">
+                    {message.senderRole}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
+                    {formatTime(message.timestamp)}
+                  </span>
+                </div>
+              )}
+              
+              <div className={cn(
+                "mt-1 rounded-md py-2 px-3",
+                message.isLocal && "bg-muted/50",
+                message.isStatusMessage && "text-muted-foreground text-xs italic text-center py-1"
+              )}>
+                {message.is_file ? (
+                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/30">
+                    <div className="flex items-center gap-2">
+                      <File className="h-4 w-4 text-blue-500" />
+                      <span className="text-sm">{message.content || message.file_path?.split('/').pop()}</span>
+                    </div>
+                    {onFileDownload && message.file_path && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => onFileDownload(message.file_path || '', message.project_id || '')}
+                        className="h-7 w-7 p-0"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="whitespace-pre-wrap">{message.content}</div>
+                )}
+                
+                {message.isLocal && (
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {message.status === 'sending' ? 'Sending...' : message.status === 'error' ? 'Error sending message' : ''}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))
       )}
     </div>
   );
