@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,6 @@ import {
   Menu,
   X,
   Users,
-  Settings,
   FolderKanban,
   MessageCircle,
   ChevronLeft,
@@ -70,8 +68,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Projects', path: '/dashboard/admin/projects', icon: <FolderKanban size={20} /> },
     { name: 'Users', path: '/dashboard/admin/users', icon: <Users size={20} /> },
     { name: 'Virtual Desktop', path: '/dashboard/admin/vm', icon: <Monitor size={20} /> },
+    { name: 'Chat', path: '/dashboard/admin/chats', icon: <MessageSquare size={20} /> },
     { name: 'AI Chat', path: '/dashboard/admin/ai-chat', icon: <MessageCircle size={20} /> },
-    // Removed Settings page from admin navigation
   ];
 
   let links = testerLinks; // Default to tester links

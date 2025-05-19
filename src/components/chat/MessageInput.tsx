@@ -61,8 +61,15 @@ const MessageInput = ({
   };
 
   const handleUpload = () => {
-    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length > 0) {
-      handleFileUpload(fileInputRef.current as unknown as React.ChangeEvent<HTMLInputElement>);
+    if (selectedFile && fileInputRef.current) {
+      // Create a synthetic event with the file
+      const event = {
+        target: {
+          files: [selectedFile]
+        }
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      
+      handleFileUpload(event);
       setSelectedFile(null);
       // Reset the file input
       if (fileInputRef.current) {

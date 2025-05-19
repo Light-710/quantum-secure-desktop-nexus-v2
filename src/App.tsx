@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +12,7 @@ import { UserRole } from "@/types/user";
 import Login from "@/pages/Login";
 import Contact from "@/pages/Contact";
 import ForgotPassword from "@/pages/ForgotPassword";
-import AdminSetup from "@/pages/AdminSetup";
+// Removed the AdminSetup import
 
 // Dashboard pages
 import TesterDashboard from "@/pages/tester/TesterDashboard";
@@ -50,7 +51,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/admin-setup" element={<AdminSetup />} />
+            {/* Removed the /admin-setup route */}
             
             {/* Tester Routes */}
             <Route 
