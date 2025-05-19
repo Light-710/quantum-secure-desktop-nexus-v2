@@ -286,6 +286,63 @@ const ChatPanel = () => {
     }
   });
 
+  // File download handler
+  const handleFileDownload = (filePath: string, projectId: string | number) => {
+    if (!filePath) {
+      console.error('Missing file path for download');
+      return;
+    }
+    
+    // Extract filename from path
+    const filename = filePath.split('/').pop();
+    if (!filename) {
+      console.error('Could not extract filename from path:', filePath);
+      return;
+    }
+
+    // Create download URL
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const downloadUrl = `${apiUrl}/chat/download/${projectId}/${filename}`;
+    
+    console.log(`Initiating file download from: ${downloadUrl}`);
+    
+    // Create hidden link element to trigger download
+    const link = document.createElement('a');
+    
+    // Use fetch with authorization header to get the file
+    const token = localStorage.getItem('ptng_token');
+    fetch(downloadUrl, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      // Create object URL from blob
+      const url = window.URL.createObjectURL(blob);
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      toast.success('File downloaded successfully');
+    })
+    .catch(error => {
+      console.error('Error downloading file:', error);
+      toast.error('Failed to download file', {
+        description: 'The file could not be downloaded. Please try again.'
+      });
+    });
+  };
+
   // Scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -395,7 +452,10 @@ const ChatPanel = () => {
                   <div className="animate-spin h-8 w-8 border-2 border-primary/20 border-t-primary rounded-full"></div>
                 </div>
               ) : (
-                <MessageList messages={messages} />
+                <MessageList 
+                  messages={messages} 
+                  onFileDownload={handleFileDownload}
+                />
               )}
             </ScrollArea>
             {typingUsers.length > 0 && (

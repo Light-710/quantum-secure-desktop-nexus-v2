@@ -44,7 +44,7 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
     }
   };
   
-  // Sort messages in chronological order (oldest first, newest last)
+  // Sort messages chronologically (oldest first)
   const sortedMessages = [...messages].sort((a, b) => {
     return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
   });
