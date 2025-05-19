@@ -28,18 +28,18 @@ class SocketService {
 
     this.options = options;
     
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+   const baseURL = import.meta.env.VITE_WSS_URL || 'http://localhost:5000';
 
-    // Pass token as a query parameter as required by your backend
-    this.socket = io(baseURL, {
-      query: { token },
-      transports: ['websocket', 'polling'],  // Allow both transports for better reliability
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 3000,
-      timeout: 10000
-    });
-
+// Update this code to include the path parameter
+  this.socket = io(baseURL, {
+    query: { token },
+    path: '/api/socket.io',  // Add this line to match your Nginx proxy configuration
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 3000,
+    timeout: 10000
+  });
     this.registerEvents();
 
     return this.socket;
