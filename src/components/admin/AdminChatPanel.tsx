@@ -13,18 +13,27 @@ import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
 
 const AdminChatPanel = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  // Debug token availability
+  useEffect(() => {
+    console.log('Current auth token:', token ? `${token.substring(0, 10)}...` : 'No token');
+  }, [token]);
 
   // Fetch projects
   const { data: projects = [] } = useQuery({
     queryKey: ['projects', user?.employee_id],
     queryFn: async () => {
       try {
-        const response = await api.get(`/admin/project/get-all-projects`);
+        const response = await api.get(`/admin/project/get-all-projects`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
         return response.data || [];
       } catch (error) {
@@ -34,7 +43,8 @@ const AdminChatPanel = () => {
         });
         return [];
       }
-    }
+    },
+    enabled: !!user && !!token
   });
 
   // Fetch messages for selected project
@@ -48,7 +58,11 @@ const AdminChatPanel = () => {
       if (!selectedProject) return { messages: [] };
       
       try {
-        const response = await api.get(`/chat/messages/${selectedProject}`);
+        const response = await api.get(`/chat/messages/${selectedProject}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         return response.data || { messages: [] };
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -58,7 +72,7 @@ const AdminChatPanel = () => {
         return { messages: [] };
       }
     },
-    enabled: !!selectedProject
+    enabled: !!selectedProject && !!token
   });
 
   // Process API messages and update state
@@ -94,9 +108,10 @@ const AdminChatPanel = () => {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { projectId: string, content: string }) => {
-      return api.post(`/chat/messages/${messageData.projectId}`, {
-        content: messageData.content
-      });
+      return api.post(`/chat/messages/${messageData.projectId}`, 
+        { content: messageData.content },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
     },
     onSuccess: () => {
       setNewMessage('');
@@ -115,7 +130,8 @@ const AdminChatPanel = () => {
     mutationFn: async (formData: FormData) => {
       return api.post(`/chat/upload/${formData.get('projectId')}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
         }
       });
     },
