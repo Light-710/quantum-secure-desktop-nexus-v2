@@ -44,6 +44,8 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
     }
   };
 
+  // Messages are already in chronological order (oldest first, newest last)
+  // This is the standard display order for chat applications
   return (
     <div className="flex flex-col space-y-4 p-3">
       {messages.length === 0 ? (
