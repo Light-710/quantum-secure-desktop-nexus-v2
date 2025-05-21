@@ -19,95 +19,95 @@ export default {
     },
     extend: {
       colors: {
-        border: "#D6D2C9",       // Muted Beige-Gray
-        input: "#D6D2C9",        // Muted Beige-Gray
-        ring: "#C47D5F",         // Terracotta
-        background: "#F7F5F2",   // Warm Off-White
-        foreground: "#5F5D58",   // Soft Gray-Brown
+        border: "#3A3A3C",       // Dark border
+        input: "#3A3A3C",        // Dark input border
+        ring: "#7B68EE",         // Bright purple for focus rings
+        background: "#1A1A1A",   // Dark background
+        foreground: "#E0E0E0",   // Light text for dark background
         primary: {
-          DEFAULT: "#C47D5F",    // Muted Terracotta
-          foreground: "#FFFFFF", // White for text on primary
+          DEFAULT: "#7B68EE",    // Bright purple for primary actions
+          foreground: "#FFFFFF", // White text on primary
         },
         secondary: {
-          DEFAULT: "#8A9B6E",    // Sage Green
-          foreground: "#FFFFFF", // White for text on secondary
+          DEFAULT: "#4A4A4C",    // Subtle dark gray for secondary elements
+          foreground: "#E0E0E0", // Light text on secondary
         },
         destructive: {
-          DEFAULT: "#A84332",    // Brick Red
-          foreground: "#FFFFFF", // White for text on destructive
+          DEFAULT: "#FF5A5A",    // Bright red for destructive actions
+          foreground: "#FFFFFF", // White text on destructive
         },
         muted: {
-          DEFAULT: "#F7F5F2",    // Warm Off-White (same as background)
-          foreground: "#A8A39D", // Muted Beige
+          DEFAULT: "#2A2A2A",    // Slightly lighter than background
+          foreground: "#A0A0A0", // Muted text color
         },
         accent: {
-          DEFAULT: "#8A9B6E",    // Sage Green (same as secondary)
-          foreground: "#FFFFFF", // White for text on accent
+          DEFAULT: "#5D5FEF",    // Accent color
+          foreground: "#FFFFFF", // White text on accent
         },
         popover: {
-          DEFAULT: "#FCFAF7",    // Cream
-          foreground: "#3E3D3A", // Warm Charcoal
+          DEFAULT: "#252525",    // Popover background
+          foreground: "#E0E0E0", // Light text on popover
         },
         card: {
-          DEFAULT: "#FCFAF7",    // Cream
-          foreground: "#3E3D3A", // Warm Charcoal
+          DEFAULT: "#252525",    // Card background
+          foreground: "#E0E0E0", // Light text on card
         },
-        // Keep previous color groups but update with new palette
+        // Keep previous color groups but update with new dark palette
         modern: {
-          50: "#F7F5F2",        // Warm Off-White
-          100: "#FCFAF7",       // Cream
-          200: "#D6D2C9",       // Muted Beige-Gray
-          300: "#A8A39D",       // Muted Beige
-          400: "#5F5D58",       // Soft Gray-Brown
-          500: "#3E3D3A",       // Warm Charcoal
-          blue: "#C47D5F",      // Terracotta (replacing blue)
-          teal: "#8A9B6E",      // Sage Green (replacing teal)
-          green: "#6B8E23",     // Olive Green
-          red: "#A84332",       // Brick Red
-          purple: "#9B8579",    // Warm Brown (replacing purple)
+          50: "#2A2A2A",        // Darkest shade
+          100: "#252525",       // Dark shade
+          200: "#3A3A3C",       // Border color
+          300: "#A0A0A0",       // Muted text
+          400: "#E0E0E0",       // Light text
+          500: "#FFFFFF",       // White
+          blue: "#7B68EE",      // Primary purple
+          teal: "#5D5FEF",      // Accent color
+          green: "#50C878",     // Success green
+          red: "#FF5A5A",       // Error red
+          purple: "#9580FF",    // Light purple
         },
         // Update existing colors to match new theme
         luxury: {
-          50: "#FCFAF7",        // Cream
-          100: "#F7F5F2",       // Warm Off-White
-          200: "#D6D2C9",       // Muted Beige-Gray
-          300: "#A8A39D",       // Muted Beige
-          400: "#5F5D58",       // Soft Gray-Brown
-          500: "#3E3D3A",       // Warm Charcoal
-          accent: "#E5A17D",    // Peach
+          50: "#252525",        // Dark shade
+          100: "#2A2A2A",       // Slightly lighter dark
+          200: "#3A3A3C",       // Border color
+          300: "#A0A0A0",       // Muted text
+          400: "#E0E0E0",       // Light text
+          500: "#FFFFFF",       // White
+          accent: "#9580FF",    // Light purple accent
         },
         warm: {
-          50: "#FCFAF7",        // Cream
-          100: "#E5A17D",       // Peach
-          200: "#C47D5F",       // Terracotta
-          300: "#A84332",       // Brick Red
+          50: "#252525",        // Dark shade
+          100: "#9580FF",       // Light purple
+          200: "#7B68EE",       // Primary purple
+          300: "#FF5A5A",       // Error red
         },
         cyber: {
-          "dark": "#3E3D3A",       // Warm Charcoal
-          "dark-blue": "#5F5D58",  // Soft Gray-Brown
-          "blue": "#C47D5F",       // Terracotta
-          "teal": "#8A9B6E",       // Sage Green
-          "green": "#6B8E23",      // Olive Green
-          "red": "#A84332",        // Brick Red
-          "purple": "#9B8579",     // Warm Brown
-          "gray": "#A8A39D",       // Muted Beige
-          "black": "#3E3D3A",      // Warm Charcoal
-          "light": "#F7F5F2",      // Warm Off-White
+          "dark": "#1A1A1A",       // Darkest background
+          "dark-blue": "#252525",  // Dark shade
+          "blue": "#7B68EE",       // Primary purple
+          "teal": "#5D5FEF",       // Accent color
+          "green": "#50C878",      // Success green
+          "red": "#FF5A5A",        // Error red
+          "purple": "#9580FF",     // Light purple
+          "gray": "#A0A0A0",       // Muted text
+          "black": "#000000",      // True black
+          "light": "#E0E0E0",      // Light text
         },
       },
       backgroundImage: {
-        'warm-gradient': 'linear-gradient(135deg, #FCFAF7 0%, #E5A17D 100%)',
-        'cyber-gradient': 'linear-gradient(to right, #F7F5F2, #FCFAF7)',
-        'blue-gradient': 'linear-gradient(135deg, #FCFAF7 0%, #E5A17D 100%)',
-        'green-gradient': 'linear-gradient(135deg, #F7F5F2 0%, #8A9B6E 50%)',
-        'light-gradient': 'linear-gradient(to right, #F7F5F2, #FCFAF7)',
+        'warm-gradient': 'linear-gradient(135deg, #252525 0%, #7B68EE 100%)',
+        'cyber-gradient': 'linear-gradient(to right, #1A1A1A, #252525)',
+        'blue-gradient': 'linear-gradient(135deg, #252525 0%, #7B68EE 100%)',
+        'green-gradient': 'linear-gradient(135deg, #1A1A1A 0%, #5D5FEF 50%)',
+        'light-gradient': 'linear-gradient(to right, #2A2A2A, #3A3A3C)',
       },
       boxShadow: {
-        'subtle': '0 4px 6px -1px rgba(214, 210, 201, 0.1), 0 2px 4px -1px rgba(214, 210, 201, 0.06)',
-        'elegant': '0 10px 15px -3px rgba(214, 210, 201, 0.1), 0 4px 6px -2px rgba(214, 210, 201, 0.05)',
-        'warm-subtle': '0 4px 6px -1px rgba(196, 125, 95, 0.05), 0 2px 4px -1px rgba(196, 125, 95, 0.03)',
-        'blue-glow': '0 0 10px rgba(196, 125, 95, 0.5), 0 0 20px rgba(196, 125, 95, 0.2)',
-        'green-glow': '0 0 10px rgba(138, 155, 110, 0.5), 0 0 20px rgba(138, 155, 110, 0.2)',
+        'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)',
+        'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
+        'warm-subtle': '0 4px 6px -1px rgba(123, 104, 238, 0.2), 0 2px 4px -1px rgba(123, 104, 238, 0.1)',
+        'blue-glow': '0 0 10px rgba(123, 104, 238, 0.5), 0 0 20px rgba(123, 104, 238, 0.2)',
+        'green-glow': '0 0 10px rgba(93, 95, 239, 0.5), 0 0 20px rgba(93, 95, 239, 0.2)',
       },
       keyframes: {
         "fade-in": {
@@ -145,33 +145,33 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            color: '#5F5D58', // Match foreground color
+            color: '#E0E0E0', // Match foreground color
             a: {
-              color: '#C47D5F', // Terracotta (primary)
+              color: '#7B68EE', // Terracotta (primary)
               '&:hover': {
-                color: '#A84332', // Brick Red
+                color: '#FF5A5A', // Brick Red
               },
             },
             h1: {
-              color: '#3E3D3A', // Warm Charcoal
+              color: '#FFFFFF', // White for dark background
             },
             h2: {
-              color: '#3E3D3A', // Warm Charcoal
+              color: '#FFFFFF', // White for dark background
             },
             h3: {
-              color: '#3E3D3A', // Warm Charcoal
+              color: '#FFFFFF', // White for dark background
             },
             h4: {
-              color: '#3E3D3A', // Warm Charcoal
+              color: '#FFFFFF', // White for dark background
             },
             code: {
-              color: '#A84332', // Brick Red
-              backgroundColor: '#F7F5F2', // Warm Off-White
+              color: '#FF5A5A', // Brick Red
+              backgroundColor: '#1A1A1A', // Dark background
               padding: '0.2em 0.4em',
               borderRadius: '0.25rem',
             },
             pre: {
-              backgroundColor: '#F7F5F2', // Warm Off-White
+              backgroundColor: '#1A1A1A', // Dark background
               code: {
                 backgroundColor: 'transparent',
               },

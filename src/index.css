@@ -20,17 +20,17 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold text-[#3E3D3A]; /* Warm Charcoal for headers */
+    @apply font-semibold text-foreground;
   }
 }
 
 @layer components {
-  /* Simple panel effect */
+  /* Dark panel effect */
   .glass-panel {
-    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg;
+    @apply bg-card border border-border shadow-subtle rounded-lg;
   }
   
-  /* Simple button */
+  /* Button styling */
   .cyber-button {
     @apply bg-primary text-white hover:bg-primary/90 
     transition-all duration-300 rounded px-4 py-2 flex items-center;
@@ -46,70 +46,69 @@
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
   }
   
-  /* Light theme specific styles */
-  .light-panel {
-    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg;
+  /* Dark theme specific styles */
+  .dark-panel {
+    @apply bg-card border border-border shadow-subtle rounded-lg;
   }
   
-  .light-button {
+  .dark-button {
     @apply bg-primary text-white hover:bg-primary/90
     transition-all duration-300 rounded-md px-4 py-2 flex items-center;
   }
   
-  .light-card {
-    @apply bg-[#FCFAF7] border border-[#D6D2C9] shadow-subtle rounded-lg p-6;
+  .dark-card {
+    @apply bg-card border border-border shadow-subtle rounded-lg p-6;
   }
   
-  .light-input {
-    @apply bg-white border border-[#D6D2C9] rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
+  .dark-input {
+    @apply bg-muted border border-input rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
   }
   
-  .light-header {
+  .dark-header {
     @apply text-primary font-semibold;
   }
   
-  .light-link {
+  .dark-link {
     @apply text-primary hover:text-primary/80 transition-colors;
   }
 
   /* Table styles */
-  .warm-table-header {
-    @apply bg-background text-[#3E3D3A];
+  .dark-table-header {
+    @apply bg-background text-foreground;
   }
   
-  .warm-table-row-odd {
-    @apply bg-[#FCFAF7];
+  .dark-table-row-odd {
+    @apply bg-card;
   }
   
-  .warm-table-row-even {
-    @apply bg-[#F7F5F2];
+  .dark-table-row-even {
+    @apply bg-muted;
   }
   
-  .warm-table-row-hover {
-    @apply hover:bg-[#00000005];
+  .dark-table-row-hover {
+    @apply hover:bg-[#FFFFFF05];
   }
 
   /* Form elements */
-  .warm-input {
-    @apply bg-white border border-[#D6D2C9] rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#C47D5F]/20 focus:border-[#C47D5F];
+  .dark-input {
+    @apply bg-muted border border-input rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary;
   }
 
-  /* Card with warm shadow */
-  .warm-card {
-    @apply bg-[#FCFAF7] shadow-[0_4px_10px_-2px_rgba(214,210,201,0.2)] rounded-lg border border-[#D6D2C9]/50;
+  /* Card with dark shadow */
+  .dark-card {
+    @apply bg-card shadow-[0_4px_10px_-2px_rgba(0,0,0,0.3)] rounded-lg border border-border/50;
   }
   
   /* Error toast styles */
   .error-toast {
-    @apply bg-[#A84332] text-white border-[#A84332]/80;
+    @apply bg-destructive text-white border-destructive/80;
   }
   
   .warning-toast {
-    @apply bg-[#E5A17D] text-[#3E3D3A] border-[#E5A17D]/80;
+    @apply bg-amber-600 text-white border-amber-600/80;
   }
   
   .success-toast {
-    @apply bg-[#6B8E23] text-white border-[#6B8E23]/80;
+    @apply bg-green-600 text-white border-green-600/80;
   }
 }
-

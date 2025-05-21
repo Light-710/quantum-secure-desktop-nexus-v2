@@ -40,7 +40,7 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
       case 'tester':
         return 'bg-green-500';
       default:
-        return 'bg-slate-500';
+        return 'bg-primary';
     }
   };
   
@@ -67,7 +67,7 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
             {!message.isStatusMessage && (
               <Avatar className={cn("h-8 w-8", getAvatarColor(message.senderRole))}>
                 {message.sender && (
-                  <AvatarFallback className="text-xs font-semibold text-white">
+                  <AvatarFallback className="text-xs font-bold text-white">
                     {getInitials(message.sender)}
                   </AvatarFallback>
                 )}
@@ -89,13 +89,13 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
               
               <div className={cn(
                 "mt-1 rounded-md py-2 px-3",
-                message.isLocal && "bg-muted/50",
+                message.isLocal && "bg-muted/70",
                 message.isStatusMessage && "text-muted-foreground text-xs italic text-center py-1"
               )}>
                 {message.is_file ? (
-                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/30">
+                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/50">
                     <div className="flex items-center gap-2">
-                      <File className="h-4 w-4 text-blue-500" />
+                      <File className="h-4 w-4 text-primary" />
                       <span className="text-sm">{message.content || message.file_path?.split('/').pop()}</span>
                     </div>
                     {onFileDownload && message.file_path && message.project_id && (
