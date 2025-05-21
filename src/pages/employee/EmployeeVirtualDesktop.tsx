@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { LoaderCircle, Monitor, Server } from 'lucide-react';
 import { vmService } from '@/services/vmService';
 import type { VMStatus } from '@/services/vmService';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const EmployeeVirtualDesktop = () => {
   const { toast } = useToast();
@@ -16,7 +16,7 @@ const EmployeeVirtualDesktop = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
   
-  // New state variables for VM startup simulation
+  // State variables for VM startup simulation
   const [startingOS, setStartingOS] = useState<{windows: boolean, linux: boolean}>({
     windows: false, 
     linux: false
@@ -33,7 +33,9 @@ const EmployeeVirtualDesktop = () => {
   // State for the loading timers to be cleared if user navigates away
   const [loadingTimers, setLoadingTimers] = useState<{
     windows?: NodeJS.Timeout,
-    linux?: NodeJS.Timeout
+    linux?: NodeJS.Timeout,
+    windowsCountdown?: NodeJS.Timeout,
+    linuxCountdown?: NodeJS.Timeout
   }>({});
 
   useEffect(() => {
@@ -43,6 +45,8 @@ const EmployeeVirtualDesktop = () => {
     return () => {
       if (loadingTimers.windows) clearTimeout(loadingTimers.windows);
       if (loadingTimers.linux) clearTimeout(loadingTimers.linux);
+      if (loadingTimers.windowsCountdown) clearInterval(loadingTimers.windowsCountdown);
+      if (loadingTimers.linuxCountdown) clearInterval(loadingTimers.linuxCountdown);
     };
   }, []);
 
@@ -65,37 +69,48 @@ const EmployeeVirtualDesktop = () => {
     if (actionInProgress) return;
     
     setActionInProgress(true);
+    
     try {
       let response;
+      
       switch (action) {
         case 'Start':
-          // Set the OS as starting
+          // Set the OS as starting - this is completely visual
           setStartingOS(prev => ({...prev, [activeOs]: true}));
           
-          // Set initial time remaining for countdown
+          // Set initial time remaining for countdown - visual only
           setTimeRemaining(prev => ({...prev, [activeOs]: 60}));
           
-          // Make the API call first
-          try {
-            response = await vmService.startVM(activeOs);
-            console.log(`VM ${action} initiated:`, response);
-          } catch (error) {
-            console.error(`Error starting ${activeOs} VM:`, error);
-            // Don't exit the loading state here - we'll let the timer handle it
-          }
-          
-          // Start countdown timer
-          let remainingTime = 60;
+          // Start countdown timer - visual only
           const countdownInterval = setInterval(() => {
-            remainingTime -= 1;
-            setTimeRemaining(prev => ({...prev, [activeOs]: remainingTime}));
-            
-            if (remainingTime <= 0) {
-              clearInterval(countdownInterval);
-            }
+            setTimeRemaining(prev => {
+              const newTime = prev[activeOs] - 1;
+              if (newTime <= 0) {
+                // Clear the interval when countdown reaches zero
+                clearInterval(countdownInterval);
+              }
+              return {...prev, [activeOs]: Math.max(0, newTime)};
+            });
           }, 1000);
           
-          // Start the timer to simulate VM startup - this will run for the full 60 seconds regardless of API response
+          // Store the countdown interval reference for cleanup
+          setLoadingTimers(prev => ({
+            ...prev, 
+            [`${activeOs}Countdown`]: countdownInterval as unknown as NodeJS.Timeout
+          }));
+          
+          // Make the actual API call in the background
+          // This won't affect the visual loading state
+          try {
+            response = await vmService.startVM(activeOs);
+            console.log(`VM ${action} API call completed:`, response);
+          } catch (error) {
+            console.error(`Error starting ${activeOs} VM:`, error);
+            // This won't affect the visual loading state - we'll still show the full countdown
+          }
+          
+          // Start the timer to simulate VM startup - this is completely visual
+          // The full 60 seconds will always occur regardless of API response time
           const timer = setTimeout(() => {
             // Clear the starting state
             setStartingOS(prev => ({...prev, [activeOs]: false}));
@@ -103,8 +118,12 @@ const EmployeeVirtualDesktop = () => {
             // Update the OS status
             setOsStatus(prev => ({...prev, [activeOs]: 'Running'}));
             
-            // Clear the timer reference
-            setLoadingTimers(prev => ({...prev, [activeOs]: undefined}));
+            // Clear the timer references
+            setLoadingTimers(prev => ({
+              ...prev, 
+              [activeOs]: undefined,
+              [`${activeOs}Countdown`]: undefined
+            }));
             
             toast({
               title: 'VM Started',
@@ -112,7 +131,7 @@ const EmployeeVirtualDesktop = () => {
             });
 
             setActionInProgress(false);
-          }, 60000); // 60 seconds
+          }, 60000); // Always 60 seconds
           
           // Store the timer reference to clear it if needed
           setLoadingTimers(prev => ({...prev, [activeOs]: timer}));
@@ -131,6 +150,7 @@ const EmployeeVirtualDesktop = () => {
 
           // Refresh VM status
           await loadVMStatus();
+          setActionInProgress(false);
           break;
           
         case 'Restart':
@@ -143,13 +163,15 @@ const EmployeeVirtualDesktop = () => {
 
           // Refresh VM status
           await loadVMStatus();
+          setActionInProgress(false);
           break;
           
         default:
+          setActionInProgress(false);
           return;
       }
 
-      // If action is something other than Start, handle response
+      // Handle response for actions other than Start
       if (action !== 'Start') {
         // If we got a URL back, we can use it to connect
         if (response && response.URL) {
@@ -162,19 +184,30 @@ const EmployeeVirtualDesktop = () => {
         description: `Failed to ${action.toLowerCase()} VM`,
         variant: "destructive",
       });
-      // Clear starting state if there's an error
-      if (action === 'Start') {
-        setStartingOS(prev => ({...prev, [activeOs]: false}));
+      
+      // For Start action, keep the visual simulation running even if the API call fails
+      if (action !== 'Start') {
+        setActionInProgress(false);
+      }
+      
+      // Only clear visual state if it wasn't a Start action
+      // For Start action, we want the full visual simulation regardless of API success/failure
+      if (action !== 'Start') {
         if (loadingTimers[activeOs as keyof typeof loadingTimers]) {
           clearTimeout(loadingTimers[activeOs as keyof typeof loadingTimers]);
-          setLoadingTimers(prev => ({...prev, [activeOs]: undefined}));
         }
-      }
-      setActionInProgress(false);
-    } finally {
-      // For Stop and Restart, we can clear actionInProgress here
-      // For Start, it's cleared after the timer completes
-      if (action !== 'Start') {
+        
+        const countdownKey = `${activeOs}Countdown` as keyof typeof loadingTimers;
+        if (loadingTimers[countdownKey]) {
+          clearInterval(loadingTimers[countdownKey] as NodeJS.Timeout);
+        }
+        
+        setStartingOS(prev => ({...prev, [activeOs]: false}));
+        setLoadingTimers(prev => ({
+          ...prev, 
+          [activeOs]: undefined,
+          [`${activeOs}Countdown`]: undefined
+        }));
         setActionInProgress(false);
       }
     }
@@ -274,6 +307,12 @@ const EmployeeVirtualDesktop = () => {
                           </p>
                         </div>
                       </div>
+                      <div className="mt-2 h-1.5 bg-cyber-dark-blue/50 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-cyber-blue transition-all duration-1000" 
+                          style={{ width: `${(60 - timeRemaining.windows) / 60 * 100}%` }}
+                        ></div>
+                      </div>
                     </div>
                   )}
                   
@@ -353,6 +392,12 @@ const EmployeeVirtualDesktop = () => {
                             This will take approximately {timeRemaining.linux} seconds
                           </p>
                         </div>
+                      </div>
+                      <div className="mt-2 h-1.5 bg-cyber-dark-blue/50 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-cyber-blue transition-all duration-1000" 
+                          style={{ width: `${(60 - timeRemaining.linux) / 60 * 100}%` }}
+                        ></div>
                       </div>
                     </div>
                   )}
