@@ -24,11 +24,11 @@ export function UserList({
       <Table>
         <TableHeader className="bg-cyber-dark-blue/40">
           <TableRow>
-            <TableHead className="text-cyber-teal">User</TableHead>
-            <TableHead className="text-cyber-teal">Role</TableHead>
-            <TableHead className="text-cyber-teal">Status</TableHead>
-            <TableHead className="text-cyber-teal">Last Login</TableHead>
-            <TableHead className="text-cyber-teal">Actions</TableHead>
+            <TableHead className="text-white">User</TableHead>
+            <TableHead className="text-white">Role</TableHead>
+            <TableHead className="text-white">Status</TableHead>
+            <TableHead className="text-white">Last Login</TableHead>
+            <TableHead className="text-white">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,24 +37,24 @@ export function UserList({
               <TableCell>
                 <div className="flex items-center space-x-3">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-cyber-teal border border-cyber-teal/30">
+                    <div className="w-10 h-10 rounded-full bg-cyber-dark-blue flex items-center justify-center text-white border border-cyber-teal/30">
                       {user.name.split(' ').map(n => n[0]).join('')}
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-cyber-teal">{user.name}</p>
-                    <div className="text-xs text-cyber-gray">{user.email}</div>
-                    <div className="text-xs text-cyber-gray/70">@{user.employee_id}</div>
+                    <p className="text-sm font-medium text-white">{user.name}</p>
+                    <div className="text-xs text-white/80">{user.email}</div>
+                    <div className="text-xs text-white/70">@{user.employee_id}</div>
                   </div>
                 </div>
               </TableCell>
               <TableCell>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   user.role.toLowerCase() === 'admin' 
-                    ? 'bg-cyber-red/20 text-cyber-red' 
+                    ? 'bg-cyber-red/20 text-white' 
                     : user.role.toLowerCase() === 'manager' 
-                      ? 'bg-cyber-green/20 text-cyber-green' 
-                      : 'bg-cyber-blue/20 text-cyber-blue'
+                      ? 'bg-cyber-green/20 text-white' 
+                      : 'bg-cyber-blue/20 text-white'
                 }`}>
                   {user.role}
                 </span>
@@ -62,15 +62,15 @@ export function UserList({
               <TableCell>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   user.status.toLowerCase() === 'active' 
-                    ? 'bg-green-400/20 text-green-400' 
+                    ? 'bg-green-400/20 text-white' 
                     : user.status.toLowerCase() === 'suspended' 
-                      ? 'bg-yellow-400/20 text-yellow-400' 
-                      : 'bg-cyber-red/20 text-cyber-red'
+                      ? 'bg-yellow-400/20 text-white' 
+                      : 'bg-cyber-red/20 text-white'
                 }`}>
                   {user.status}
                 </span>
               </TableCell>
-              <TableCell className="text-sm text-cyber-gray">
+              <TableCell className="text-sm text-white/80">
                 {user.lastLogin || 'Never'}
               </TableCell>
               <TableCell>
@@ -78,7 +78,7 @@ export function UserList({
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
+                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-white"
                     onClick={() => onViewPermissions(user)}
                   >
                     <Shield className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function UserList({
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-cyber-green"
+                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-green/20 hover:text-white"
                     onClick={() => onEditUser(user)}
                     title="Edit User"
                   >
@@ -95,7 +95,7 @@ export function UserList({
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
+                    className="h-8 w-8 p-0 border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-white"
                     onClick={() => onDeleteUser(user.employee_id)}
                     disabled={user.role.toLowerCase() === 'admin' || user.status.toLowerCase() === 'inactive' }
                     title="Deactivate User"
@@ -107,8 +107,8 @@ export function UserList({
                     size="sm"
                     className={`h-8 w-8 p-0 border-cyber-teal/30 ${
                       user.status.toLowerCase() === 'active'
-                        ? 'hover:bg-yellow-400/20 hover:text-yellow-400'
-                        : 'hover:bg-green-400/20 hover:text-green-400'
+                        ? 'hover:bg-yellow-400/20 hover:text-white'
+                        : 'hover:bg-green-400/20 hover:text-white'
                     }`}
                     onClick={() => onToggleStatus(user.employee_id)}
                     disabled={user.status.toLowerCase() === 'active'}

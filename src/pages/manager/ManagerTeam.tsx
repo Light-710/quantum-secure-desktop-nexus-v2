@@ -73,57 +73,48 @@ const ManagerTeam = () => {
   return (
     <DashboardLayout>
       <div className="grid grid-cols-1 gap-6">
-        <Card className="glass-panel border-warm-100/30 mb-6">
+        <Card className="glass-panel border-primary/30 mb-6">
           <CardHeader>
-            <CardTitle className="text-2xl text-warm-300">Team Management</CardTitle>
-            <CardDescription className="text-warm-100/70">
+            <CardTitle className="text-2xl text-white">Team Management</CardTitle>
+            <CardDescription className="text-white/70">
               Manage team members and assignments
             </CardDescription>
           </CardHeader>
           <CardContent>
             {isLoadingTesters || isLoadingProjects ? (
               <div className="flex justify-center p-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-300"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
               </div>
             ) : teamMembersWithProjects.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Assigned Projects</TableHead>
+                    <TableHead className="text-white">Employee</TableHead>
+                    <TableHead className="text-white">Email</TableHead>
+                    <TableHead className="text-white">Assigned Projects</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {teamMembersWithProjects.map((tester) => (
                     <TableRow key={tester.employee_id}>
-                      <TableCell>
+                      <TableCell className="text-white">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4" />
                           {tester.name}
                         </div>
                       </TableCell>
-                      <TableCell>{tester.email}</TableCell>
+                      <TableCell className="text-white">{tester.email}</TableCell>
                       <TableCell>
                         {tester.projects && tester.projects.length > 0 ? (
                           <ul className="list-disc list-inside">
                             {tester.projects.map(project => (
-                              <li key={project.id} className="text-sm mb-1">
+                              <li key={project.id} className="text-sm mb-1 text-white">
                                 {project.name}
-                                {/* <Badge 
-                                  className={`ml-2 ${
-                                    project.status.toLowerCase() === 'in progress' ? 'bg-blue-500' : 
-                                    project.status.toLowerCase() === 'complete' ? 'bg-green-500' : 
-                                    'bg-yellow-500'
-                                  }`}
-                                >
-                                  {project.status}
-                                </Badge> */}
                               </li>
                             ))}
                           </ul>
                         ) : (
-                          <span className="text-warm-100/50 text-sm">No projects assigned</span>
+                          <span className="text-white/50 text-sm">No projects assigned</span>
                         )}
                       </TableCell>
                     </TableRow>
@@ -131,7 +122,7 @@ const ManagerTeam = () => {
                 </TableBody>
               </Table>
             ) : (
-              <div className="text-center p-4 text-warm-100/70">
+              <div className="text-center p-4 text-white/70">
                 No team members found
               </div>
             )}

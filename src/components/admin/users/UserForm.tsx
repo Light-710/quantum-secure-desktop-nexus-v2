@@ -1,3 +1,4 @@
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -33,11 +34,11 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">Full Name</FormLabel>
+              <FormLabel className="text-white">Full Name</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Enter full name" 
-                  className="border-cyber-teal/30 focus:border-cyber-blue"
+                  className="border-cyber-teal/30 focus:border-cyber-blue text-white bg-muted"
                   {...field} 
                 />
               </FormControl>
@@ -51,11 +52,11 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">Email</FormLabel>
+              <FormLabel className="text-white">Email</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Enter email address" 
-                  className="border-cyber-teal/30 focus:border-cyber-blue"
+                  className="border-cyber-teal/30 focus:border-cyber-blue text-white bg-muted"
                   {...field} 
                 />
               </FormControl>
@@ -69,11 +70,11 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="employee_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">Employee ID</FormLabel>
+              <FormLabel className="text-white">Employee ID</FormLabel>
               <FormControl>
                 <Input 
                   placeholder="Enter employee ID" 
-                  className="border-cyber-teal/30 focus:border-cyber-blue"
+                  className="border-cyber-teal/30 focus:border-cyber-blue text-white bg-muted"
                   {...field} 
                 />
               </FormControl>
@@ -87,14 +88,14 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">
+              <FormLabel className="text-white">
                 {initialData ? "Password (leave blank to keep unchanged)" : "Password"}
               </FormLabel>
               <FormControl>
                 <Input 
                   type="password"
                   placeholder={initialData ? "Enter new password or leave blank" : "Enter secure password"}
-                  className="border-cyber-teal/30 focus:border-cyber-blue"
+                  className="border-cyber-teal/30 focus:border-cyber-blue text-white bg-muted"
                   {...field} 
                 />
               </FormControl>
@@ -108,10 +109,10 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-cyber-teal">Role</FormLabel>
+              <FormLabel className="text-white">Role</FormLabel>
               <FormControl>
                 <select 
-                  className="w-full h-10 px-3 py-2 rounded-md border border-cyber-teal/30 bg-cyber-dark-blue/20 text-cyber-gray focus:border-cyber-blue"
+                  className="w-full h-10 px-3 py-2 rounded-md border border-cyber-teal/30 bg-muted text-white focus:border-cyber-blue"
                   {...field}
                 >
                   <option value="Tester">Tester</option>
@@ -128,7 +129,7 @@ export function UserForm({ onSubmit, onCancel, initialData, submitLabel = "Add U
           <Button 
             type="button" 
             variant="outline" 
-            className="border-cyber-teal/30"
+            className="border-cyber-teal/30 text-white hover:text-white"
             onClick={onCancel}
           >
             Cancel

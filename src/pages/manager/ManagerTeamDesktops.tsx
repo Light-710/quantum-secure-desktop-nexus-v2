@@ -109,27 +109,27 @@ const ManagerTeamDesktops = () => {
 
   return (
     <DashboardLayout>
-      <Card className="glass-panel border-warm-100/30 mb-6">
+      <Card className="glass-panel border-primary/30 mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl text-warm-300">Team Virtual Desktops</CardTitle>
-          <CardDescription className="text-warm-100/70">
+          <CardTitle className="text-2xl text-white">Team Virtual Desktops</CardTitle>
+          <CardDescription className="text-white/70">
             Manage and monitor your team's virtual machines
           </CardDescription>
         </CardHeader>
       </Card>
 
       <div className="grid grid-cols-1 gap-6">
-        <Card className="glass-panel border-warm-100/30">
+        <Card className="glass-panel border-primary/30">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center text-xl text-warm-300">
-              <Users className="mr-2 text-warm-200" size={20} />
+            <CardTitle className="flex items-center text-xl text-white">
+              <Users className="mr-2 text-primary" size={20} />
               Select Team Member
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoadingTesters ? (
               <div className="flex justify-center p-4">
-                <div className="animate-spin h-8 w-8 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full"></div>
               </div>
             ) : testers.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -138,14 +138,14 @@ const ManagerTeamDesktops = () => {
                     key={tester.employee_id}
                     variant={selectedTester === tester.employee_id ? "default" : "outline"}
                     onClick={() => setSelectedTester(tester.employee_id)}
-                    className="border-warm-100/30"
+                    className="border-primary/30 text-white"
                   >
                     {tester.name}
                   </Button>
                 ))}
               </div>
             ) : (
-              <div className="text-center p-4 text-warm-100/70">
+              <div className="text-center p-4 text-white/70">
                 No team members found
               </div>
             )}
@@ -153,36 +153,36 @@ const ManagerTeamDesktops = () => {
         </Card>
 
         {selectedTester && (
-          <Card className="glass-panel border-warm-100/30">
+          <Card className="glass-panel border-primary/30">
             <CardHeader className="pb-2">
-              <CardTitle className="flex items-center text-xl text-warm-300">
-                <Monitor className="mr-2 text-warm-200" size={20} />
+              <CardTitle className="flex items-center text-xl text-white">
+                <Monitor className="mr-2 text-primary" size={20} />
                 Virtual Machines
               </CardTitle>
-              <CardDescription className="text-warm-100/70">
+              <CardDescription className="text-white/70">
                 {testers.find(t => t.employee_id === selectedTester)?.name}'s virtual desktops
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingVMs ? (
                 <div className="flex justify-center p-4">
-                  <div className="animate-spin h-8 w-8 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                  <div className="animate-spin h-8 w-8 border-2 border-white border-t-transparent rounded-full"></div>
                 </div>
               ) : vms.length > 0 ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>VM</TableHead>
-                      <TableHead>OS</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead className="text-white">VM</TableHead>
+                      <TableHead className="text-white">OS</TableHead>
+                      <TableHead className="text-white">Status</TableHead>
+                      <TableHead className="text-white">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {vms.map((vm) => (
                       <TableRow key={vm.id}>
-                        <TableCell className="font-medium">{vm.name}</TableCell>
-                        <TableCell>{vm.os}</TableCell>
+                        <TableCell className="font-medium text-white">{vm.name}</TableCell>
+                        <TableCell className="text-white">{vm.os}</TableCell>
                         <TableCell>
                           <VMStatusBadge status={vm.status} />
                         </TableCell>
@@ -207,7 +207,7 @@ const ManagerTeamDesktops = () => {
                   </TableBody>
                 </Table>
               ) : (
-                <div className="text-center p-4 text-warm-100/70">
+                <div className="text-center p-4 text-white/70">
                   No virtual machines available for this user
                 </div>
               )}

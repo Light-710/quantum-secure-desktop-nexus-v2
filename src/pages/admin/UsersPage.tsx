@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -231,12 +232,12 @@ const UsersPage = () => {
       <Card className="glass-panel border-primary/30 mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-2xl text-primary">User Management</CardTitle>
-            <CardDescription className="text-[#5F5D58]">
+            <CardTitle className="text-2xl text-white">User Management</CardTitle>
+            <CardDescription className="text-white/70">
               Manage system users, their roles and permissions
             </CardDescription>
           </div>
-          <Button className="light-button" onClick={() => setIsAddUserOpen(true)}>
+          <Button className="bg-primary hover:bg-primary/90 text-white" onClick={() => setIsAddUserOpen(true)}>
             <UserPlus className="mr-2 h-4 w-4" /> Add User
           </Button>
         </CardHeader>
@@ -289,17 +290,17 @@ const UsersPage = () => {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="glass-panel border-primary/30">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#3E3D3A]">Confirm User Deletion</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#5F5D58]">
+            <AlertDialogTitle className="text-white">Confirm User Deletion</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
               Are you sure you want to delete {userToDelete?.name}? This action will deactivate their account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[#D6D2C9] text-[#5F5D58] hover:bg-[#F7F5F2] hover:text-[#3E3D3A]">
+            <AlertDialogCancel className="border-white/30 text-white hover:bg-card/50 hover:text-white">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              className="bg-[#A84332] text-white hover:bg-[#A84332]/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
               onClick={handleDeleteUser}
             >
               Delete User
