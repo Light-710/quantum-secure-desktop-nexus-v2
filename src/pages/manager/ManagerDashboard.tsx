@@ -69,8 +69,8 @@ const ManagerDashboard = () => {
     enabled: !!user?.employee_id
   });
 
-  // Handle VM action (start, stop, restart)
-  const handleVMAction = async (vmId: string, action: string, instanceOs: string) => {
+  // Handle VM action (start, stop, restart) - renamed to executeVMAction to avoid name conflict
+  const executeVMAction = async (vmId: string, action: string, instanceOs: string) => {
     if (!user?.employee_id) return;
     
     setActionLoading(vmId);
@@ -229,7 +229,7 @@ const ManagerDashboard = () => {
                           size="sm" 
                           className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                           disabled={actionLoading === vm.id}
-                          onClick={() => handleVMAction(vm.id, 'start', vm.os)}
+                          onClick={() => executeVMAction(vm.id, 'start', vm.os)}
                         >
                           {actionLoading === vm.id ? 
                             <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div> : 
@@ -243,7 +243,7 @@ const ManagerDashboard = () => {
                             size="sm"
                             className="flex-1 bg-red-600 hover:bg-red-700 text-white"
                             disabled={actionLoading === vm.id}
-                            onClick={() => handleVMAction(vm.id, 'stop', vm.os)}
+                            onClick={() => executeVMAction(vm.id, 'stop', vm.os)}
                           >
                             {actionLoading === vm.id ? 
                               <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div> : 
@@ -254,7 +254,7 @@ const ManagerDashboard = () => {
                             size="sm"
                             className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
                             disabled={actionLoading === vm.id}
-                            onClick={() => handleVMAction(vm.id, 'restart', vm.os)}
+                            onClick={() => executeVMAction(vm.id, 'restart', vm.os)}
                           >
                             Restart
                           </Button>
