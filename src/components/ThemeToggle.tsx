@@ -21,6 +21,9 @@ export function ThemeToggle() {
   
   // Initialize theme on component mount
   React.useEffect(() => {
+    // Since we're using a dark purple theme by default, always use dark mode
+    document.documentElement.classList.add('dark');
+    
     // Check system preference if no theme is set
     const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
     const initialTheme = theme || (systemPrefersDark ? 'dark' : 'light');
@@ -38,11 +41,11 @@ export function ThemeToggle() {
       variant="ghost" 
       size="icon"
       onClick={toggleTheme}
-      className="rounded-full w-10 h-10 bg-muted"
+      className="rounded-full w-10 h-10 bg-muted/80 hover:bg-muted"
       title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {theme === 'dark' ? (
-        <Sun className="h-5 w-5 text-foreground" />
+        <Sun className="h-5 w-5 text-primary" />
       ) : (
         <Moon className="h-5 w-5 text-foreground" />
       )}

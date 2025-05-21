@@ -111,4 +111,21 @@
   .success-toast {
     @apply bg-green-600 text-white border-green-600/80;
   }
+
+  /* Purple-Red theme specific styles */
+  .purple-gradient {
+    @apply bg-gradient-to-br from-[#280E3A] to-[#9333EA];
+  }
+
+  .purple-red-gradient {
+    @apply bg-gradient-to-br from-[#280E3A] via-[#9333EA] to-[#FF4560];
+  }
+
+  .purple-card {
+    @apply bg-card border border-primary/20 shadow-[0_4px_10px_rgba(217,70,239,0.2)];
+  }
+
+  .purple-input {
+    @apply bg-muted border border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20;
+  }
 }
