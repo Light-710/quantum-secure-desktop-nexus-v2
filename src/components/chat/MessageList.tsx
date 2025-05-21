@@ -33,12 +33,12 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
   const getAvatarColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'admin':
-        return 'bg-red-500';
+        return 'bg-destructive';
       case 'manager':
-        return 'bg-blue-500';
+        return 'bg-primary';
       case 'employee':
       case 'tester':
-        return 'bg-green-500';
+        return 'bg-green-600';
       default:
         return 'bg-primary';
     }
@@ -89,11 +89,11 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
               
               <div className={cn(
                 "mt-1 rounded-md py-2 px-3",
-                message.isLocal && "bg-muted/70",
+                message.isLocal ? "bg-muted" : "bg-card/50",
                 message.isStatusMessage && "text-muted-foreground text-xs italic text-center py-1"
               )}>
                 {message.is_file ? (
-                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/50">
+                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted">
                     <div className="flex items-center gap-2">
                       <File className="h-4 w-4 text-primary" />
                       <span className="text-sm">{message.content || message.file_path?.split('/').pop()}</span>

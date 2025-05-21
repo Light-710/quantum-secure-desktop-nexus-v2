@@ -48,7 +48,7 @@ const TesterDashboard = () => {
   return (
     <DashboardLayout>
       {/* Welcome Card */}
-      <Card className="border-warm-100/30 mb-6 bg-gradient-to-r from-warm-50 to-white">
+      <Card className="glass-panel border-warm-100/30 mb-6">
         <CardHeader>
           <CardTitle className="text-2xl text-warm-300">Welcome, {user?.name}</CardTitle>
           <CardDescription className="text-warm-200">
@@ -61,7 +61,7 @@ const TesterDashboard = () => {
         {/* Main Content - Left Side (3 columns) */}
         <div className="lg:col-span-3 space-y-6">
           {/* Virtual Desktop Access */}
-          <Card className="border-warm-100/30 bg-white">
+          <Card className="glass-panel border-warm-100/30">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl text-warm-300 flex items-center">
                 <Monitor className="mr-2 text-warm-100" size={20} />
@@ -122,7 +122,7 @@ const TesterDashboard = () => {
           </Card>
           
           {/* Assigned Projects Preview */}
-          <Card className="border-warm-100/30 bg-white">
+          <Card className="glass-panel border-warm-100/30">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-xl text-warm-300">Projects</CardTitle>
@@ -150,7 +150,6 @@ const TesterDashboard = () => {
                     <div key={project.id} className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
                       <h4 className="text-cyber-teal font-medium">{project.name}</h4>
                       <div className="flex justify-between text-sm mt-1">
-                        {/* <span className="text-cyber-gray">{project.description}</span> */}
                         <span className={
                           project.status === 'In Progress' 
                             ? 'text-blue-500' 

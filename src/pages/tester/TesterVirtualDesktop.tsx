@@ -217,7 +217,7 @@ const TesterVirtualDesktop = () => {
 
   return (
     <DashboardLayout>
-      <Card className="border-primary/10 mb-6 bg-background/80 backdrop-blur-sm">
+      <Card className="glass-panel border-primary/10 mb-6">
         <CardHeader>
           <CardTitle className="text-2xl text-primary/80">Virtual Desktop Access</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -227,7 +227,7 @@ const TesterVirtualDesktop = () => {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-primary/10 h-full bg-background/80 backdrop-blur-sm">
+        <Card className="glass-panel border-primary/10 h-full">
           <CardHeader>
             <CardTitle className="text-xl text-primary/80 flex items-center">
               <Monitor className="mr-2 text-muted-foreground" size={20} />
@@ -248,7 +248,7 @@ const TesterVirtualDesktop = () => {
                 </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="windows" className="border rounded-md border-input p-4 bg-card/50">
+              <TabsContent value="windows" className="border rounded-md border-input p-4 bg-card">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -292,10 +292,10 @@ const TesterVirtualDesktop = () => {
                   </div>
                   
                   {getVmStatus('windows').toLowerCase() === 'running' && !canConnect.windows && (
-                    <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
+                    <div className="mt-3 p-2 bg-muted text-amber-500 rounded border border-amber-500/30">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
-                          <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
+                          <div className="w-8 h-8 border-4 border-amber-300/20 border-t-amber-500 rounded-full animate-spin"></div>
                           <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
                             {getRemainingTime('windows')}
                           </div>
@@ -327,7 +327,7 @@ const TesterVirtualDesktop = () => {
                 </div>
               </TabsContent>
               
-              <TabsContent value="linux" className="border rounded-md border-input p-4 bg-card/50">
+              <TabsContent value="linux" className="border rounded-md border-input p-4 bg-card">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -371,10 +371,10 @@ const TesterVirtualDesktop = () => {
                   </div>
                   
                   {getVmStatus('linux').toLowerCase() === 'running' && !canConnect.linux && (
-                    <div className="mt-3 p-2 bg-amber-50 text-amber-700 rounded border border-amber-200">
+                    <div className="mt-3 p-2 bg-muted text-amber-500 rounded border border-amber-500/30">
                       <div className="flex items-center">
                         <div className="mr-3 relative">
-                          <div className="w-8 h-8 border-4 border-amber-200 border-t-amber-500 rounded-full animate-spin"></div>
+                          <div className="w-8 h-8 border-4 border-amber-300/20 border-t-amber-500 rounded-full animate-spin"></div>
                           <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
                             {getRemainingTime('linux')}
                           </div>
@@ -409,7 +409,7 @@ const TesterVirtualDesktop = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-primary/10 h-full bg-background/80 backdrop-blur-sm">
+        <Card className="glass-panel border-primary/10 h-full">
           <CardHeader>
             <CardTitle className="text-xl text-primary/80 flex items-center">
               <Server className="mr-2 text-muted-foreground" size={20} />
