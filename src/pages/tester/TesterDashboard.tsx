@@ -48,10 +48,10 @@ const TesterDashboard = () => {
   return (
     <DashboardLayout>
       {/* Welcome Card */}
-      <Card className="glass-panel border-warm-100/30 mb-6">
+      <Card className="dark-card border-border mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl text-warm-300">Welcome, {user?.name}</CardTitle>
-          <CardDescription className="text-warm-200">
+          <CardTitle className="text-2xl text-foreground">Welcome, {user?.name}</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Access your testing resources and assigned projects from this dashboard.
           </CardDescription>
         </CardHeader>
@@ -61,24 +61,24 @@ const TesterDashboard = () => {
         {/* Main Content - Left Side (3 columns) */}
         <div className="lg:col-span-3 space-y-6">
           {/* Virtual Desktop Access */}
-          <Card className="glass-panel border-warm-100/30">
+          <Card className="dark-card border-border hover:border-primary/50 transition-colors">
             <CardHeader className="pb-2">
-              <CardTitle className="text-xl text-warm-300 flex items-center">
-                <Monitor className="mr-2 text-warm-100" size={20} />
+              <CardTitle className="text-xl text-foreground flex items-center">
+                <Monitor className="mr-2 text-primary" size={20} />
                 Virtual Desktop Access
               </CardTitle>
-              <CardDescription className="text-warm-200">
+              <CardDescription className="text-muted-foreground">
                 Access your secure testing environments
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Windows VM */}
-                <div className="border border-warm-100/20 rounded-md p-4 bg-warm-50/20">
+                <div className="border border-border rounded-md p-4 bg-card">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-warm-300 font-medium">Windows VM</h4>
-                      <p className="text-sm text-warm-200">
+                      <h4 className="text-foreground font-medium">Windows VM</h4>
+                      <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
                           isLoadingVmStatus ? "text-yellow-500" :
@@ -93,11 +93,11 @@ const TesterDashboard = () => {
                 </div>
                 
                 {/* Linux VM */}
-                <div className="border border-warm-100/20 rounded-md p-4 bg-warm-50/20">
+                <div className="border border-border rounded-md p-4 bg-card">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-warm-300 font-medium">Linux VM</h4>
-                      <p className="text-sm text-warm-200">
+                      <h4 className="text-foreground font-medium">Linux VM</h4>
+                      <p className="text-sm text-muted-foreground">
                         Status: {' '}
                         <span className={
                           isLoadingVmStatus ? "text-yellow-500" :
@@ -113,7 +113,7 @@ const TesterDashboard = () => {
               </div>
               
               <Button 
-                className="w-full mt-4 bg-warm-200 hover:bg-warm-300 text-white"
+                className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={() => navigate('/dashboard/tester/desktop')}
               >
                 Manage Virtual Desktops
@@ -122,33 +122,33 @@ const TesterDashboard = () => {
           </Card>
           
           {/* Assigned Projects Preview */}
-          <Card className="glass-panel border-warm-100/30">
+          <Card className="dark-card border-border hover:border-accent/50 transition-colors">
             <CardHeader className="pb-2">
               <div className="flex justify-between items-center">
-                <CardTitle className="text-xl text-warm-300">Projects</CardTitle>
+                <CardTitle className="text-xl text-foreground">Projects</CardTitle>
                 <Button 
                   variant="ghost" 
-                  className="text-warm-200 hover:text-warm-300"
+                  className="text-muted-foreground hover:text-foreground"
                   onClick={() => navigate('/dashboard/tester/projects')}
                 >
                   View All
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
-              <CardDescription className="text-warm-200">
+              <CardDescription className="text-muted-foreground">
                 Projects assigned to you
               </CardDescription>
             </CardHeader>
             <CardContent>
               {isLoadingProjects ? (
                 <div className="flex justify-center p-4">
-                  <div className="animate-spin h-6 w-6 border-2 border-warm-200 border-t-warm-300 rounded-full"></div>
+                  <div className="animate-spin h-6 w-6 border-2 border-muted-foreground border-t-primary rounded-full"></div>
                 </div>
               ) : projects.length > 0 ? (
                 <div className="space-y-4">
                   {projects.map((project) => (
-                    <div key={project.id} className="border border-cyber-teal/20 rounded-md p-3 bg-cyber-dark-blue/20">
-                      <h4 className="text-cyber-teal font-medium">{project.name}</h4>
+                    <div key={project.id} className="border border-border rounded-md p-3 bg-card">
+                      <h4 className="text-foreground font-medium">{project.name}</h4>
                       <div className="flex justify-between text-sm mt-1">
                         <span className={
                           project.status === 'In Progress' 
@@ -160,18 +160,18 @@ const TesterDashboard = () => {
                           {project.status}
                         </span>
                       </div>
-                      <p className="text-warm-200 text-sm line-clamp-2 mt-1">{project.description}</p>
+                      <p className="text-muted-foreground text-sm line-clamp-2 mt-1">{project.description}</p>
                     </div>
                   ))}
                   
                   {projects.length > 3 && (
-                    <div className="text-center text-warm-200 text-sm">
+                    <div className="text-center text-muted-foreground text-sm">
                       +{projects.length - 3} more projects
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="text-center py-6 text-warm-200">
+                <div className="text-center py-6 text-muted-foreground">
                   No projects assigned to you yet.
                 </div>
               )}
