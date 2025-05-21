@@ -49,10 +49,10 @@ const ManagerDashboard = () => {
   return (
     <DashboardLayout>
       {/* Welcome Card */}
-      <Card className="glass-panel border-warm-100/30 mb-6">
+      <Card className="border-border/40 mb-6 bg-card shadow-md">
         <CardHeader>
-          <CardTitle className="text-2xl text-warm-300">Manager Dashboard</CardTitle>
-          <CardDescription className="text-warm-100/70">
+          <CardTitle className="text-2xl text-foreground">Manager Dashboard</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Welcome back, {user?.name}. Manage your team and projects.
           </CardDescription>
         </CardHeader>
@@ -60,38 +60,38 @@ const ManagerDashboard = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         {/* Team Summary */}
-        <Card className="glass-panel border-warm-100/30">
+        <Card className="border-border/40 bg-card shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-warm-300 flex items-center">
-              <Users className="mr-2 text-warm-200" size={20} />
+            <CardTitle className="text-xl text-foreground flex items-center">
+              <Users className="mr-2 text-primary" size={20} />
               Team Summary
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoadingTeam ? (
               <div className="flex justify-center p-4">
-                <div className="animate-spin h-6 w-6 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-warm-300 mb-2">
-                  {teamMembers.length} <span className="text-warm-100/70 text-lg">Testers</span>
+                <div className="text-2xl font-bold text-foreground mb-2">
+                  {teamMembers.length} <span className="text-muted-foreground text-lg">Testers</span>
                 </div>
                 <div className="space-y-4 mt-4">
                   {teamMembers.slice(0, 3).map((member) => (
                     <div key={member.employee_id} className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-warm-300/20 flex items-center justify-center text-warm-300">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-foreground">
                           {member.name.charAt(0)}
                         </div>
-                        <span className="ml-3 text-warm-100">{member.name}</span>
+                        <span className="ml-3 text-foreground">{member.name}</span>
                       </div>
                     </div>
                   ))}
                   {teamMembers.length > 3 && (
                     <Button 
                       variant="ghost" 
-                      className="w-full text-warm-300 hover:text-warm-300/80"
+                      className="w-full text-primary hover:text-primary/80"
                       onClick={() => navigate('/dashboard/manager/team')}
                     >
                       View All Team Members
@@ -104,10 +104,10 @@ const ManagerDashboard = () => {
         </Card>
 
         {/* Projects Summary */}
-        <Card className="glass-panel border-warm-100/30">
+        <Card className="border-border/40 bg-card shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-warm-300 flex items-center">
-              <svg className="mr-2 text-warm-200" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <CardTitle className="text-xl text-foreground flex items-center">
+              <svg className="mr-2 text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M5 3V19H21V21H3V3H5Z" fill="currentColor"/>
                 <path d="M19.1 8.7L14.7 13.1L12.1 10.5L9 13.6L7.6 12.2L12.1 7.7L14.7 10.3L17.7 7.3L16.3 5.9L19.8 6.2L19.5 9.7L18.1 8.3L18.1 8.7L19.1 8.7Z" fill="currentColor"/>
               </svg>
@@ -117,25 +117,26 @@ const ManagerDashboard = () => {
           <CardContent>
             {isLoadingProjects ? (
               <div className="flex justify-center p-4">
-                <div className="animate-spin h-6 w-6 border-2 border-warm-300 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
               </div>
             ) : (
               <>
-                <div className="text-2xl font-bold text-warm-300 mb-2">
-                  {projects.length} <span className="text-warm-100/70 text-lg">Active Projects</span>
+                <div className="text-2xl font-bold text-foreground mb-2">
+                  {projects.length} <span className="text-muted-foreground text-lg">Active Projects</span>
                 </div>
                 <div className="space-y-4 mt-4">
                   {projects.slice(0, 3).map((project) => (
                     <div key={project.id} className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 rounded bg-warm-300/20 flex items-center justify-center text-warm-300">
+                        <div className="w-8 h-8 rounded bg-primary/20 flex items-center justify-center text-foreground">
                           {project.name.charAt(0)}
                         </div>
-                        <span className="ml-3 text-warm-100">{project.name}</span>
+                        <span className="ml-3 text-foreground">{project.name}</span>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        project.status.toLowerCase() === 'in progress' ? 'bg-blue-500/20 text-blue-500' : project.status.toLowerCase() === 'complete' ? 'bg-green-500/20 text-green-500' 
-                            : 'bg-yellow-500/20 text-yellow-500'
+                        project.status.toLowerCase() === 'in progress' ? 'bg-blue-500/20 text-blue-400' : 
+                        project.status.toLowerCase() === 'complete' ? 'bg-green-500/20 text-green-400' : 
+                        'bg-yellow-500/20 text-yellow-300'
                       }`}>
                         {project.status}
                       </span>
@@ -144,7 +145,7 @@ const ManagerDashboard = () => {
                   {projects.length > 3 && (
                     <Button 
                       variant="ghost" 
-                      className="w-full text-warm-300 hover:text-warm-300/80"
+                      className="w-full text-primary hover:text-primary/80"
                       onClick={() => navigate('/dashboard/manager/projects')}
                     >
                       View All Projects
@@ -157,15 +158,15 @@ const ManagerDashboard = () => {
         </Card>
 
         {/* VM Status - Only showing manager's own VMs */}
-        <Card className="glass-panel border-warm-100/30">
+        <Card className="border-border/40 bg-card shadow-md">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-warm-300 flex items-center">
-              <Monitor className="mr-2 text-warm-200" size={20} />
+            <CardTitle className="text-xl text-foreground flex items-center">
+              <Monitor className="mr-2 text-primary" size={20} />
               Virtual Desktop
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-warm-100 space-y-4">
+            <div className="text-foreground space-y-4">
               <p>Access your personal virtual desktop environments.</p>
               <Button 
                 className="w-full" 
@@ -179,10 +180,10 @@ const ManagerDashboard = () => {
       </div>
 
       {/* Chat Panel */}
-      <Card className="glass-panel border-warm-100/30 mb-6">
+      <Card className="border-border/40 bg-card shadow-md mb-6">
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl text-warm-300">Project Chat</CardTitle>
-          <CardDescription className="text-warm-100/70">
+          <CardTitle className="text-xl text-foreground">Project Chat</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Communicate with your team members
           </CardDescription>
         </CardHeader>

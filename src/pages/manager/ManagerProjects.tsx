@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import ChatPanel from '@/components/chat/ChatPanel';
@@ -362,10 +361,10 @@ const ManagerProjects = () => {
 
   const getStatusBadgeColor = (status: string) => {
     const statusLower = status.toLowerCase();
-    if (statusLower === 'in progress') return 'bg-blue-100 text-blue-800';
-    if (statusLower === 'complete') return 'bg-green-100 text-green-800';
-    if (statusLower === 'not started') return 'bg-yellow-100 text-yellow-800';
-    return 'bg-gray-100 text-gray-800';
+    if (statusLower === 'in progress') return 'bg-blue-500/20 text-blue-400';
+    if (statusLower === 'complete') return 'bg-green-500/20 text-green-400';
+    if (statusLower === 'not started') return 'bg-yellow-500/20 text-yellow-300';
+    return 'bg-gray-500/20 text-gray-400';
   };
 
   return (
@@ -373,11 +372,11 @@ const ManagerProjects = () => {
       <TooltipProvider>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <Card className="glass-panel border-warm-100/30 mb-6">
+            <Card className="border-border/40 bg-card shadow-md mb-6">
               <CardHeader className="flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="text-2xl text-warm-300">Projects Overview</CardTitle>
-                  <CardDescription className="text-warm-100/70">
+                  <CardTitle className="text-2xl text-foreground">Projects Overview</CardTitle>
+                  <CardDescription className="text-muted-foreground">
                     Manage and monitor all active projects
                   </CardDescription>
                 </div>
@@ -412,7 +411,7 @@ const ManagerProjects = () => {
                   </Select>
                   <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button variant="default" className="bg-warm-300 hover:bg-warm-400">
+                      <Button variant="default">
                         <PlusCircle className="w-4 h-4 mr-2" />
                         New Project
                       </Button>
@@ -505,7 +504,6 @@ const ManagerProjects = () => {
                             <Button 
                               type="submit" 
                               disabled={createProjectMutation.isPending}
-                              className="bg-warm-300 hover:bg-warm-400"
                             >
                               {createProjectMutation.isPending && (
                                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
@@ -522,7 +520,7 @@ const ManagerProjects = () => {
               <CardContent>
                 {isLoading ? (
                   <div className="flex justify-center p-4">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-warm-300"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                   </div>
                 ) : filteredProjects.length > 0 ? (
                   <Table>
@@ -538,7 +536,7 @@ const ManagerProjects = () => {
                       {filteredProjects.map((project) => (
                         <TableRow key={project.id}>
                           <TableCell>
-                            <div className="font-medium">{project.name}</div>
+                            <div className="font-medium text-foreground">{project.name}</div>
                             <div className="text-xs text-muted-foreground mt-1">{project.description.substring(0, 50)}...</div>
                           </TableCell>
                           <TableCell>
@@ -546,7 +544,7 @@ const ManagerProjects = () => {
                               {project.status}
                             </span>
                           </TableCell>
-                          <TableCell>{project.end_date ? new Date(project.end_date).toLocaleDateString() : 'Not set'}</TableCell>
+                          <TableCell className="text-foreground">{project.end_date ? new Date(project.end_date).toLocaleDateString() : 'Not set'}</TableCell>
                           <TableCell>
                             <div className="flex justify-end gap-2">
                               <Tooltip>
@@ -656,7 +654,7 @@ const ManagerProjects = () => {
                     </TableBody>
                   </Table>
                 ) : (
-                  <div className="text-center p-4 text-warm-100/70">
+                  <div className="text-center p-4 text-muted-foreground">
                     No projects found
                   </div>
                 )}
@@ -823,7 +821,6 @@ const ManagerProjects = () => {
                   <Button 
                     type="submit" 
                     disabled={updateProjectMutation.isPending}
-                    className="bg-warm-300 hover:bg-warm-400"
                   >
                     {updateProjectMutation.isPending && (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
@@ -894,7 +891,6 @@ const ManagerProjects = () => {
                   <Button 
                     type="submit" 
                     disabled={assignUserMutation.isPending || testers.length === 0}
-                    className="bg-warm-300 hover:bg-warm-400"
                   >
                     {assignUserMutation.isPending && (
                       <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent mr-2" />
