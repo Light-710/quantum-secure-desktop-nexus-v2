@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -252,13 +253,13 @@ const AdminProjects = () => {
     const statusLower = status.toLowerCase();
     switch (true) {
       case statusLower === 'in progress':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'bg-green-900/40 text-green-300 border-green-800';
       case statusLower === 'complete':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+        return 'bg-blue-900/40 text-blue-300 border-blue-800';
       case statusLower === 'not started':
-        return 'bg-amber-100 text-amber-800 border-amber-300';
+        return 'bg-amber-900/40 text-amber-300 border-amber-800';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'bg-gray-800 text-gray-300 border-gray-700';
     }
   };
 
@@ -271,55 +272,55 @@ const AdminProjects = () => {
   return (
     <DashboardLayout>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="glass-panel border-[#D6D2C9]">
+        <Card className="dark-card border-border">
           <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">Active Projects</CardTitle>
+            <CardTitle className="text-lg text-foreground">Active Projects</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-[#8A9B6E]">
+            <div className="text-3xl font-bold text-primary">
               {activeProjects}
             </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Current ongoing projects</p>
+            <p className="text-sm text-muted-foreground mt-1">Current ongoing projects</p>
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-[#D6D2C9]">
+        <Card className="dark-card border-border">
           <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">Completed Projects</CardTitle>
+            <CardTitle className="text-lg text-foreground">Completed Projects</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-[#6D98BA]">
+            <div className="text-3xl font-bold text-accent">
               {completedProjects}
             </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Successfully delivered</p>
+            <p className="text-sm text-muted-foreground mt-1">Successfully delivered</p>
           </CardContent>
         </Card>
 
-        <Card className="glass-panel border-[#D6D2C9]">
+        <Card className="dark-card border-border">
           <CardHeader>
-            <CardTitle className="text-lg text-[#3E3D3A]">Not Started</CardTitle>
+            <CardTitle className="text-lg text-foreground">Not Started</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-[#C47D5F]">
+            <div className="text-3xl font-bold text-destructive">
               {notStartedProjects}
             </div>
-            <p className="text-sm text-[#8E8B85] mt-1">Projects requiring attention</p>
+            <p className="text-sm text-muted-foreground mt-1">Projects requiring attention</p>
           </CardContent>
         </Card>
       </div>
       <br />
-      <Card className="glass-panel border-[#D6D2C9] mb-6">
+      <Card className="dark-card border-border mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-2xl text-[#3E3D3A]">Project Management</CardTitle>
-            <CardDescription className="text-[#8E8B85]">
+            <CardTitle className="text-2xl text-foreground">Project Management</CardTitle>
+            <CardDescription className="text-muted-foreground">
               View and manage all company projects
             </CardDescription>
           </div>
           <div className="flex space-x-2">
             <Button
               variant="outline"
-              className="border-[#D6D2C9] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
+              className="border-border hover:bg-muted hover:text-primary"
               onClick={() => refetch()}
               disabled={isLoading}
             >
@@ -333,16 +334,16 @@ const AdminProjects = () => {
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-[#C47D5F] hover:bg-[#B36F51] text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   New Project
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
+              <DialogContent className="sm:max-w-[500px] bg-background border-border">
                 <DialogHeader>
-                  <DialogTitle>Create New Project</DialogTitle>
-                  <DialogDescription>
+                  <DialogTitle className="text-foreground">Create New Project</DialogTitle>
+                  <DialogDescription className="text-muted-foreground">
                     Fill in the details to create a new project.
                   </DialogDescription>
                 </DialogHeader>
@@ -353,9 +354,9 @@ const AdminProjects = () => {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Project Name</FormLabel>
+                          <FormLabel className="text-foreground">Project Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Project name" {...field} />
+                            <Input placeholder="Project name" className="dark-input" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -367,11 +368,11 @@ const AdminProjects = () => {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description</FormLabel>
+                          <FormLabel className="text-foreground">Description</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Project description" 
-                              className="min-h-[100px]" 
+                              className="min-h-[100px] dark-input" 
                               {...field} 
                             />
                           </FormControl>
@@ -386,9 +387,9 @@ const AdminProjects = () => {
                         name="start_date"
                         render={({ field }) => (
                           <FormItem className="flex-1">
-                            <FormLabel>Start Date</FormLabel>
+                            <FormLabel className="text-foreground">Start Date</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
+                              <Input type="date" className="dark-input" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -400,9 +401,9 @@ const AdminProjects = () => {
                         name="end_date"
                         render={({ field }) => (
                           <FormItem className="flex-1">
-                            <FormLabel>End Date</FormLabel>
+                            <FormLabel className="text-foreground">End Date</FormLabel>
                             <FormControl>
-                              <Input type="date" {...field} />
+                              <Input type="date" className="dark-input" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -415,9 +416,9 @@ const AdminProjects = () => {
                       name="scope"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Scope</FormLabel>
+                          <FormLabel className="text-foreground">Scope</FormLabel>
                           <FormControl>
-                            <Input placeholder="Project scope" {...field} />
+                            <Input placeholder="Project scope" className="dark-input" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -429,11 +430,12 @@ const AdminProjects = () => {
                       name="managerId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Manager ID</FormLabel>
+                          <FormLabel className="text-foreground">Manager ID</FormLabel>
                           <FormControl>
                             <Input 
                               type="text"
                               placeholder="Employee ID of manager" 
+                              className="dark-input"
                               {...field}
                               onChange={(e) => {
                                 // Allow empty field or numeric input
@@ -443,7 +445,7 @@ const AdminProjects = () => {
                               }}
                             />
                           </FormControl>
-                          <FormDescription>
+                          <FormDescription className="text-muted-foreground">
                             Enter the employee ID of the project manager
                           </FormDescription>
                           <FormMessage />
@@ -454,7 +456,7 @@ const AdminProjects = () => {
                     <DialogFooter>
                       <Button 
                         type="submit" 
-                        className="bg-[#C47D5F] hover:bg-[#B36F51] text-white"
+                        className="bg-primary hover:bg-primary/90 text-white"
                         disabled={createProjectMutation.isPending}
                       >
                         {createProjectMutation.isPending && (
@@ -470,17 +472,17 @@ const AdminProjects = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border border-[#D6D2C9] overflow-hidden">
+          <div className="rounded-md border border-border overflow-hidden">
             <Table>
-              <TableHeader className="bg-[#F7F5F2]">
+              <TableHeader className="bg-muted">
                 <TableRow>
-                  <TableHead className="text-[#8E8B85]">Project ID</TableHead>
-                  <TableHead className="text-[#8E8B85]">Name</TableHead>
-                  <TableHead className="text-[#8E8B85]">Status</TableHead>
-                  <TableHead className="text-[#8E8B85]">Archived</TableHead>
-                  <TableHead className="text-[#8E8B85]">Timeline</TableHead>
-                  <TableHead className="text-[#8E8B85]">Manager</TableHead>
-                  <TableHead className="text-[#8E8B85]">Actions</TableHead>
+                  <TableHead className="text-muted-foreground">Project ID</TableHead>
+                  <TableHead className="text-muted-foreground">Name</TableHead>
+                  <TableHead className="text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-muted-foreground">Archived</TableHead>
+                  <TableHead className="text-muted-foreground">Timeline</TableHead>
+                  <TableHead className="text-muted-foreground">Manager</TableHead>
+                  <TableHead className="text-muted-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -488,18 +490,18 @@ const AdminProjects = () => {
                   <TableRow>
                     <TableCell colSpan={6} className="h-24 text-center">
                       <div className="flex justify-center items-center h-full">
-                        <div className="animate-spin h-6 w-6 border-2 border-[#C47D5F] border-t-transparent rounded-full mr-2"></div>
-                        <span className="text-[#8E8B85]">Loading projects...</span>
+                        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full mr-2"></div>
+                        <span className="text-muted-foreground">Loading projects...</span>
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : projects.length > 0 ? (
                   projects.map((project: Project) => (
-                    <TableRow key={project.id} className="hover:bg-[#F7F5F2]">
-                      <TableCell className="font-mono text-sm text-[#8E8B85]">{project.id}</TableCell>
+                    <TableRow key={project.id} className="hover:bg-muted/50">
+                      <TableCell className="font-mono text-sm text-muted-foreground">{project.id}</TableCell>
                       <TableCell>
-                        <div className="font-medium text-[#3E3D3A]">{project.name}</div>
-                        <div className="text-xs text-[#8E8B85] mt-1">{project.description}</div>
+                        <div className="font-medium text-foreground">{project.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{project.description}</div>
                       </TableCell>
                       <TableCell>
                         <Badge className={`${getStatusColor(project.status)} border text-xs font-normal`}>
@@ -507,12 +509,12 @@ const AdminProjects = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge className={`border text-xs font-normal ${project.archived ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        <Badge className={`border text-xs font-normal ${project.archived ? 'bg-green-900/40 text-green-300 border-green-800' : 'bg-red-900/40 text-red-300 border-red-800'}`}>
                           {project.archived ? 'True' : 'False'}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center text-[#8E8B85]">
+                        <div className="flex items-center text-muted-foreground">
                           <Calendar className="h-3 w-3 mr-1" />
                           <span className="text-xs">
                             {project.start_date && formatDate(project.start_date)} - 
@@ -520,7 +522,7 @@ const AdminProjects = () => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-[#3E3D3A]">
+                      <TableCell className="text-sm text-foreground">
                         <p> {project.manager_name || 'Not specified'}</p>
                       </TableCell>
                       <TableCell>
@@ -528,7 +530,7 @@ const AdminProjects = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-8 border-[#D6D2C9] hover:bg-[#F7F5F2] hover:text-[#C47D5F]"
+                            className="h-8 border-border hover:bg-muted hover:text-primary"
                             onClick={() => handleEditClick(project)}
                           >
                             <Edit className="h-4 w-4 mr-1" />
@@ -539,27 +541,27 @@ const AdminProjects = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="h-8 border-[#D6D2C9] hover:bg-[#F7F5F2] hover:text-[#A84332]"
+                                className="h-8 border-border hover:bg-muted hover:text-destructive"
                                 onClick={() => setArchiveProjectId(project.id)}
                               >
                                 <Archive className="h-4 w-4 mr-1" />
                                 Archive
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent>
+                            <AlertDialogContent className="bg-background border-border">
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Archive Project</AlertDialogTitle>
-                                <AlertDialogDescription>
+                                <AlertDialogTitle className="text-foreground">Archive Project</AlertDialogTitle>
+                                <AlertDialogDescription className="text-muted-foreground">
                                   Are you sure you want to archive this project? This will change the project status and it will no longer be active.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel onClick={() => setArchiveProjectId(null)}>
+                                <AlertDialogCancel className="bg-muted text-foreground hover:bg-muted/80" onClick={() => setArchiveProjectId(null)}>
                                   Cancel
                                 </AlertDialogCancel>
                                 <AlertDialogAction 
                                   onClick={handleArchiveProject}
-                                  className="bg-[#A84332]"
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
                                   {archiveProjectMutation.isPending && (
                                     <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
@@ -575,7 +577,7 @@ const AdminProjects = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="h-24 text-center text-[#8E8B85]">
+                    <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                       No projects found
                     </TableCell>
                   </TableRow>
@@ -588,10 +590,10 @@ const AdminProjects = () => {
 
       {/* Edit Project Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] bg-background border-border">
           <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-foreground">Edit Project</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
               Update the details of this project.
             </DialogDescription>
           </DialogHeader>
@@ -602,9 +604,9 @@ const AdminProjects = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project Name</FormLabel>
+                    <FormLabel className="text-foreground">Project Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Project name" {...field} />
+                      <Input placeholder="Project name" className="dark-input" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -616,11 +618,11 @@ const AdminProjects = () => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel className="text-foreground">Description</FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Project description" 
-                        className="min-h-[100px]" 
+                        className="min-h-[100px] dark-input" 
                         {...field} 
                       />
                     </FormControl>
@@ -634,18 +636,18 @@ const AdminProjects = () => {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel className="text-foreground">Status</FormLabel>
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-muted text-foreground border-border">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent>
+                      <SelectContent className="bg-background border-border">
                         <SelectItem value="not started">Not Started</SelectItem>
                         <SelectItem value="in progress">In Progress</SelectItem>
                         <SelectItem value="complete">Complete</SelectItem>
@@ -662,9 +664,9 @@ const AdminProjects = () => {
                   name="start_date"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel className="text-foreground">Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" className="dark-input" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -676,9 +678,9 @@ const AdminProjects = () => {
                   name="end_date"
                   render={({ field }) => (
                     <FormItem className="flex-1">
-                      <FormLabel>End Date</FormLabel>
+                      <FormLabel className="text-foreground">End Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input type="date" className="dark-input" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -691,9 +693,9 @@ const AdminProjects = () => {
                 name="scope"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Scope</FormLabel>
+                    <FormLabel className="text-foreground">Scope</FormLabel>
                     <FormControl>
-                      <Input placeholder="Project scope" {...field} />
+                      <Input placeholder="Project scope" className="dark-input" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -705,11 +707,12 @@ const AdminProjects = () => {
                 name="managerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Manager ID</FormLabel>
+                    <FormLabel className="text-foreground">Manager ID</FormLabel>
                     <FormControl>
                       <Input 
                         type="text"
                         placeholder="Employee ID of manager" 
+                        className="dark-input"
                         value={field.value?.toString() || ''}
                         onChange={(e) => {
                           // Allow empty field or numeric input
@@ -719,7 +722,7 @@ const AdminProjects = () => {
                         }}
                       />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className="text-muted-foreground">
                       Enter the employee ID of the project manager
                     </FormDescription>
                     <FormMessage />
@@ -731,13 +734,14 @@ const AdminProjects = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
+                  className="bg-muted text-foreground hover:bg-muted/80"
                   onClick={() => setIsEditDialogOpen(false)}
                 >
                   Cancel
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-[#C47D5F] hover:bg-[#B36F51] text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                   disabled={updateProjectMutation.isPending}
                 >
                   {updateProjectMutation.isPending && (
@@ -755,3 +759,4 @@ const AdminProjects = () => {
 };
 
 export default AdminProjects;
+

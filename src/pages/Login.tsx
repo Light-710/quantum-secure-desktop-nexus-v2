@@ -22,14 +22,14 @@ const Login = () => {
     <div className="relative min-h-screen flex flex-col items-center justify-center p-4 bg-background">
       {/* Logo */}
       <div className="absolute top-16 left-1/2 transform -translate-x-1/2">
-        <h1 className="text-5xl md:text-6xl font-bold text-[#C47D5F]">PTNG</h1>
+        <h1 className="text-5xl md:text-6xl font-bold text-primary">PTNG</h1>
       </div>
       
       {/* Login card */}
-      <Card className="w-[350px] sm:w-[400px] shadow-subtle border-[#D6D2C9] bg-[#FCFAF7]">
+      <Card className="w-[350px] sm:w-[400px] shadow-subtle border-border bg-card">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl text-[#C47D5F]">Access Terminal</CardTitle>
-          <CardDescription className="text-[#A8A39D]">
+          <CardTitle className="text-2xl text-primary">Access Terminal</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Enter your credentials to access the system
           </CardDescription>
         </CardHeader>
@@ -37,9 +37,9 @@ const Login = () => {
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="relative">
-                <User className="absolute left-3 top-3 h-5 w-5 text-[#A8A39D]" />
+                <User className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input 
-                  className="pl-10 rounded-md border-[#D6D2C9] bg-white focus-visible:ring-[#C47D5F]/20 focus-visible:border-[#C47D5F]" 
+                  className="pl-10 rounded-md border-border bg-muted focus-visible:ring-primary/20 focus-visible:border-primary" 
                   type="text" 
                   placeholder="Employee ID" 
                   value={employeeId} 
@@ -48,9 +48,9 @@ const Login = () => {
                 />
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-[#A8A39D]" />
+                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input 
-                  className="pl-10 rounded-md border-[#D6D2C9] bg-white focus-visible:ring-[#C47D5F]/20 focus-visible:border-[#C47D5F]" 
+                  className="pl-10 rounded-md border-border bg-muted focus-visible:ring-primary/20 focus-visible:border-primary" 
                   type="password" 
                   placeholder="Password" 
                   value={password} 
@@ -58,7 +58,7 @@ const Login = () => {
                   required 
                 />
               </div>
-              <Button className="w-full bg-[#C47D5F] hover:bg-[#C47D5F]/90 text-white rounded-md" type="submit" disabled={isLoading}>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-md" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <span>Authenticating...</span>
@@ -73,13 +73,13 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
-          <div className="text-sm text-center text-[#A8A39D]">
-            <Link to="/forgot-password" className="text-[#C47D5F] hover:underline">
+          <div className="text-sm text-center text-muted-foreground">
+            <Link to="/forgot-password" className="text-primary hover:underline">
               Forgot Password?
             </Link>
           </div>
-          <div className="text-sm text-center text-[#A8A39D]">
-            <Link to="/admin-setup" className="text-[#C47D5F] hover:underline">
+          <div className="text-sm text-center text-muted-foreground">
+            <Link to="/admin-setup" className="text-primary hover:underline">
               First-time setup? Create admin user
             </Link>
           </div>
