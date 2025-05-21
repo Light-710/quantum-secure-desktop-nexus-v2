@@ -16,7 +16,7 @@
   }
 
   body {
-    @apply bg-background text-foreground relative min-h-screen;
+    @apply bg-background text-foreground relative min-h-screen transition-colors duration-300;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -27,7 +27,7 @@
 @layer components {
   /* Dark panel effect */
   .glass-panel {
-    @apply bg-card border border-border shadow-subtle rounded-lg;
+    @apply bg-card/80 border border-border shadow-subtle rounded-lg backdrop-blur-sm;
   }
   
   /* Button styling */
@@ -61,7 +61,7 @@
   }
   
   .dark-input {
-    @apply bg-muted border border-input rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/20;
+    @apply bg-muted border border-input rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary/40;
   }
   
   .dark-header {
@@ -74,7 +74,7 @@
 
   /* Table styles */
   .dark-table-header {
-    @apply bg-background text-foreground;
+    @apply bg-muted/50 text-foreground font-medium;
   }
   
   .dark-table-row-odd {
@@ -86,7 +86,7 @@
   }
   
   .dark-table-row-hover {
-    @apply hover:bg-[#FFFFFF05];
+    @apply hover:bg-muted/70 transition-colors;
   }
 
   /* Form elements */
@@ -99,7 +99,7 @@
     @apply bg-card shadow-[0_4px_10px_-2px_rgba(0,0,0,0.3)] rounded-lg border border-border/50;
   }
   
-  /* Error toast styles */
+  /* Toast styles */
   .error-toast {
     @apply bg-destructive text-white border-destructive/80;
   }

@@ -19,95 +19,95 @@ export default {
     },
     extend: {
       colors: {
-        border: "#3A3A3C",       // Dark border
-        input: "#3A3A3C",        // Dark input border
-        ring: "#7B68EE",         // Bright purple for focus rings
-        background: "#1A1A1A",   // Dark background
-        foreground: "#E0E0E0",   // Light text for dark background
+        border: "#3F3F46",       // Zinc-700
+        input: "#3F3F46",        // Zinc-700
+        ring: "#8B5CF6",         // Violet-500
+        background: "#18181B",   // Zinc-900
+        foreground: "#E4E4E7",   // Zinc-200
         primary: {
-          DEFAULT: "#7B68EE",    // Bright purple for primary actions
-          foreground: "#FFFFFF", // White text on primary
+          DEFAULT: "#8B5CF6",    // Violet-500
+          foreground: "#FFFFFF", // White
         },
         secondary: {
-          DEFAULT: "#4A4A4C",    // Subtle dark gray for secondary elements
-          foreground: "#E0E0E0", // Light text on secondary
+          DEFAULT: "#3F3F46",    // Zinc-700
+          foreground: "#E4E4E7", // Zinc-200
         },
         destructive: {
-          DEFAULT: "#FF5A5A",    // Bright red for destructive actions
-          foreground: "#FFFFFF", // White text on destructive
+          DEFAULT: "#EF4444",    // Red-500
+          foreground: "#FFFFFF", // White
         },
         muted: {
-          DEFAULT: "#2A2A2A",    // Slightly lighter than background
-          foreground: "#A0A0A0", // Muted text color
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#A1A1AA", // Zinc-400
         },
         accent: {
-          DEFAULT: "#5D5FEF",    // Accent color
-          foreground: "#FFFFFF", // White text on accent
+          DEFAULT: "#7C3AED",    // Violet-600
+          foreground: "#FFFFFF", // White
         },
         popover: {
-          DEFAULT: "#252525",    // Popover background
-          foreground: "#E0E0E0", // Light text on popover
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#E4E4E7", // Zinc-200
         },
         card: {
-          DEFAULT: "#252525",    // Card background
-          foreground: "#E0E0E0", // Light text on card
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#E4E4E7", // Zinc-200
         },
         // Keep previous color groups but update with new dark palette
         modern: {
-          50: "#2A2A2A",        // Darkest shade
-          100: "#252525",       // Dark shade
-          200: "#3A3A3C",       // Border color
-          300: "#A0A0A0",       // Muted text
-          400: "#E0E0E0",       // Light text
+          50: "#27272A",        // Zinc-800
+          100: "#18181B",       // Zinc-900
+          200: "#3F3F46",       // Zinc-700
+          300: "#A1A1AA",       // Zinc-400
+          400: "#E4E4E7",       // Zinc-200
           500: "#FFFFFF",       // White
-          blue: "#7B68EE",      // Primary purple
-          teal: "#5D5FEF",      // Accent color
-          green: "#50C878",     // Success green
-          red: "#FF5A5A",       // Error red
-          purple: "#9580FF",    // Light purple
+          blue: "#8B5CF6",      // Violet-500
+          teal: "#7C3AED",      // Violet-600
+          green: "#10B981",     // Emerald-500
+          red: "#EF4444",       // Red-500
+          purple: "#A78BFA",    // Violet-400
         },
         // Update existing colors to match new theme
         luxury: {
-          50: "#252525",        // Dark shade
-          100: "#2A2A2A",       // Slightly lighter dark
-          200: "#3A3A3C",       // Border color
-          300: "#A0A0A0",       // Muted text
-          400: "#E0E0E0",       // Light text
+          50: "#18181B",        // Zinc-900
+          100: "#27272A",       // Zinc-800
+          200: "#3F3F46",       // Zinc-700
+          300: "#A1A1AA",       // Zinc-400
+          400: "#E4E4E7",       // Zinc-200
           500: "#FFFFFF",       // White
-          accent: "#9580FF",    // Light purple accent
+          accent: "#A78BFA",    // Violet-400
         },
         warm: {
-          50: "#252525",        // Dark shade
-          100: "#9580FF",       // Light purple
-          200: "#7B68EE",       // Primary purple
-          300: "#FF5A5A",       // Error red
+          50: "#18181B",        // Zinc-900
+          100: "#A78BFA",       // Violet-400
+          200: "#8B5CF6",       // Violet-500
+          300: "#EF4444",       // Red-500
         },
         cyber: {
-          "dark": "#1A1A1A",       // Darkest background
-          "dark-blue": "#252525",  // Dark shade
-          "blue": "#7B68EE",       // Primary purple
-          "teal": "#5D5FEF",       // Accent color
-          "green": "#50C878",      // Success green
-          "red": "#FF5A5A",        // Error red
-          "purple": "#9580FF",     // Light purple
-          "gray": "#A0A0A0",       // Muted text
-          "black": "#000000",      // True black
-          "light": "#E0E0E0",      // Light text
+          "dark": "#18181B",       // Zinc-900
+          "dark-blue": "#27272A",  // Zinc-800
+          "blue": "#8B5CF6",       // Violet-500
+          "teal": "#7C3AED",       // Violet-600
+          "green": "#10B981",      // Emerald-500
+          "red": "#EF4444",        // Red-500
+          "purple": "#A78BFA",     // Violet-400
+          "gray": "#A1A1AA",       // Zinc-400
+          "black": "#09090B",      // Zinc-950
+          "light": "#E4E4E7",      // Zinc-200
         },
       },
       backgroundImage: {
-        'warm-gradient': 'linear-gradient(135deg, #252525 0%, #7B68EE 100%)',
-        'cyber-gradient': 'linear-gradient(to right, #1A1A1A, #252525)',
-        'blue-gradient': 'linear-gradient(135deg, #252525 0%, #7B68EE 100%)',
-        'green-gradient': 'linear-gradient(135deg, #1A1A1A 0%, #5D5FEF 50%)',
-        'light-gradient': 'linear-gradient(to right, #2A2A2A, #3A3A3C)',
+        'warm-gradient': 'linear-gradient(135deg, #18181B 0%, #8B5CF6 100%)',
+        'cyber-gradient': 'linear-gradient(to right, #18181B, #27272A)',
+        'blue-gradient': 'linear-gradient(135deg, #27272A 0%, #8B5CF6 100%)',
+        'green-gradient': 'linear-gradient(135deg, #18181B 0%, #7C3AED 50%)',
+        'light-gradient': 'linear-gradient(to right, #27272A, #3F3F46)',
       },
       boxShadow: {
         'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)',
         'elegant': '0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2)',
-        'warm-subtle': '0 4px 6px -1px rgba(123, 104, 238, 0.2), 0 2px 4px -1px rgba(123, 104, 238, 0.1)',
-        'blue-glow': '0 0 10px rgba(123, 104, 238, 0.5), 0 0 20px rgba(123, 104, 238, 0.2)',
-        'green-glow': '0 0 10px rgba(93, 95, 239, 0.5), 0 0 20px rgba(93, 95, 239, 0.2)',
+        'warm-subtle': '0 4px 6px -1px rgba(139, 92, 246, 0.2), 0 2px 4px -1px rgba(139, 92, 246, 0.1)',
+        'blue-glow': '0 0 10px rgba(139, 92, 246, 0.5), 0 0 20px rgba(139, 92, 246, 0.2)',
+        'green-glow': '0 0 10px rgba(124, 58, 237, 0.5), 0 0 20px rgba(124, 58, 237, 0.2)',
       },
       keyframes: {
         "fade-in": {
@@ -145,11 +145,11 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            color: '#E0E0E0', // Match foreground color
+            color: '#E4E4E7', // Match foreground color
             a: {
-              color: '#7B68EE', // Terracotta (primary)
+              color: '#8B5CF6', // Terracotta (primary)
               '&:hover': {
-                color: '#FF5A5A', // Brick Red
+                color: '#EF4444', // Brick Red
               },
             },
             h1: {
@@ -165,13 +165,13 @@ export default {
               color: '#FFFFFF', // White for dark background
             },
             code: {
-              color: '#FF5A5A', // Brick Red
-              backgroundColor: '#1A1A1A', // Dark background
+              color: '#EF4444', // Brick Red
+              backgroundColor: '#18181B', // Dark background
               padding: '0.2em 0.4em',
               borderRadius: '0.25rem',
             },
             pre: {
-              backgroundColor: '#1A1A1A', // Dark background
+              backgroundColor: '#18181B', // Dark background
               code: {
                 backgroundColor: 'transparent',
               },
