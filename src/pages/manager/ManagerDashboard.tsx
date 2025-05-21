@@ -10,6 +10,7 @@ import api from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Monitor, Users } from 'lucide-react';
 import { userManagementService } from '@/services/userManagementService';
+import { vmService, VMStatus } from '@/services/vmService';
 import ChatPanel from '@/components/chat/ChatPanel';
 
 const ManagerDashboard = () => {
@@ -45,6 +46,20 @@ const ManagerDashboard = () => {
       }
     },
   });
+
+    // Fetch VM status
+    const { data: vmStatus, isLoading: isLoadingVmStatus } = useQuery({
+      queryKey: ['vm-status', user?.employee_id],
+      queryFn: async () => {
+        try {
+          return await vmService.getVMStatus();
+        } catch (error) {
+          console.error('Failed to fetch VM status:', error);
+          toast.error('Failed to load VM status');
+          return { windows: 'Stopped', linux: 'Stopped' };
+        }
+      }
+    });
 
   return (
     <DashboardLayout>
@@ -166,15 +181,52 @@ const ManagerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-foreground space-y-4">
-              <p>Access your personal virtual desktop environments.</p>
-              <Button 
-                className="w-full" 
-                onClick={() => navigate('/dashboard/manager/desktop')}
-              >
-                View My Desktop
-              </Button>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Windows VM */}
+                            <div className="border border-border rounded-md p-4 bg-card">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h4 className="text-foreground font-medium">Windows VM</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Status: {' '}
+                                    <span className={
+                                      isLoadingVmStatus ? "text-yellow-500" :
+                                      vmStatus?.windows?.toLowerCase() === 'running' ? "text-green-500" : 
+                                      "text-yellow-500"
+                                    }>
+                                      {isLoadingVmStatus ? 'Checking...' : vmStatus?.windows || 'Not Available'}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Linux VM */}
+                            <div className="border border-border rounded-md p-4 bg-card">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h4 className="text-foreground font-medium">Linux VM</h4>
+                                  <p className="text-sm text-muted-foreground">
+                                    Status: {' '}
+                                    <span className={
+                                      isLoadingVmStatus ? "text-yellow-500" :
+                                      vmStatus?.linux?.toLowerCase() === 'running' ? "text-green-500" : 
+                                      "text-yellow-500"
+                                    }>
+                                      {isLoadingVmStatus ? 'Checking...' : vmStatus?.linux || 'Not Available'}
+                                    </span>
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <Button 
+                            className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+                            onClick={() => navigate('/dashboard/manager/desktop')}
+                          >
+                            Manage Virtual Desktops
+                          </Button>
           </CardContent>
         </Card>
       </div>
