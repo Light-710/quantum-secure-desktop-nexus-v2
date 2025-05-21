@@ -75,6 +75,15 @@ const EmployeeVirtualDesktop = () => {
           // Set initial time remaining for countdown
           setTimeRemaining(prev => ({...prev, [activeOs]: 60}));
           
+          // Make the API call first
+          try {
+            response = await vmService.startVM(activeOs);
+            console.log(`VM ${action} initiated:`, response);
+          } catch (error) {
+            console.error(`Error starting ${activeOs} VM:`, error);
+            // Don't exit the loading state here - we'll let the timer handle it
+          }
+          
           // Start countdown timer
           let remainingTime = 60;
           const countdownInterval = setInterval(() => {
@@ -86,16 +95,13 @@ const EmployeeVirtualDesktop = () => {
             }
           }, 1000);
           
-          // Start the timer to simulate VM startup
-          const timer = setTimeout(async () => {
+          // Start the timer to simulate VM startup - this will run for the full 60 seconds regardless of API response
+          const timer = setTimeout(() => {
             // Clear the starting state
             setStartingOS(prev => ({...prev, [activeOs]: false}));
             
             // Update the OS status
             setOsStatus(prev => ({...prev, [activeOs]: 'Running'}));
-            
-            // Make the API call 
-            response = await vmService.startVM(activeOs);
             
             // Clear the timer reference
             setLoadingTimers(prev => ({...prev, [activeOs]: undefined}));
