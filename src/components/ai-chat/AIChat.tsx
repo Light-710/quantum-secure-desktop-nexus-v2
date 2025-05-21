@@ -110,11 +110,11 @@ const AIChat = () => {
   };
 
   return (
-    <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-background">
-      <div className="p-4 border-b flex justify-between items-center">
+    <div className="flex flex-col h-full border rounded-lg overflow-hidden bg-card">
+      <div className="p-4 border-b border-border flex justify-between items-center">
         <div>
-          <h2 className="font-semibold text-lg text-warm-300">AI Assistant</h2>
-          <p className="text-sm text-warm-200">Ask any question related to your work.</p>
+          <h2 className="font-semibold text-lg text-foreground">AI Assistant</h2>
+          <p className="text-sm text-muted-foreground">Ask any question related to your work.</p>
         </div>
         {messages.length > 0 && (
           <Button 
@@ -132,8 +132,8 @@ const AIChat = () => {
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center space-y-2">
-              <p className="text-warm-200">No messages yet</p>
-              <p className="text-sm text-warm-200">Ask a question to get started</p>
+              <p className="text-muted-foreground">No messages yet</p>
+              <p className="text-sm text-muted-foreground">Ask a question to get started</p>
             </div>
           </div>
         ) : (
@@ -145,18 +145,18 @@ const AIChat = () => {
               <div
                 className={`max-w-[80%] rounded-lg p-3 ${
                   message.isUser
-                    ? 'bg-warm-300 text-white'
-                    : 'bg-warm-50 border border-warm-100'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground border border-border'
                 }`}
               >
                 {message.isUser ? (
                   <p>{message.content}</p>
                 ) : (
-                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:mb-2 prose-headings:mt-3 prose-pre:my-0 prose-pre:p-3 prose-pre:bg-warm-50/70 prose-pre:border prose-pre:border-warm-100/20 prose-code:text-warm-200 prose-code:bg-warm-50/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:mb-2 prose-headings:mt-3 prose-pre:my-0 prose-pre:p-3 prose-pre:bg-background prose-pre:border prose-pre:border-border/20 prose-code:text-foreground prose-code:bg-background/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
                     <ReactMarkdown>{message.content}</ReactMarkdown>
                   </div>
                 )}
-                <div className={`text-xs mt-1 ${message.isUser ? 'text-white/80' : 'text-warm-200'}`}>
+                <div className={`text-xs mt-1 ${message.isUser ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                   {message.timestamp.toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -178,7 +178,7 @@ const AIChat = () => {
         )}
       </div>
       
-      <div className="p-4 border-t">
+      <div className="p-4 border-t border-border">
         <div className="flex space-x-2">
           <Input
             value={question}
@@ -186,19 +186,19 @@ const AIChat = () => {
             onKeyDown={handleKeyDown}
             placeholder="Type your question..."
             disabled={isLoading}
-            className="flex-1 focus:ring-warm-200 focus:border-warm-200"
+            className="flex-1"
           />
           <Button
             type="button"
             size="icon"
-            className="rounded-full bg-warm-300 hover:bg-warm-300/90"
+            className="rounded-full bg-primary hover:bg-primary/90"
             onClick={handleSendQuestion}
             disabled={!question.trim() || isLoading}
           >
             {isLoading ? (
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-warm-100 border-t-transparent" />
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />
             ) : (
-              <SendHorizontalIcon className="h-5 w-5 text-white" />
+              <SendHorizontalIcon className="h-5 w-5" />
             )}
           </Button>
         </div>
