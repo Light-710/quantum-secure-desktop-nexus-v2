@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -334,7 +333,7 @@ const AdminProjects = () => {
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
                 <Button
-                  className="bg-primary hover:bg-primary/90 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   New Project
@@ -456,7 +455,7 @@ const AdminProjects = () => {
                     <DialogFooter>
                       <Button 
                         type="submit" 
-                        className="bg-primary hover:bg-primary/90 text-white"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
                         disabled={createProjectMutation.isPending}
                       >
                         {createProjectMutation.isPending && (
@@ -523,7 +522,7 @@ const AdminProjects = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-foreground">
-                        <p> {project.manager_name || 'Not specified'}</p>
+                        <p>{project.manager_name || 'Not specified'}</p>
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-1">
@@ -741,7 +740,7 @@ const AdminProjects = () => {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="bg-primary hover:bg-primary/90 text-white"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   disabled={updateProjectMutation.isPending}
                 >
                   {updateProjectMutation.isPending && (
@@ -759,4 +758,3 @@ const AdminProjects = () => {
 };
 
 export default AdminProjects;
-

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -153,10 +152,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
               <LogOut size={16} className={sidebarCollapsed && !isMobile ? '' : 'mr-2'} />
               {(!sidebarCollapsed || isMobile) && 'Logout'}
             </Button>
-
-            <div className="mt-2 flex justify-center">
-              <ThemeToggle />
-            </div>
           </div>
         </div>
         

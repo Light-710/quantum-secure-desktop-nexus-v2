@@ -26,7 +26,7 @@ const Login = () => {
       </div>
       
       {/* Login card */}
-      <Card className="w-[350px] sm:w-[400px] shadow-subtle border-border bg-card">
+      <Card className="w-[350px] sm:w-[400px] shadow-elegant border-border bg-card">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl text-primary">Access Terminal</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -58,7 +58,7 @@ const Login = () => {
                   required 
                 />
               </div>
-              <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-md" type="submit" disabled={isLoading}>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-md" type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <span className="flex items-center justify-center">
                     <span>Authenticating...</span>

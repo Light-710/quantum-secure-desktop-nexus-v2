@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -356,7 +355,7 @@ const AdminDashboard = () => {
               Refresh
             </Button>
             <Button 
-              className="bg-primary hover:bg-primary/90 text-white"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={handleAddUser}
             >
               <UserPlus className="mr-2 h-4 w-4" />
@@ -683,4 +682,3 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
-
