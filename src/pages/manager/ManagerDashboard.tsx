@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,13 +8,16 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from '@/components/ui/sonner';
 import api from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
-import { Monitor, Users } from 'lucide-react';
+import { Monitor, Users, Computer, HardDrive } from 'lucide-react';
 import { userManagementService } from '@/services/userManagementService';
 import ChatPanel from '@/components/chat/ChatPanel';
+import { VMStatusBadge } from '@/components/vm/VMStatusBadge';
+import { handleVMAction, loadUserVMs } from '@/services/vmManagementService';
 
 const ManagerDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   // Fetch projects assigned to the manager
   const { data: projects = [], isLoading: isLoadingProjects } = useQuery({
@@ -45,6 +48,42 @@ const ManagerDashboard = () => {
       }
     },
   });
+
+  // Fetch manager's VMs
+  const { 
+    data: managerVMs = [],
+    isLoading: isLoadingVMs,
+    refetch: refetchVMs
+  } = useQuery({
+    queryKey: ['manager-own-vms'],
+    queryFn: async () => {
+      if (!user?.employee_id) return [];
+      try {
+        return await loadUserVMs(user.employee_id);
+      } catch (error) {
+        console.error('Failed to fetch manager VMs:', error);
+        toast.error('Failed to load virtual machines');
+        return [];
+      }
+    },
+    enabled: !!user?.employee_id
+  });
+
+  // Handle VM action (start, stop, restart)
+  const handleVMAction = async (vmId: string, action: string, instanceOs: string) => {
+    if (!user?.employee_id) return;
+    
+    setActionLoading(vmId);
+    try {
+      await handleVMAction(vmId, action, instanceOs, user.employee_id);
+      await refetchVMs();
+      toast.success(`VM ${action} successful`);
+    } catch (error) {
+      console.error(`Error ${action} VM:`, error);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -157,7 +196,7 @@ const ManagerDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* VM Status - Only showing manager's own VMs */}
+        {/* VM Status - Now showing manager's own VMs */}
         <Card className="border-border/40 bg-card shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-xl text-foreground flex items-center">
@@ -166,15 +205,92 @@ const ManagerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-foreground space-y-4">
-              <p>Access your personal virtual desktop environments.</p>
-              <Button 
-                className="w-full" 
-                onClick={() => navigate('/dashboard/manager/desktop')}
-              >
-                View My Desktop
-              </Button>
-            </div>
+            {isLoadingVMs ? (
+              <div className="flex justify-center p-4">
+                <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+              </div>
+            ) : managerVMs.length > 0 ? (
+              <div className="space-y-4">
+                {managerVMs.slice(0, 2).map((vm) => (
+                  <div key={vm.id} className="p-3 rounded-md bg-muted/30 border border-border/30 flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center">
+                        {vm.os === 'Windows' ? 
+                          <Computer size={16} className="mr-2 text-blue-400" /> : 
+                          <HardDrive size={16} className="mr-2 text-amber-400" />
+                        }
+                        <span className="text-foreground font-medium">{vm.os} VM</span>
+                      </div>
+                      <VMStatusBadge status={vm.status} />
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {vm.status === 'Stopped' && (
+                        <Button 
+                          size="sm" 
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                          disabled={actionLoading === vm.id}
+                          onClick={() => handleVMAction(vm.id, 'start', vm.os)}
+                        >
+                          {actionLoading === vm.id ? 
+                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div> : 
+                            'Start'
+                          }
+                        </Button>
+                      )}
+                      {vm.status === 'Running' && (
+                        <>
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                            disabled={actionLoading === vm.id}
+                            onClick={() => handleVMAction(vm.id, 'stop', vm.os)}
+                          >
+                            {actionLoading === vm.id ? 
+                              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div> : 
+                              'Stop'
+                            }
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                            disabled={actionLoading === vm.id}
+                            onClick={() => handleVMAction(vm.id, 'restart', vm.os)}
+                          >
+                            Restart
+                          </Button>
+                          {vm.guacamole_url && (
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => window.open(vm.guacamole_url, '_blank')}
+                            >
+                              Connect
+                            </Button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => navigate('/dashboard/manager/desktop')}
+                >
+                  Manage All Desktops
+                </Button>
+              </div>
+            ) : (
+              <div className="text-foreground space-y-4">
+                <p>No virtual desktops found. Access your personal virtual desktop environments.</p>
+                <Button 
+                  className="w-full" 
+                  onClick={() => navigate('/dashboard/manager/desktop')}
+                >
+                  View My Desktop
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
