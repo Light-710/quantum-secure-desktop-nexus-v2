@@ -1,10 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { Monitor, Server } from 'lucide-react';
+import { LoaderCircle, Monitor, Server } from 'lucide-react';
 import { vmService } from '@/services/vmService';
 import type { VMStatus } from '@/services/vmService';
 
@@ -14,9 +15,35 @@ const EmployeeVirtualDesktop = () => {
   const [vmStatus, setVmStatus] = useState<VMStatus | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionInProgress, setActionInProgress] = useState(false);
+  
+  // New state variables for VM startup simulation
+  const [startingOS, setStartingOS] = useState<{windows: boolean, linux: boolean}>({
+    windows: false, 
+    linux: false
+  });
+  const [timeRemaining, setTimeRemaining] = useState<{windows: number, linux: number}>({
+    windows: 0, 
+    linux: 0
+  });
+  const [osStatus, setOsStatus] = useState<{windows: string, linux: string}>({
+    windows: 'Ready', 
+    linux: 'Stopped'
+  });
+
+  // State for the loading timers to be cleared if user navigates away
+  const [loadingTimers, setLoadingTimers] = useState<{
+    windows?: NodeJS.Timeout,
+    linux?: NodeJS.Timeout
+  }>({});
 
   useEffect(() => {
     loadVMStatus();
+    
+    // Clear timers on component unmount to handle navigation away
+    return () => {
+      if (loadingTimers.windows) clearTimeout(loadingTimers.windows);
+      if (loadingTimers.linux) clearTimeout(loadingTimers.linux);
+    };
   }, []);
 
   const loadVMStatus = async () => {
@@ -42,30 +69,86 @@ const EmployeeVirtualDesktop = () => {
       let response;
       switch (action) {
         case 'Start':
-          response = await vmService.startVM(activeOs);
+          // Set the OS as starting
+          setStartingOS(prev => ({...prev, [activeOs]: true}));
+          
+          // Set initial time remaining for countdown
+          setTimeRemaining(prev => ({...prev, [activeOs]: 60}));
+          
+          // Start countdown timer
+          let remainingTime = 60;
+          const countdownInterval = setInterval(() => {
+            remainingTime -= 1;
+            setTimeRemaining(prev => ({...prev, [activeOs]: remainingTime}));
+            
+            if (remainingTime <= 0) {
+              clearInterval(countdownInterval);
+            }
+          }, 1000);
+          
+          // Start the timer to simulate VM startup
+          const timer = setTimeout(async () => {
+            // Clear the starting state
+            setStartingOS(prev => ({...prev, [activeOs]: false}));
+            
+            // Update the OS status
+            setOsStatus(prev => ({...prev, [activeOs]: 'Running'}));
+            
+            // Make the API call 
+            response = await vmService.startVM(activeOs);
+            
+            // Clear the timer reference
+            setLoadingTimers(prev => ({...prev, [activeOs]: undefined}));
+            
+            toast({
+              title: 'VM Started',
+              description: `Your ${activeOs} virtual desktop is now ready to use.`,
+            });
+
+            setActionInProgress(false);
+          }, 60000); // 60 seconds
+          
+          // Store the timer reference to clear it if needed
+          setLoadingTimers(prev => ({...prev, [activeOs]: timer}));
           break;
+          
         case 'Stop':
           response = await vmService.stopVM(activeOs);
+          
+          // Update status immediately
+          setOsStatus(prev => ({...prev, [activeOs]: 'Stopped'}));
+          
+          toast({
+            title: `VM ${action} Initiated`,
+            description: response.message,
+          });
+
+          // Refresh VM status
+          await loadVMStatus();
           break;
+          
         case 'Restart':
           response = await vmService.restartVM(activeOs);
+          
+          toast({
+            title: `VM ${action} Initiated`,
+            description: response.message,
+          });
+
+          // Refresh VM status
+          await loadVMStatus();
           break;
+          
         default:
           return;
       }
 
-      toast({
-        title: `VM ${action} Initiated`,
-        description: response.message,
-      });
-
-      // Refresh VM status
-      await loadVMStatus();
-
-      // If we got a URL back from starting the VM, we can use it to connect
-      if (response.URL) {
-        // Handle VM connection URL
-        window.open(response.URL, '_blank');
+      // If action is something other than Start, handle response
+      if (action !== 'Start') {
+        // If we got a URL back, we can use it to connect
+        if (response && response.URL) {
+          window.open(response.URL, '_blank');
+        }
       }
     } catch (error) {
       toast({
@@ -73,8 +156,21 @@ const EmployeeVirtualDesktop = () => {
         description: `Failed to ${action.toLowerCase()} VM`,
         variant: "destructive",
       });
-    } finally {
+      // Clear starting state if there's an error
+      if (action === 'Start') {
+        setStartingOS(prev => ({...prev, [activeOs]: false}));
+        if (loadingTimers[activeOs as keyof typeof loadingTimers]) {
+          clearTimeout(loadingTimers[activeOs as keyof typeof loadingTimers]);
+          setLoadingTimers(prev => ({...prev, [activeOs]: undefined}));
+        }
+      }
       setActionInProgress(false);
+    } finally {
+      // For Stop and Restart, we can clear actionInProgress here
+      // For Start, it's cleared after the timer completes
+      if (action !== 'Start') {
+        setActionInProgress(false);
+      }
     }
   };
 
@@ -126,7 +222,11 @@ const EmployeeVirtualDesktop = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-cyber-teal font-medium">Windows 11 Enterprise</h4>
-                      <p className="text-sm text-cyber-gray">Status: <span className="text-green-400">Ready</span></p>
+                      <p className="text-sm text-cyber-gray">
+                        Status: <span className={osStatus.windows === 'Running' ? "text-green-400" : "text-yellow-400"}>
+                          {osStatus.windows}
+                        </span>
+                      </p>
                     </div>
                     <div className="flex space-x-2">
                       <Button
@@ -134,19 +234,42 @@ const EmployeeVirtualDesktop = () => {
                         size="sm"
                         className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
                         onClick={() => handleVmAction('Start')}
+                        disabled={startingOS.windows || startingOS.linux || osStatus.windows === 'Running'}
                       >
-                        Start
+                        {startingOS.windows ? (
+                          <>
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            Starting...
+                          </>
+                        ) : (
+                          'Start'
+                        )}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
                         onClick={() => handleVmAction('Stop')}
+                        disabled={startingOS.windows || startingOS.linux || osStatus.windows !== 'Running'}
                       >
                         Stop
                       </Button>
                     </div>
                   </div>
+                  
+                  {startingOS.windows && (
+                    <div className="mt-3 p-3 bg-cyber-dark-blue/30 rounded border border-cyber-teal/20">
+                      <div className="flex items-center">
+                        <LoaderCircle className="mr-3 h-6 w-6 animate-spin text-cyber-blue" />
+                        <div>
+                          <p className="font-medium text-cyber-teal">Initializing VM...</p>
+                          <p className="text-xs text-cyber-gray">
+                            This will take approximately {timeRemaining.windows} seconds
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="text-sm text-cyber-gray space-y-1">
                     <div className="flex justify-between">
@@ -163,8 +286,13 @@ const EmployeeVirtualDesktop = () => {
                     </div>
                   </div>
                   
-                  <Button className="w-full cyber-button">
-                    Connect to Desktop
+                  <Button 
+                    className={`w-full ${osStatus.windows === 'Running' 
+                      ? 'cyber-button bg-cyber-blue hover:bg-cyber-blue/80' 
+                      : 'bg-cyber-dark-blue/30 text-cyber-gray'}`}
+                    disabled={osStatus.windows !== 'Running'}
+                  >
+                    {osStatus.windows === 'Running' ? 'Connect to Desktop' : 'Start VM to Connect'}
                   </Button>
                 </div>
               </TabsContent>
@@ -174,7 +302,11 @@ const EmployeeVirtualDesktop = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-cyber-teal font-medium">Kali Linux 2023.1</h4>
-                      <p className="text-sm text-cyber-gray">Status: <span className="text-yellow-400">Stopped</span></p>
+                      <p className="text-sm text-cyber-gray">
+                        Status: <span className={osStatus.linux === 'Running' ? "text-green-400" : "text-yellow-400"}>
+                          {osStatus.linux}
+                        </span>
+                      </p>
                     </div>
                     <div className="flex space-x-2">
                       <Button
@@ -182,38 +314,69 @@ const EmployeeVirtualDesktop = () => {
                         size="sm"
                         className="border-cyber-teal/30 hover:bg-cyber-blue/20 hover:text-cyber-blue"
                         onClick={() => handleVmAction('Start')}
+                        disabled={startingOS.windows || startingOS.linux || osStatus.linux === 'Running'}
                       >
-                        Start
+                        {startingOS.linux ? (
+                          <>
+                            <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                            Starting...
+                          </>
+                        ) : (
+                          'Start'
+                        )}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-cyber-teal/30 hover:bg-cyber-red/20 hover:text-cyber-red"
                         onClick={() => handleVmAction('Stop')}
-                        disabled
+                        disabled={startingOS.windows || startingOS.linux || osStatus.linux !== 'Running'}
                       >
                         Stop
                       </Button>
                     </div>
                   </div>
                   
+                  {startingOS.linux && (
+                    <div className="mt-3 p-3 bg-cyber-dark-blue/30 rounded border border-cyber-teal/20">
+                      <div className="flex items-center">
+                        <LoaderCircle className="mr-3 h-6 w-6 animate-spin text-cyber-blue" />
+                        <div>
+                          <p className="font-medium text-cyber-teal">Initializing VM...</p>
+                          <p className="text-xs text-cyber-gray">
+                            This will take approximately {timeRemaining.linux} seconds
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="text-sm text-cyber-gray space-y-1">
                     <div className="flex justify-between">
                       <span>IP Address:</span>
-                      <span className="text-cyber-teal font-mono">---.---.---.---</span>
+                      <span className="text-cyber-teal font-mono">
+                        {osStatus.linux === 'Running' ? '192.168.2.45' : '---.---.---.---'}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>CPU Usage:</span>
-                      <span className="text-cyber-teal">0%</span>
+                      <span className="text-cyber-teal">{osStatus.linux === 'Running' ? '5%' : '0%'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Memory Usage:</span>
-                      <span className="text-cyber-teal">0 GB / 4 GB</span>
+                      <span className="text-cyber-teal">
+                        {osStatus.linux === 'Running' ? '768 MB / 4 GB' : '0 GB / 4 GB'}
+                      </span>
                     </div>
                   </div>
                   
-                  <Button className="w-full cyber-button" disabled>
-                    Start VM to Connect
+                  <Button 
+                    className={`w-full ${osStatus.linux === 'Running' 
+                      ? 'cyber-button bg-cyber-blue hover:bg-cyber-blue/80' 
+                      : 'bg-cyber-dark-blue/30 text-cyber-gray'}`}
+                    disabled={osStatus.linux !== 'Running'}
+                  >
+                    {osStatus.linux === 'Running' ? 'Connect to Desktop' : 'Start VM to Connect'}
                   </Button>
                 </div>
               </TabsContent>
