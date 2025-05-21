@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -86,29 +85,29 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-warm-50">
       {/* Sidebar for desktop */}
       <aside
-        className={`fixed inset-y-0 z-50 flex flex-col transition-all duration-300 bg-card border-r border-border shadow-sm ${
+        className={`fixed inset-y-0 z-50 flex flex-col transition-all duration-300 bg-white border-r border-warm-100/30 shadow-sm ${
           sidebarOpen || !isMobile ? 'translate-x-0' : '-translate-x-full'
         } lg:relative ${
           sidebarCollapsed && !isMobile ? 'w-20' : 'w-64'
         }`}
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-border">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-warm-100/30">
           {!sidebarCollapsed || isMobile ? (
             <Link to="/" className="flex items-center space-x-2">
-              <span className="text-xl font-bold text-primary">PenTest NG</span>
+              <span className="text-xl font-bold text-warm-300">PenTest NG</span>
             </Link>
           ) : (
             <div className="w-full flex justify-center">
-              <span className="text-xl font-bold text-primary">PN</span>
+              <span className="text-xl font-bold text-warm-300">PN</span>
             </div>
           )}
           
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-              <X size={20} className="text-foreground" />
+              <X size={20} />
             </Button>
           )}
         </div>
@@ -121,36 +120,36 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 to={link.path}
                 className={`flex items-center px-4 py-3 text-sm rounded-lg ${
                   location.pathname === link.path
-                    ? 'bg-muted text-primary font-medium'
-                    : 'text-foreground hover:bg-muted/50 hover:text-primary'
+                    ? 'bg-warm-100/30 text-warm-300 font-medium'
+                    : 'text-warm-200 hover:bg-warm-50 hover:text-warm-300'
                 } ${sidebarCollapsed && !isMobile ? 'justify-center' : ''}`}
                 title={sidebarCollapsed && !isMobile ? link.name : ''}
               >
-                <span className={location.pathname === link.path ? 'text-primary' : 'text-foreground'}>{link.icon}</span>
+                <span className="text-warm-200">{link.icon}</span>
                 {(!sidebarCollapsed || isMobile) && <span className="ml-3">{link.name}</span>}
               </Link>
             ))}
           </nav>
 
-          <div className="mt-auto pt-4 border-t border-border/40">
+          <div className="mt-auto pt-4 border-t border-warm-100/20">
             {(!sidebarCollapsed || isMobile) && (
               <div className="px-4 py-2">
-                <p className="text-xs text-muted-foreground">Signed in as</p>
-                <p className="text-sm font-medium text-foreground">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-                <p className="text-xs font-medium mt-1 text-primary">{user?.role}</p>
+                <p className="text-xs text-warm-200">Signed in as</p>
+                <p className="text-sm font-medium text-warm-300">{user?.name}</p>
+                <p className="text-xs text-warm-200">{user?.email}</p>
+                <p className="text-xs font-medium mt-1 text-warm-200">{user?.role}</p>
               </div>
             )}
 
             <Button
               variant="ghost"
-              className={`w-full justify-start px-4 py-2 mt-2 text-foreground hover:bg-muted/50 hover:text-primary ${
+              className={`w-full justify-start px-4 py-2 mt-2 text-warm-200 hover:bg-warm-50 hover:text-warm-300 ${
                 sidebarCollapsed && !isMobile ? 'justify-center' : ''
               }`}
               onClick={handleLogout}
               title={sidebarCollapsed && !isMobile ? 'Logout' : ''}
             >
-              <LogOut size={16} className={`${sidebarCollapsed && !isMobile ? '' : 'mr-2'} text-foreground`} />
+              <LogOut size={16} className={sidebarCollapsed && !isMobile ? '' : 'mr-2'} />
               {(!sidebarCollapsed || isMobile) && 'Logout'}
             </Button>
 
@@ -166,9 +165,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             variant="ghost" 
             size="icon" 
             onClick={toggleCollapse} 
-            className="absolute top-20 -right-3 h-6 w-6 rounded-full bg-muted border border-border shadow-sm"
+            className="absolute top-20 -right-3 h-6 w-6 rounded-full bg-white border border-warm-100/30 shadow-sm"
           >
-            {sidebarCollapsed ? <ChevronRight size={14} className="text-primary" /> : <ChevronLeft size={14} className="text-primary" />}
+            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
           </Button>
         )}
       </aside>
@@ -176,7 +175,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Mobile overlay */}
       {sidebarOpen && isMobile && (
         <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 z-40 bg-black/50"
           onClick={toggleSidebar}
         ></div>
       )}
@@ -184,21 +183,21 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       {/* Main content */}
       <main className="flex flex-col flex-grow overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center h-16 px-4 bg-card border-b border-border shadow-sm">
+        <header className="flex items-center h-16 px-4 bg-white border-b border-warm-100/30 shadow-sm">
           {isMobile && (
             <Button variant="ghost" size="icon" onClick={toggleSidebar} className="mr-4">
-              <Menu size={20} className="text-foreground" />
+              <Menu size={20} />
             </Button>
           )}
           <div className="flex-grow">
-            <h1 className="text-lg font-medium text-foreground">
+            <h1 className="text-lg font-medium text-warm-300">
               {location.pathname.split('/').pop()?.charAt(0).toUpperCase() + location.pathname.split('/').pop()?.slice(1) || 'Dashboard'}
             </h1>
           </div>
         </header>
         
         {/* Page content */}
-        <div className="flex-grow p-4 overflow-y-auto bg-background">
+        <div className="flex-grow p-4 overflow-y-auto">
           {children}
         </div>
       </main>

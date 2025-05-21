@@ -33,14 +33,14 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
   const getAvatarColor = (role: string) => {
     switch (role?.toLowerCase()) {
       case 'admin':
-        return 'bg-destructive';  // Red
+        return 'bg-red-500';
       case 'manager':
-        return 'bg-primary';      // Bright Purple
+        return 'bg-blue-500';
       case 'employee':
       case 'tester':
-        return 'bg-accent';       // Vibrant Purple
+        return 'bg-green-500';
       default:
-        return 'bg-primary';      // Bright Purple
+        return 'bg-primary';
     }
   };
   
@@ -77,8 +77,8 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
             <div className="flex flex-col flex-1">
               {!message.isStatusMessage && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-foreground">{message.sender}</span>
-                  <Badge variant="outline" className="text-xs h-4 px-1 py-0 border-primary/30 text-primary">
+                  <span className="text-sm font-semibold">{message.sender}</span>
+                  <Badge variant="outline" className="text-xs h-4 px-1 py-0">
                     {message.senderRole}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
@@ -89,28 +89,28 @@ const MessageList = ({ messages, onFileDownload }: MessageListProps) => {
               
               <div className={cn(
                 "mt-1 rounded-md py-2 px-3",
-                message.isLocal ? "bg-muted" : "bg-card/60",
+                message.isLocal && "bg-muted/70",
                 message.isStatusMessage && "text-muted-foreground text-xs italic text-center py-1"
               )}>
                 {message.is_file ? (
-                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/70">
+                  <div className="flex items-center justify-between gap-2 border border-border rounded-md p-2 bg-muted/50">
                     <div className="flex items-center gap-2">
                       <File className="h-4 w-4 text-primary" />
-                      <span className="text-sm text-foreground">{message.content || message.file_path?.split('/').pop()}</span>
+                      <span className="text-sm">{message.content || message.file_path?.split('/').pop()}</span>
                     </div>
                     {onFileDownload && message.file_path && message.project_id && (
                       <Button 
                         variant="ghost" 
                         size="sm" 
                         onClick={() => onFileDownload(message.file_path || '', message.project_id || '')}
-                        className="h-7 w-7 p-0 hover:bg-primary/20 hover:text-primary"
+                        className="h-7 w-7 p-0"
                       >
                         <Download className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
                 ) : (
-                  <div className="whitespace-pre-wrap text-foreground">{message.content}</div>
+                  <div className="whitespace-pre-wrap">{message.content}</div>
                 )}
                 
                 {message.isLocal && (

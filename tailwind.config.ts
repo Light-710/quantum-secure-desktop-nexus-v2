@@ -19,87 +19,88 @@ export default {
     },
     extend: {
       colors: {
-        border: "#4A266A",       // Deep Purple for borders
-        input: "#4A266A",        // Deep Purple for input borders
-        ring: "#D946EF",         // Bright Purple for focus rings
-        background: "#1E0B2F",   // Very Dark Purple background
-        foreground: "#F5E8FF",   // Light Lavender text
+        border: "#3F3F46",       // Zinc-700
+        input: "#3F3F46",        // Zinc-700
+        ring: "#8B5CF6",         // Violet-500
+        background: "#18181B",   // Zinc-900
+        foreground: "#E4E4E7",   // Zinc-200
         primary: {
-          DEFAULT: "#D946EF",    // Bright Purple as primary
+          DEFAULT: "#8B5CF6",    // Violet-500
           foreground: "#FFFFFF", // White
         },
         secondary: {
-          DEFAULT: "#3D1B54",    // Medium Purple as secondary
-          foreground: "#F5E8FF", // Light Lavender text
+          DEFAULT: "#3F3F46",    // Zinc-700
+          foreground: "#E4E4E7", // Zinc-200
         },
         destructive: {
-          DEFAULT: "#FF4560",    // Bright Red
+          DEFAULT: "#EF4444",    // Red-500
           foreground: "#FFFFFF", // White
         },
         muted: {
-          DEFAULT: "#35144D",    // Dark Purple for muted areas
-          foreground: "#CAB0EB", // Medium Lavender for muted text
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#A1A1AA", // Zinc-400
         },
         accent: {
-          DEFAULT: "#9333EA",    // Vibrant Purple for accents
+          DEFAULT: "#7C3AED",    // Violet-600
           foreground: "#FFFFFF", // White
         },
         popover: {
-          DEFAULT: "#280E3A",    // Dark Purple for popovers
-          foreground: "#F5E8FF", // Light Lavender text
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#E4E4E7", // Zinc-200
         },
         card: {
-          DEFAULT: "#280E3A",    // Dark Purple for cards
-          foreground: "#F5E8FF", // Light Lavender text
+          DEFAULT: "#27272A",    // Zinc-800
+          foreground: "#E4E4E7", // Zinc-200
         },
-        // Keep existing color groups but update with new dark purple/red palette
+        // Keep previous color groups but update with new dark palette
         modern: {
-          50: "#280E3A",        // Dark Purple
-          100: "#1E0B2F",       // Very Dark Purple
-          200: "#3D1B54",       // Medium Purple
-          300: "#CAB0EB",       // Medium Lavender
-          400: "#F5E8FF",       // Light Lavender
+          50: "#27272A",        // Zinc-800
+          100: "#18181B",       // Zinc-900
+          200: "#3F3F46",       // Zinc-700
+          300: "#A1A1AA",       // Zinc-400
+          400: "#E4E4E7",       // Zinc-200
           500: "#FFFFFF",       // White
-          blue: "#9333EA",      // Vibrant Purple
-          teal: "#D946EF",      // Bright Purple
-          green: "#10B981",     // Emerald (keep for success)
-          red: "#FF4560",       // Bright Red
-          purple: "#A855F7",    // Light Purple
+          blue: "#8B5CF6",      // Violet-500
+          teal: "#7C3AED",      // Violet-600
+          green: "#10B981",     // Emerald-500
+          red: "#EF4444",       // Red-500
+          purple: "#A78BFA",    // Violet-400
         },
+        // Update existing colors to match new theme
         luxury: {
-          50: "#1E0B2F",        // Very Dark Purple
-          100: "#280E3A",       // Dark Purple
-          200: "#3D1B54",       // Medium Purple
-          300: "#CAB0EB",       // Medium Lavender
-          400: "#F5E8FF",       // Light Lavender
+          50: "#18181B",        // Zinc-900
+          100: "#27272A",       // Zinc-800
+          200: "#3F3F46",       // Zinc-700
+          300: "#A1A1AA",       // Zinc-400
+          400: "#E4E4E7",       // Zinc-200
           500: "#FFFFFF",       // White
-          accent: "#D946EF",    // Bright Purple
+          accent: "#A78BFA",    // Violet-400
         },
         warm: {
-          50: "#1E0B2F",        // Very Dark Purple
-          100: "#9333EA",       // Vibrant Purple
-          200: "#D946EF",       // Bright Purple
-          300: "#FF4560",       // Bright Red
+          50: "#18181B",        // Zinc-900
+          100: "#A78BFA",       // Violet-400
+          200: "#8B5CF6",       // Violet-500
+          300: "#EF4444",       // Red-500
         },
         cyber: {
-          "dark": "#1E0B2F",       // Very Dark Purple
-          "dark-blue": "#280E3A",  // Dark Purple
-          "blue": "#9333EA",       // Vibrant Purple
-          "teal": "#D946EF",       // Bright Purple
-          "green": "#10B981",      // Emerald (keep for success)
-          "red": "#FF4560",        // Bright Red
-          "purple": "#A855F7",     // Light Purple
-          "gray": "#CAB0EB",       // Medium Lavender
-          "black": "#160823",      // Deep Dark Purple
-          "light": "#F5E8FF",      // Light Lavender
+          "dark": "#18181B",       // Zinc-900
+          "dark-blue": "#27272A",  // Zinc-800
+          "blue": "#8B5CF6",       // Violet-500
+          "teal": "#7C3AED",       // Violet-600
+          "green": "#10B981",      // Emerald-500
+          "red": "#EF4444",        // Red-500
+          "purple": "#A78BFA",     // Violet-400
+          "gray": "#A1A1AA",       // Zinc-400
+          "black": "#09090B",      // Zinc-950
+          "light": "#E4E4E7",      // Zinc-200
         },
       },
       backgroundImage: {
-        'warm-gradient': 'linear-gradient(135deg, #1E0B2F 0%, #9333EA 100%)',
-        'cyber-gradient': 'linear-gradient(to right, #1E0B2F, #280E3A)',
-        'blue-gradient': 'linear-gradient(135deg, #280E3A 0%, #9333EA 100%)',
-        'green-gradient': 'linear-gradient(135deg, #1E0B2F 0%, #D946EF 50%)',
-        'light-gradient': 'linear-gradient(to right, #280E3A, #3D1B54)',
+        'warm-gradient': 'linear-gradient(135deg, #18181B 0%, #8B5CF6 100%)',
+        'cyber-gradient': 'linear-gradient(to right, #18181B, #27272A)',
+        'blue-gradient': 'linear-gradient(135deg, #27272A 0%, #8B5CF6 100%)',
+        'green-gradient': 'linear-gradient(135deg, #18181B 0%, #7C3AED 50%)',
+        'light-gradient': 'linear-gradient(to right, #27272A, #3F3F46)',
       },
       boxShadow: {
         'subtle': '0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1)',
@@ -144,33 +145,33 @@ export default {
       typography: {
         DEFAULT: {
           css: {
-            color: '#F5E8FF', // Light Lavender for text
+            color: '#E4E4E7', // Match foreground color
             a: {
-              color: '#D946EF', // Bright Purple for links
+              color: '#8B5CF6', // Terracotta (primary)
               '&:hover': {
-                color: '#FF4560', // Bright Red for hover
+                color: '#EF4444', // Brick Red
               },
             },
             h1: {
-              color: '#FFFFFF', // White for headings
+              color: '#FFFFFF', // White for dark background
             },
             h2: {
-              color: '#FFFFFF', // White for headings
+              color: '#FFFFFF', // White for dark background
             },
             h3: {
-              color: '#FFFFFF', // White for headings
+              color: '#FFFFFF', // White for dark background
             },
             h4: {
-              color: '#FFFFFF', // White for headings
+              color: '#FFFFFF', // White for dark background
             },
             code: {
-              color: '#FF4560', // Bright Red for code
-              backgroundColor: '#1E0B2F', // Very Dark Purple background
+              color: '#EF4444', // Brick Red
+              backgroundColor: '#18181B', // Dark background
               padding: '0.2em 0.4em',
               borderRadius: '0.25rem',
             },
             pre: {
-              backgroundColor: '#1E0B2F', // Very Dark Purple background
+              backgroundColor: '#18181B', // Dark background
               code: {
                 backgroundColor: 'transparent',
               },
