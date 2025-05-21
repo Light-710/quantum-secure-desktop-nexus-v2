@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/sonner';
 import { Monitor, Server } from 'lucide-react';
 import { vmService, UserVM } from '@/services/vmService';
+import { Progress } from '@/components/ui/progress';
 
 const TesterVirtualDesktop = () => {
   const [activeOs, setActiveOs] = React.useState<'windows' | 'linux'>('windows');
@@ -19,7 +20,14 @@ const TesterVirtualDesktop = () => {
     windows: false,
     linux: false
   });
-  const [vmStartTime, setVmStartTime] = useState<{windows?: Date, linux?: Date}>({});
+  const [vmStartProgress, setVmStartProgress] = useState<{windows: number, linux: number}>({
+    windows: 0,
+    linux: 0
+  });
+  const [loadingState, setLoadingState] = useState<{windows: boolean, linux: boolean}>({
+    windows: false,
+    linux: false
+  });
 
   useEffect(() => {
     loadUserVMs();
@@ -64,12 +72,46 @@ const TesterVirtualDesktop = () => {
     }
   };
 
+  const simulateLoading = (os: 'windows' | 'linux') => {
+    // Reset progress
+    setVmStartProgress(prev => ({ ...prev, [os]: 0 }));
+    setLoadingState(prev => ({ ...prev, [os]: true }));
+    
+    // Start visual progress animation
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 1.7; // Slightly faster to complete in time (~59 seconds)
+      if (progress >= 100) {
+        clearInterval(interval);
+        setLoadingState(prev => ({ ...prev, [os]: false }));
+        setCanConnect(prev => ({ ...prev, [os]: true }));
+        
+        // Show completion toast
+        toast.success(`VM Ready`, {
+          description: `Your ${os} VM is now ready to connect.`,
+        });
+      }
+      setVmStartProgress(prev => ({ ...prev, [os]: Math.min(progress, 100) }));
+    }, 1000); // Update every second
+
+    // Clear interval after 60 seconds (just to be safe)
+    const safetyTimer = setTimeout(() => {
+      clearInterval(interval);
+      setLoadingState(prev => ({ ...prev, [os]: false }));
+      setCanConnect(prev => ({ ...prev, [os]: true }));
+    }, 60000);
+
+    // Store the timers for cleanup
+    return { interval, safetyTimer };
+  };
+
   const handleVmAction = async (action: string) => {
     if (actionInProgress) return;
     
     setActionInProgress(true);
     try {
       let response;
+      
       switch (action) {
         case 'Start':
           // Show immediate toast about starting
@@ -77,36 +119,26 @@ const TesterVirtualDesktop = () => {
             description: "This will take about a minute. Please wait."
           });
           
+          // Start visual loading simulation first
+          const { interval, safetyTimer } = simulateLoading(activeOs);
+          
+          // Call API in background (not tied to the visual loading)
           response = await vmService.startVM(activeOs);
           
-          // Clear any existing timer
-          if (connectTimers[activeOs]) {
-            clearTimeout(connectTimers[activeOs]);
+          // Store the URL for when loading completes
+          if (response.URL) {
+            setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
           }
           
-          // Set 1-minute timer before showing connect button
-          setCanConnect(prev => ({ ...prev, [activeOs]: false }));
-          setVmStartTime(prev => ({ ...prev, [activeOs]: new Date() }));
-          
-          const timer = setTimeout(() => {
-            setCanConnect(prev => ({ ...prev, [activeOs]: true }));
-            
-            if (response.URL) {
-              setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
-            }
-            
-            // Clear timer reference
-            setConnectTimers(prev => ({ ...prev, [activeOs]: undefined }));
-            
-            toast.success(`VM Ready`, {
-              description: `Your ${activeOs} VM is now ready to connect.`,
-            });
-
-            // Reload VM data
-            loadUserVMs();
-          }, 60000); // 60 seconds = 1 minute
-          
-          setConnectTimers(prev => ({ ...prev, [activeOs]: timer }));
+          // Store timers for cleanup
+          setConnectTimers(prev => ({ 
+            ...prev, 
+            [activeOs]: setTimeout(() => {
+              // This will be executed after the visual loading completes
+              // Reload VM data to reflect current state
+              loadUserVMs();
+            }, 60000) 
+          }));
           break;
           
         case 'Stop':
@@ -118,7 +150,8 @@ const TesterVirtualDesktop = () => {
           // Reset connection state
           setCanConnect(prev => ({ ...prev, [activeOs]: false }));
           setConnectionUrls(prev => ({ ...prev, [activeOs]: undefined }));
-          setVmStartTime(prev => ({ ...prev, [activeOs]: undefined }));
+          setVmStartProgress(prev => ({ ...prev, [activeOs]: 0 }));
+          setLoadingState(prev => ({ ...prev, [activeOs]: false }));
           
           // Clear any timer that might be running
           if (connectTimers[activeOs]) {
@@ -135,37 +168,25 @@ const TesterVirtualDesktop = () => {
             description: "This will take about a minute. Please wait."
           });
           
+          // Start visual loading simulation first
+          const restartTimers = simulateLoading(activeOs);
+          
+          // Call API in background
           response = await vmService.restartVM(activeOs);
           
-          // Reset connection state temporarily
-          setCanConnect(prev => ({ ...prev, [activeOs]: false }));
-          setVmStartTime(prev => ({ ...prev, [activeOs]: new Date() }));
-          
-          // Clear any existing timer
-          if (connectTimers[activeOs]) {
-            clearTimeout(connectTimers[activeOs]);
+          // Store the URL for when loading completes
+          if (response.URL) {
+            setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
           }
           
-          // Set 1-minute timer before showing connect button
-          const restartTimer = setTimeout(() => {
-            setCanConnect(prev => ({ ...prev, [activeOs]: true }));
-            
-            if (response.URL) {
-              setConnectionUrls(prev => ({ ...prev, [activeOs]: response.URL }));
-            }
-            
-            // Clear timer reference
-            setConnectTimers(prev => ({ ...prev, [activeOs]: undefined }));
-            
-            toast.success(`VM Ready`, {
-              description: `Your ${activeOs} VM is now ready to connect.`,
-            });
-
-            // Reload VM data
-            loadUserVMs();
-          }, 60000); // 60 seconds = 1 minute
-          
-          setConnectTimers(prev => ({ ...prev, [activeOs]: restartTimer }));
+          // Store timer for cleanup
+          setConnectTimers(prev => ({ 
+            ...prev, 
+            [activeOs]: setTimeout(() => {
+              // This will be executed after the visual loading completes
+              loadUserVMs();
+            }, 60000) 
+          }));
           break;
           
         default:
@@ -175,6 +196,10 @@ const TesterVirtualDesktop = () => {
       toast.error(`Failed to ${action.toLowerCase()} VM`, {
         description: "An error occurred while managing your virtual machine. Please try again."
       });
+      
+      // Reset loading state if there's an error
+      setLoadingState(prev => ({ ...prev, [activeOs]: false }));
+      setVmStartProgress(prev => ({ ...prev, [activeOs]: 0 }));
     } finally {
       setActionInProgress(false);
     }
@@ -187,16 +212,10 @@ const TesterVirtualDesktop = () => {
     }
   };
 
-  // Calculate remaining time for VM initialization
-  const getRemainingTime = (os: 'windows' | 'linux') => {
-    if (!vmStartTime[os]) return 0;
-    
-    const startTime = vmStartTime[os]!;
-    const now = new Date();
-    const elapsedSeconds = Math.floor((now.getTime() - startTime.getTime()) / 1000);
-    const remainingSeconds = Math.max(0, 60 - elapsedSeconds);
-    
-    return remainingSeconds;
+  // Calculate remaining time based on progress
+  const getRemainingSeconds = (os: 'windows' | 'linux') => {
+    const progress = vmStartProgress[os];
+    return Math.ceil(60 * (1 - progress / 100));
   };
 
   // Find VM status for current OS
@@ -269,7 +288,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
-                        disabled={getVmStatus('windows').toLowerCase() === 'running' || actionInProgress}
+                        disabled={getVmStatus('windows').toLowerCase() === 'running' || actionInProgress || loadingState.windows}
                       >
                         {actionInProgress && activeOs === 'windows' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -281,7 +300,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
-                        disabled={getVmStatus('windows').toLowerCase() !== 'running' || actionInProgress}
+                        disabled={getVmStatus('windows').toLowerCase() !== 'running' || actionInProgress || loadingState.windows}
                       >
                         {actionInProgress && activeOs === 'windows' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -291,20 +310,18 @@ const TesterVirtualDesktop = () => {
                     </div>
                   </div>
                   
-                  {getVmStatus('windows').toLowerCase() === 'running' && !canConnect.windows && (
-                    <div className="mt-3 p-2 bg-muted text-amber-500 rounded border border-amber-500/30">
-                      <div className="flex items-center">
+                  {loadingState.windows && (
+                    <div className="mt-3 p-3 bg-muted rounded border border-amber-500/30">
+                      <div className="flex items-center mb-2">
                         <div className="mr-3 relative">
                           <div className="w-8 h-8 border-4 border-amber-300/20 border-t-amber-500 rounded-full animate-spin"></div>
-                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-                            {getRemainingTime('windows')}
-                          </div>
                         </div>
                         <div>
-                          <p className="font-medium">VM is starting</p>
-                          <p className="text-xs">Connection will be available in {getRemainingTime('windows')} seconds</p>
+                          <p className="font-medium text-amber-500">VM is starting</p>
+                          <p className="text-xs text-muted-foreground">Connection will be available in {getRemainingSeconds('windows')} seconds</p>
                         </div>
                       </div>
+                      <Progress value={vmStartProgress.windows} className="h-2" />
                     </div>
                   )}
                   
@@ -313,7 +330,7 @@ const TesterVirtualDesktop = () => {
                     disabled={!canConnect.windows || getVmStatus('windows').toLowerCase() !== 'running' || !connectionUrls.windows}
                     onClick={handleConnect}
                   >
-                    {!canConnect.windows && getVmStatus('windows').toLowerCase() === 'running' ? (
+                    {loadingState.windows ? (
                       <>
                         <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
                         Preparing connection...
@@ -348,7 +365,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-primary/20 hover:text-primary"
                         onClick={() => handleVmAction('Start')}
-                        disabled={getVmStatus('linux').toLowerCase() === 'running' || actionInProgress}
+                        disabled={getVmStatus('linux').toLowerCase() === 'running' || actionInProgress || loadingState.linux}
                       >
                         {actionInProgress && activeOs === 'linux' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -360,7 +377,7 @@ const TesterVirtualDesktop = () => {
                         size="sm"
                         className="border-input hover:bg-destructive/20 hover:text-destructive"
                         onClick={() => handleVmAction('Stop')}
-                        disabled={getVmStatus('linux').toLowerCase() !== 'running' || actionInProgress}
+                        disabled={getVmStatus('linux').toLowerCase() !== 'running' || actionInProgress || loadingState.linux}
                       >
                         {actionInProgress && activeOs === 'linux' ? (
                           <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
@@ -370,20 +387,18 @@ const TesterVirtualDesktop = () => {
                     </div>
                   </div>
                   
-                  {getVmStatus('linux').toLowerCase() === 'running' && !canConnect.linux && (
-                    <div className="mt-3 p-2 bg-muted text-amber-500 rounded border border-amber-500/30">
-                      <div className="flex items-center">
+                  {loadingState.linux && (
+                    <div className="mt-3 p-3 bg-muted rounded border border-amber-500/30">
+                      <div className="flex items-center mb-2">
                         <div className="mr-3 relative">
                           <div className="w-8 h-8 border-4 border-amber-300/20 border-t-amber-500 rounded-full animate-spin"></div>
-                          <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold">
-                            {getRemainingTime('linux')}
-                          </div>
                         </div>
                         <div>
-                          <p className="font-medium">VM is starting</p>
-                          <p className="text-xs">Connection will be available in {getRemainingTime('linux')} seconds</p>
+                          <p className="font-medium text-amber-500">VM is starting</p>
+                          <p className="text-xs text-muted-foreground">Connection will be available in {getRemainingSeconds('linux')} seconds</p>
                         </div>
                       </div>
+                      <Progress value={vmStartProgress.linux} className="h-2" />
                     </div>
                   )}
                   
@@ -392,7 +407,7 @@ const TesterVirtualDesktop = () => {
                     disabled={!canConnect.linux || getVmStatus('linux').toLowerCase() !== 'running' || !connectionUrls.linux}
                     onClick={handleConnect}
                   >
-                    {!canConnect.linux && getVmStatus('linux').toLowerCase() === 'running' ? (
+                    {loadingState.linux ? (
                       <>
                         <div className="h-4 w-4 mr-2 animate-spin border-2 border-current border-t-transparent rounded-full" />
                         Preparing connection...

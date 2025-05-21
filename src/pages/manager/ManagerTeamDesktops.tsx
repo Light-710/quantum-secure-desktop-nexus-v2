@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,9 @@ const ManagerTeamDesktops = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [selectedTester, setSelectedTester] = useState<string | null>(null);
   const [showConnectLink, setShowConnectLink] = useState<Record<string, boolean>>({});
-  const [connectTimers, setConnectTimers] = useState<Record<string, NodeJS.Timeout>>({});
+  const [vmStartProgress, setVmStartProgress] = useState<Record<string, number>>({});
+  const [loadingVMs, setLoadingVMs] = useState<Record<string, boolean>>({});
+  const [connectTimers, setConnectTimers] = useState<Record<string, {interval?: NodeJS.Timeout, timer?: NodeJS.Timeout}>>({});
 
   // Fetch team members (testers)
   const { data: testers = [], isLoading: isLoadingTesters } = useQuery({
@@ -55,56 +57,126 @@ const ManagerTeamDesktops = () => {
     enabled: !!selectedTester
   });
 
+  // Cleanup timers when component unmounts
+  useEffect(() => {
+    return () => {
+      Object.values(connectTimers).forEach(timers => {
+        if (timers.interval) clearInterval(timers.interval);
+        if (timers.timer) clearTimeout(timers.timer);
+      });
+    };
+  }, [connectTimers]);
+
+  // Simulate loading for VM start
+  const simulateLoading = (vmId: string) => {
+    // Reset progress
+    setVmStartProgress(prev => ({ ...prev, [vmId]: 0 }));
+    setLoadingVMs(prev => ({ ...prev, [vmId]: true }));
+    setShowConnectLink(prev => ({ ...prev, [vmId]: false }));
+    
+    // Start visual progress animation
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 1.7; // Slightly faster to complete in time (~59 seconds)
+      if (progress >= 100) {
+        clearInterval(interval);
+        setLoadingVMs(prev => ({ ...prev, [vmId]: false }));
+        setShowConnectLink(prev => ({ ...prev, [vmId]: true }));
+        
+        // Show completion toast
+        toast(`VM Ready`, {
+          description: "The team member's virtual machine is now ready to connect."
+        });
+        
+        // Remove the interval reference
+        if (connectTimers[vmId]) {
+          const updatedTimers = { ...connectTimers[vmId] };
+          delete updatedTimers.interval;
+          setConnectTimers(prev => ({ ...prev, [vmId]: updatedTimers }));
+        }
+      }
+      setVmStartProgress(prev => ({ ...prev, [vmId]: Math.min(progress, 100) }));
+    }, 1000); // Update every second
+
+    // Clear interval after 60 seconds (just to be safe)
+    const timer = setTimeout(() => {
+      clearInterval(interval);
+      setLoadingVMs(prev => ({ ...prev, [vmId]: false }));
+      setShowConnectLink(prev => ({ ...prev, [vmId]: true }));
+      
+      // Remove timer references
+      delete connectTimers[vmId];
+      setConnectTimers({ ...connectTimers });
+    }, 60000);
+
+    // Store the timers for cleanup
+    setConnectTimers(prev => ({ 
+      ...prev, 
+      [vmId]: { 
+        interval, 
+        timer 
+      } 
+    }));
+  };
+
   // Handle VM action (start, stop, restart)
   const handleAction = async (vmId: string, action: string, instanceOs: string, employeeId: string) => {
     setActionLoading(vmId);
     try {
-      await handleVMAction(vmId, action, instanceOs, employeeId);
-      
-      // Clear any existing timer
-      if (connectTimers[vmId]) {
-        clearTimeout(connectTimers[vmId]);
-      }
-      
-      // If action is Start, show toast and set a 1-minute timer before showing connect link
+      // If action is start, simulate loading
       if (action.toLowerCase() === 'start') {
         toast(`Starting ${instanceOs} VM`, {
           description: "The team member's virtual machine is starting. This may take about a minute."
         });
         
-        setShowConnectLink(prev => ({ ...prev, [vmId]: false }));
-        
-        const timer = setTimeout(() => {
-          setShowConnectLink(prev => ({ ...prev, [vmId]: true }));
-          toast(`${instanceOs} VM Ready`, {
-            description: "The team member's virtual machine is now ready to connect."
-          });
-          delete connectTimers[vmId];
-        }, 60000); // 60 seconds = 1 minute
-        
-        setConnectTimers(prev => ({ ...prev, [vmId]: timer }));
+        // Start visual loading animation
+        simulateLoading(vmId);
       }
       
-      // Refresh VM data after action
-      await refetchVMs();
+      // Make the actual API call
+      await handleVMAction(vmId, action, instanceOs, employeeId);
+      
+      // If it's not a start action, we don't need to simulate loading
+      if (action.toLowerCase() !== 'start') {
+        // Refresh VM data after action
+        await refetchVMs();
+      } else {
+        // For start action, we'll refresh after the visual loading completes
+        setTimeout(() => {
+          refetchVMs();
+        }, 60000);
+      }
     } catch (error) {
       console.error(`Error ${action} VM:`, error);
+      
+      // Clear loading state if there's an error
+      if (action.toLowerCase() === 'start') {
+        setLoadingVMs(prev => ({ ...prev, [vmId]: false }));
+        setVmStartProgress(prev => ({ ...prev, [vmId]: 0 }));
+        
+        // Clear any timers
+        if (connectTimers[vmId]) {
+          if (connectTimers[vmId].interval) clearInterval(connectTimers[vmId].interval);
+          if (connectTimers[vmId].timer) clearTimeout(connectTimers[vmId].timer);
+          delete connectTimers[vmId];
+          setConnectTimers({ ...connectTimers });
+        }
+      }
     } finally {
       setActionLoading(null);
     }
   };
 
-  // Clean up timers when component unmounts
-  React.useEffect(() => {
-    return () => {
-      Object.values(connectTimers).forEach(timer => clearTimeout(timer));
-    };
-  }, [connectTimers]);
-
   const handleViewDetails = (vm: VirtualMachine) => {
     toast(`VM Details: ${vm.name}`, {
       description: `OS: ${vm.os}, Status: ${vm.status}, ID: ${vm.id}`
     });
+  };
+
+  // Calculate remaining time for VM initialization
+  const getRemainingSeconds = (vmId: string) => {
+    const progress = vmStartProgress[vmId] || 0;
+    return Math.ceil(60 * (1 - progress / 100));
   };
 
   return (
@@ -184,12 +256,19 @@ const ManagerTeamDesktops = () => {
                         <TableCell className="font-medium text-white">{vm.name}</TableCell>
                         <TableCell className="text-white">{vm.os}</TableCell>
                         <TableCell>
-                          <VMStatusBadge status={vm.status} />
+                          {loadingVMs[vm.id] ? (
+                            <div className="flex items-center space-x-2">
+                              <div className="h-4 w-4 animate-spin border-2 border-amber-400 border-t-transparent rounded-full"></div>
+                              <span className="text-amber-400">Starting ({getRemainingSeconds(vm.id)}s)</span>
+                            </div>
+                          ) : (
+                            <VMStatusBadge status={vm.status} />
+                          )}
                         </TableCell>
                         <TableCell>
                           <VMTableActions
                             vmId={vm.id}
-                            status={vm.status}
+                            status={loadingVMs[vm.id] ? 'Starting' : vm.status}
                             instanceOs={vm.os}
                             employeeId={selectedTester}
                             actionLoading={actionLoading === vm.id ? vm.id : null}
