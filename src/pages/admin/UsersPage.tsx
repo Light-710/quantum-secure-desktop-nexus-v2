@@ -54,9 +54,9 @@ const UsersPage = () => {
       
       // Check if response is an array (which is now the expected format)
       if (Array.isArray(response)) {
-        console.log('User data received:', response);
+        
         const mappedUsers = response.map(mapApiUserToUser);
-        console.log('Mapped users:', mappedUsers);
+        
         setUsers(mappedUsers);
       } else {
         console.error('Unexpected API response format:', response);
@@ -115,7 +115,7 @@ const UsersPage = () => {
   };
 
   const confirmDeleteUser = (employee_id: string) => {
-    console.log('confirmDeleteUser called with employee_id:', employee_id);
+    
     const user = users.find(u => u.employee_id === employee_id);
     
     if (!user) {
@@ -149,8 +149,8 @@ const UsersPage = () => {
     }   
     
     try {
-      console.log('User to delete:', userToDelete);
-      console.log('Employee ID to use for deletion:', userToDelete.employee_id);
+      
+      
       
       // Validate employee_id exists before making the API call
       if (!userToDelete.employee_id) {
@@ -176,7 +176,7 @@ const UsersPage = () => {
   };
 
   const handleStatusToggle = async (employee_id: string) => {
-    console.log('handleStatusToggle called with employee_id:', employee_id);
+    
     const user = users.find(u => u.employee_id === employee_id);
     if (!user) {
       console.error('User not found with employee_id:', employee_id);
@@ -191,8 +191,8 @@ const UsersPage = () => {
     }
 
     try {
-      console.log('Toggling status for user:', user);
-      console.log('Using employee_id:', user.employee_id);
+      
+      
       
       // Validate employee_id exists before making the API call
       if (!user.employee_id) {

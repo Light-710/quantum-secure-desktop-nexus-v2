@@ -7,7 +7,7 @@ export const userService = {
   getAllUsers: async () => {
     try {
       const response = await api.get('/admin/user/get-users');
-      console.log('API response for getAllUsers:', response.data);
+      
       
       // Check if the response is wrapped in a users object
       if (response.data && response.data.users && Array.isArray(response.data.users)) {
@@ -70,15 +70,15 @@ export const userService = {
         throw new Error('Employee ID is required for deletion');
       }
       
-      console.log('Attempting to soft-delete user with employee_id:', employee_id);
+      
       
       // Explicitly structure the payload as expected by the API
       const payload = { employee_id };
-      console.log('Sending payload:', payload);
+      
       
       const response = await api.put('/admin/user/soft-delete-user', payload);
       
-      console.log('Soft delete response:', response.data);
+      
       return response.data;
     } catch (error: any) {
       console.error('Error in softDeleteUser:', error);
@@ -106,11 +106,11 @@ export const userService = {
         throw new Error('Employee ID is required for restoration');
       }
       
-      console.log('Attempting to restore user with employee_id:', employee_id);
+      
       
       // Explicitly structure the payload as expected by the API
       const payload = { employee_id };
-      console.log('Sending payload:', payload);
+      
       
       const response = await api.put('/admin/user/restore-user', payload);
       return response.data;
@@ -134,13 +134,13 @@ export const userService = {
   
   // Updated to include better debugging for the /user/get-profile endpoint
   getUserProfile: async () => {
-    console.log('Getting user profile...');
+    
     try {
       const token = localStorage.getItem('ptng_token');
-      console.log('Auth token available:', !!token);
+      
       
       const response = await api.get('/user/get-profile');
-      console.log('Profile response:', response.data);
+      
       return response.data;
     } catch (error) {
       console.error('Error fetching user profile:', error);

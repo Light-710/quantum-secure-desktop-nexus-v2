@@ -38,19 +38,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem('ptng_user');
     const storedToken = localStorage.getItem('ptng_token');
 
-    console.log('Auth initialization - Token exists:', !!storedToken);
+    
     
     if (storedUser && storedToken) {
       try {
         const parsedUser = JSON.parse(storedUser);
-        console.log('Stored user data:', parsedUser);
+        
         
         // Ensure the role is properly formatted
         if (parsedUser && parsedUser.role) {
           // Normalize role case - ensure first letter is uppercase and rest is lowercase
           const normalizedRole = parsedUser.role.charAt(0).toUpperCase() + parsedUser.role.slice(1).toLowerCase();
           parsedUser.role = normalizedRole;
-          console.log('Normalized role:', normalizedRole);
+          
         }
         
         setUser(parsedUser);
@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(false);
       }
     } else {
-      console.log('No stored user or token found');
+      
       setIsLoading(false);
     }
   }, []);
@@ -76,11 +76,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Helper to fetch user profile with token
   const fetchUserProfile = async (authToken: string) => {
     try {
-      console.log('Fetching user profile with token');
+      
       const response = await api.get('/user/get-profile', {
         headers: { Authorization: `Bearer ${authToken}` }
       });
-      console.log('User profile fetched successfully:', response.data);
+      
       
       // Verify the response has the expected structure
       if (!response.data || !response.data.role) {
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         userData.role = userData.role.charAt(0).toUpperCase() + userData.role.slice(1).toLowerCase();
       }
       
-      console.log('Setting normalized user data:', userData);
+      
       setUser(userData);
       localStorage.setItem('ptng_user', JSON.stringify(userData));
       setIsLoading(false);
@@ -111,10 +111,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     
     try {
-      console.log(`Attempting login for employee_id: ${employee_id}`);
+      
       const response = await authService.login(employee_id, password);
       
-      console.log('Login response:', response);
+      
       
       if (!response || !response.access_token) {
         throw new Error('No access token received');
@@ -134,7 +134,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       // Normalize role case
       const normalizedRole = role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
-      console.log('Normalized role:', normalizedRole);
+      
       
       // Save token
       setToken(access_token);
@@ -149,13 +149,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       // Log before navigation
-      console.log(`Navigating to /dashboard/${normalizedRole.toLowerCase()}`);
+      
       
       // Redirect based on normalized user role
       navigate(`/dashboard/${normalizedRole.toLowerCase()}`);
       
       // Log after navigation attempt
-      console.log('Navigation executed');
+      
       
     } catch (error: any) {
       console.error('Login failed:', error);

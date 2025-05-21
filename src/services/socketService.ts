@@ -22,7 +22,7 @@ class SocketService {
 
   connect(token: string, options: SocketServiceOptions = {}) {
     if (this.socket && this.socket.connected) {
-      console.log('Socket already connected');
+      
       return;
     }
 
@@ -49,21 +49,21 @@ class SocketService {
     if (!this.socket) return;
 
     this.socket.on('connect', () => {
-      console.log('Socket connected successfully');
+      
       if (this.options.onConnect) {
         this.options.onConnect();
       }
     });
 
     this.socket.on('disconnect', () => {
-      console.log('Socket disconnected');
+      
       if (this.options.onDisconnect) {
         this.options.onDisconnect();
       }
     });
 
     this.socket.on('message', (data) => {
-      console.log('Message received via socket:', data);
+      
       if (this.options.onMessage) {
         this.options.onMessage(data);
       }
@@ -82,7 +82,7 @@ class SocketService {
     });
 
     this.socket.on('status', (data) => {
-      console.log('Status message received:', data);
+      
       if (this.options.onStatus) {
         this.options.onStatus(data);
       }
@@ -117,14 +117,14 @@ class SocketService {
       return;
     }
 
-    console.log(`Joining room for project ${projectId}`);
+    
     this.socket.emit('join', { project_id: projectId });
   }
 
   leaveRoom(projectId: string) {
     if (!this.socket) return;
     
-    console.log(`Leaving room for project ${projectId}`);
+    
     this.socket.emit('leave', { project_id: projectId });
   }
 
@@ -134,7 +134,7 @@ class SocketService {
       return false;
     }
 
-    console.log(`Sending message to project ${projectId}`, content);
+    
     this.socket.emit('message', { project_id: projectId, content });
     return true;
   }

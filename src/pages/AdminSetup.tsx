@@ -25,7 +25,7 @@ const AdminSetup = () => {
           setTimeout(() => navigate('/login'), 3000);
         }
       } catch (error) {
-        console.log("Could not check if admin exists:", error);
+        
       } finally {
         setIsChecking(false);
       }

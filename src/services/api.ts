@@ -14,10 +14,10 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ptng_token');
   if (token) {
-    console.log(`API Request to ${config.url} - Adding auth token`);
+    
     config.headers.Authorization = `Bearer ${token}`;
   } else {
-    console.log(`API Request to ${config.url} - No auth token available`);
+    
   }
   return config;
 });
@@ -25,7 +25,7 @@ api.interceptors.request.use((config) => {
 // Add response interceptor for handling errors
 api.interceptors.response.use(
   (response) => {
-    console.log(`API Response from ${response.config.url} - Status: ${response.status}`);
+    
     return response;
   },
   (error) => {
@@ -41,7 +41,7 @@ api.interceptors.response.use(
       
       if (status === 401) {
         // Unauthorized - token expired or invalid
-        console.log('Unauthorized access detected - cleaning up session');
+        
         localStorage.removeItem('ptng_token');
         localStorage.removeItem('ptng_user');
         

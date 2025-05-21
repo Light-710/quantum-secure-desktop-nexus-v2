@@ -31,7 +31,7 @@ const ForgotPassword = () => {
       
       // For demo purposes, if a reset_link is returned, show it
       if (response.reset_link) {
-        console.log("Reset Link:", response.reset_link);
+        
       }
     } catch (error: any) {
       toast.error("Request Failed", {

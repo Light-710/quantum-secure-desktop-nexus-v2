@@ -14,7 +14,7 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login form submitted', { employeeId, password });
+    
     await login(employeeId, password);
   };
 

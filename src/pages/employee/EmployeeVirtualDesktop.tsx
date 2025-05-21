@@ -78,7 +78,7 @@ const EmployeeVirtualDesktop = () => {
           // Make the API call first
           try {
             response = await vmService.startVM(activeOs);
-            console.log(`VM ${action} initiated:`, response);
+            
           } catch (error) {
             console.error(`Error starting ${activeOs} VM:`, error);
             // Don't exit the loading state here - we'll let the timer handle it

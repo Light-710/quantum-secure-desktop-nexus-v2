@@ -58,7 +58,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/admin/user/get-all-users');
-        console.log('API response for users:', response.data);
+        
         
         let usersArray = [];
         
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/admin/project/get-all-projects');
-        console.log('API response for projects:', response.data);
+        
         
         let projectsArray = [];
         

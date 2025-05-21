@@ -45,7 +45,7 @@ const ManagerVirtualDesktop = () => {
     try {
       setRefreshing(true);
       const response = await vmService.getUserVMs();
-      console.log('User VMs response:', response);
+      
       setUserVMs(response.vms);
       
       // Process VM data and set status

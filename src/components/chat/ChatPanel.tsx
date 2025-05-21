@@ -125,17 +125,17 @@ const ChatPanel = () => {
     // Connect to WebSocket
     socketService.connect(token, {
       onConnect: () => {
-        console.log('Socket connected');
+        
         setIsSocketConnected(true);
         setIsConnecting(false);
         socketService.joinRoom(selectedProject);
       },
       onDisconnect: () => {
-        console.log('Socket disconnected');
+        
         setIsSocketConnected(false);
       },
       onMessage: (data) => {
-        console.log('New message received', data);
+        
         
         // Check if it's one of our own local messages by its ID
         const localMsgPrefix = `local-`;
@@ -177,7 +177,7 @@ const ChatPanel = () => {
       },
       onStatus: (data: StatusMessage) => {
         // Add status message to the chat
-        console.log('Status message received:', data);
+        
         const statusMsg: Message = {
           id: `status-${Date.now()}`,
           sender: data.user || 'System',
@@ -231,7 +231,7 @@ const ChatPanel = () => {
     
     // Cleanup function - disconnect from socket when component unmounts
     return () => {
-      console.log('Leaving room', selectedProject);
+      
       socketService.leaveRoom(selectedProject);
       
       // Clear all typing timeouts
@@ -304,7 +304,7 @@ const ChatPanel = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const downloadUrl = `${apiUrl}/chat/download/${projectId}/${filename}`;
     
-    console.log(`Initiating file download from: ${downloadUrl}`);
+    
     
     // Create hidden link element to trigger download
     const link = document.createElement('a');

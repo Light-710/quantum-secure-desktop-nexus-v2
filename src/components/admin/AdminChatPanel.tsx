@@ -21,7 +21,7 @@ const AdminChatPanel = () => {
 
   // Debug token availability
   useEffect(() => {
-    console.log('Current auth token:', token ? `${token.substring(0, 10)}...` : 'No token');
+    
   }, [token]);
 
   // Fetch projects
@@ -167,7 +167,7 @@ const AdminChatPanel = () => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     const downloadUrl = `${apiUrl}/chat/download/${projectId}/${filename}`;
     
-    console.log(`Initiating file download from: ${downloadUrl}`);
+    
     
     // Create hidden link element to trigger download
     const link = document.createElement('a');

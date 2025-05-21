@@ -28,7 +28,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   // Show loading state
   if (isLoading) {
-    console.log('ProtectedRoute showing loading state');
+    
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="cyber-grid-bg" />
@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   // Redirect to login if not authenticated
   if (!user) {
-    console.log('ProtectedRoute redirecting to login - user not authenticated');
+    
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
@@ -66,7 +66,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   }
 
   // User is authenticated and authorized
-  console.log('ProtectedRoute rendering children - user authenticated and authorized');
+  
   return <>{children}</>;
 };
 

@@ -29,7 +29,7 @@ const VirtualDesktopPage = () => {
     queryFn: async () => {
       try {
         const response = await vmService.getAllVMs();
-        console.log('All VMs API response:', response);
+        
         
         if (response && response.vms && Array.isArray(response.vms)) {
           // Convert API response to VirtualMachine format

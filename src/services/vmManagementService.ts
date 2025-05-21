@@ -74,16 +74,16 @@ export const handleVMAction = async (vmId: string, action: string, instanceOs: s
     
     switch (action.toLowerCase()) {
       case 'start':
-        console.log(`Starting VM ${vmId} (${instanceOs}) for user ${employeeId}`);
+        
         response = await vmService.startVM(instanceOs, employeeId);
         break;
       case 'stop':
-        console.log(`Stopping VM ${vmId} (${instanceOs}) for user ${employeeId}`);
+        
         response = await vmService.stopVM(instanceOs, employeeId);
         break;
       case 'restart':
       case 'reset':
-        console.log(`Restarting VM ${vmId} (${instanceOs}) for user ${employeeId}`);
+        
         response = await vmService.restartVM(instanceOs, employeeId);
         break;
       default:
@@ -189,7 +189,7 @@ export const loadUserVMs = async (employeeId?: string): Promise<VirtualMachine[]
     if (employeeId) {
       // Get VM status from API for a specific user
       const statusResponse = await vmService.getVMStatus(employeeId);
-      console.log('VM status response for user:', statusResponse);
+      
       
       // In a real implementation, you would transform the API response to VirtualMachine objects
       // For now, we'll return mock data that reflects the status from the API
@@ -218,7 +218,7 @@ export const loadUserVMs = async (employeeId?: string): Promise<VirtualMachine[]
       // Get all VMs for admin view
       try {
         const response = await vmService.getAllVMs();
-        console.log('All VMs API response:', response);
+        
         
         if (response && response.vms && Array.isArray(response.vms)) {
           return response.vms.map(vm => convertApiVMToAppFormat(vm));
