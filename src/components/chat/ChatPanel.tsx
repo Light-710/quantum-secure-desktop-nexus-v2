@@ -176,12 +176,12 @@ const ChatPanel = () => {
         }
       },
       onStatus: (data: StatusMessage) => {
-        // Add status message to the chat
+        // Backend sends status messages for join/leave with complete message
         console.log('Processing status message:', data);
         const statusMsg: Message = {
           id: `status-${Date.now()}-${Math.random()}`,
-          sender: data.user || 'System',
-          content: data.message || `${data.user || 'Someone'} has joined the chat`,
+          sender: 'System',
+          content: data.message, // This already contains "John has joined the chat"
           timestamp: new Date(data.timestamp || Date.now()),
           senderRole: 'Tester', // Use a neutral role for status messages
           isStatusMessage: true
