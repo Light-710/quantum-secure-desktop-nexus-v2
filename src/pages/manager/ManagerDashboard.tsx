@@ -137,7 +137,7 @@ const ManagerDashboard = () => {
             ) : (
               <>
                 <div className="text-2xl font-bold text-foreground mb-2">
-                  {projects.length} <span className="text-muted-foreground text-lg">Active Projects</span>
+                  {projects.filter((project) => project.status.toLowerCase() === 'in progress').length} <span className="text-muted-foreground text-lg">Active Projects</span>
                 </div>
                 <div className="space-y-4 mt-4">
                   {projects.slice(0, 3).map((project) => (

@@ -202,12 +202,12 @@ const AdminDashboard = () => {
   
   // Calculate project statistics
   const projectStats = React.useMemo(() => {
-    const active = projectsData.filter(p => p.status.toLowerCase() === 'active').length;
-    const completed = projectsData.filter(p => p.status.toLowerCase() === 'completed').length;
+    const active = projectsData.filter(p => p.status.toLowerCase() === 'in progress').length;
+    const completed = projectsData.filter(p => p.status.toLowerCase() === 'complete').length;
     const onHoldOrIssues = projectsData.filter(p => 
       ['on hold', 'cancelled', 'issues'].includes(p.status.toLowerCase())
     ).length;
-    const pending = projectsData.filter(p => p.status.toLowerCase() === 'pending').length;
+    const pending = projectsData.filter(p => p.status.toLowerCase() === 'not started').length;
     
     const total = projectsData.length;
     
@@ -219,7 +219,6 @@ const AdminDashboard = () => {
       total,
       activePercent: total > 0 ? (active / total) * 100 : 0,
       completedPercent: total > 0 ? (completed / total) * 100 : 0,
-      onHoldOrIssuesPercent: total > 0 ? (onHoldOrIssues / total) * 100 : 0,
       pendingPercent: total > 0 ? (pending / total) * 100 : 0
     };
   }, [projectsData]);
@@ -617,18 +616,13 @@ const AdminDashboard = () => {
                     style={{ width: `${projectStats.pendingPercent}%` }}
                     title={`Pending: ${projectStats.pending} (${projectStats.pendingPercent.toFixed(1)}%)`}
                   ></div>
-                  <div 
-                    className="h-full bg-red-600" 
-                    style={{ width: `${projectStats.onHoldOrIssuesPercent}%` }}
-                    title={`Issues/On Hold: ${projectStats.onHoldOrIssues} (${projectStats.onHoldOrIssuesPercent.toFixed(1)}%)`}
-                  ></div>
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>Total Projects: {projectStats.total}</span>
                 </div>
               </div>
             
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="border border-border rounded-md p-4 bg-card">
                   <div className="flex items-center text-green-400 mb-2">
                     <PieChart className="w-4 h-4 mr-1" />
@@ -662,16 +656,7 @@ const AdminDashboard = () => {
                   <div className="text-xs text-muted-foreground mt-1">Projects awaiting start</div>
                 </div>
                 
-                <div className="border border-border rounded-md p-4 bg-card">
-                  <div className="flex items-center text-red-400 mb-2">
-                    <AlertCircle className="w-4 h-4 mr-1" />
-                    <div className="text-sm">Issues/On Hold</div>
-                  </div>
-                  <div className="text-2xl font-bold text-destructive">
-                    {projectStats.onHoldOrIssues}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">Projects requiring attention</div>
-                </div>
+                
               </div>
             </>
           )}
