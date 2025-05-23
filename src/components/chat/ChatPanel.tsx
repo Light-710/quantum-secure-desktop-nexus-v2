@@ -177,11 +177,11 @@ const ChatPanel = () => {
       },
       onStatus: (data: StatusMessage) => {
         // Add status message to the chat
-        
+        console.log('Processing status message:', data);
         const statusMsg: Message = {
-          id: `status-${Date.now()}`,
+          id: `status-${Date.now()}-${Math.random()}`,
           sender: data.user || 'System',
-          content: data.message,
+          content: data.message || `${data.user || 'Someone'} has joined the chat`,
           timestamp: new Date(data.timestamp || Date.now()),
           senderRole: 'Tester', // Use a neutral role for status messages
           isStatusMessage: true

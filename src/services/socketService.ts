@@ -82,9 +82,31 @@ class SocketService {
     });
 
     this.socket.on('status', (data) => {
-      
+      console.log('Status event received:', data);
       if (this.options.onStatus) {
         this.options.onStatus(data);
+      }
+    });
+
+    this.socket.on('user_joined', (data) => {
+      console.log('User joined event:', data);
+      if (this.options.onStatus) {
+        this.options.onStatus({
+          user: data.user || data.name || 'Someone',
+          message: `${data.user || data.name || 'Someone'} has joined the chat`,
+          timestamp: data.timestamp || new Date().toISOString()
+        });
+      }
+    });
+
+    this.socket.on('user_left', (data) => {
+      console.log('User left event:', data);
+      if (this.options.onStatus) {
+        this.options.onStatus({
+          user: data.user || data.name || 'Someone',
+          message: `${data.user || data.name || 'Someone'} has left the chat`,
+          timestamp: data.timestamp || new Date().toISOString()
+        });
       }
     });
 
